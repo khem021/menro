@@ -3,7 +3,7 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
-<div style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
+<div style="display:flex;flex-direction:column;gap:0.75rem;">
 
     {{-- ── KPI Row ── --}}
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;flex-shrink:0;">
@@ -88,29 +88,29 @@
     @endif
 
     {{-- ── Main Content ── --}}
-    <div style="flex:1;min-height:0;display:grid;grid-template-columns:2fr 3fr;gap:0.5rem;">
+    <div style="display:grid;grid-template-columns:2fr 3fr;gap:0.75rem;align-items:start;">
 
         {{-- Left: Cluster Config --}}
-        <div style="min-height:0;overflow:hidden;display:flex;flex-direction:column;">
+        <div>
             @livewire('dashboard.cluster-config')
         </div>
 
         {{-- Right: Charts + Recent Entries --}}
-        <div style="display:flex;flex-direction:column;gap:0.5rem;min-height:0;">
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
 
             {{-- Charts --}}
-            <div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
 
-                <div class="card" style="padding:0.75rem;display:flex;flex-direction:column;overflow:hidden;">
-                    <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;flex-shrink:0;">Waste by Cluster</div>
-                    <div style="flex:1;min-height:0;position:relative;">
+                <div class="card" style="padding:0.75rem;">
+                    <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Waste by Cluster</div>
+                    <div style="height:180px;position:relative;">
                         <canvas id="clusterChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
                     </div>
                 </div>
 
-                <div class="card" style="padding:0.75rem;display:flex;flex-direction:column;overflow:hidden;">
-                    <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;flex-shrink:0;">Waste by Category</div>
-                    <div style="flex:1;min-height:0;position:relative;">
+                <div class="card" style="padding:0.75rem;">
+                    <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Waste by Category</div>
+                    <div style="height:180px;position:relative;">
                         <canvas id="categoryChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
                     </div>
                 </div>
@@ -118,15 +118,15 @@
             </div>
 
             {{-- Recent Entries --}}
-            <div class="card" style="padding:0;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column;">
-                <div style="padding:0.5rem 0.875rem;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div class="card" style="padding:0;overflow:hidden;">
+                <div style="padding:0.5rem 0.875rem;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;">
                     <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Recent Waste Entries</div>
                     <div style="display:flex;align-items:center;gap:0.5rem;">
                         <a href="{{ route('entries.index') }}" style="font-size:0.6875rem;color:var(--accent);text-decoration:none;font-weight:500;">View all →</a>
                         <a href="{{ route('entries.create') }}" style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.25rem 0.625rem;font-size:0.6875rem;font-weight:600;border-radius:0.375rem;background:linear-gradient(135deg,#b8860b,#FDB813);color:#071020;text-decoration:none;">+ Add</a>
                     </div>
                 </div>
-                <div style="overflow-y:auto;scrollbar-width:none;flex:1;">
+                <div>
                     <table style="width:100%;border-collapse:collapse;">
                         <thead style="position:sticky;top:0;background:var(--card-bg);">
                             <tr>
