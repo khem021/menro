@@ -10,6 +10,8 @@ RUN apk add --no-cache \
     oniguruma-dev \
     zip \
     unzip \
+    nodejs \
+    npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo \
@@ -27,6 +29,9 @@ WORKDIR /var/www
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction \
+    && npm ci --ignore-scripts \
+    && npm run build \
+    && rm -rf node_modules \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
