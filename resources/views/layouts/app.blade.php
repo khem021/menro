@@ -571,18 +571,85 @@
         .topbar-breadcrumb a { color:var(--text-muted);text-decoration:none;transition:color .15s; }
         .topbar-breadcrumb a:hover { color:var(--text); }
         .topbar-breadcrumb .sep { opacity:0.4; }
+
+        /* ── Mobile / Responsive ── */
+        .hamburger-btn {
+            display:none;align-items:center;justify-content:center;
+            width:2.25rem;height:2.25rem;background:none;border:none;cursor:pointer;
+            color:var(--text-muted);border-radius:0.5rem;flex-shrink:0;
+            transition:background .15s,color .15s;
+        }
+        .hamburger-btn:hover { background:var(--card-border);color:var(--text); }
+        .sidebar-backdrop {
+            display:none;position:fixed;inset:0;
+            background:rgba(0,0,0,0.65);z-index:150;
+            backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform:translateX(-100%);
+                transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
+                z-index:200;
+            }
+            .sidebar.sidebar-open { transform:translateX(0);box-shadow:8px 0 40px rgba(0,0,0,0.55); }
+            .sidebar-backdrop { display:block; }
+            .main { margin-left:0 !important; }
+            .hamburger-btn { display:flex; }
+            .page-content { padding:1rem; }
+            .topbar { padding:0 1rem;gap:0.5rem; }
+            .topbar-date { display:none; }
+
+            /* Tables: horizontal scroll inside cards */
+            .card { overflow-x:auto; }
+            tbody td, thead th { padding:0.5rem 0.625rem; }
+
+            /* Stack all grid helpers */
+            .grid-4 { grid-template-columns:repeat(2,1fr) !important; }
+            .grid-3,.grid-2 { grid-template-columns:1fr !important; }
+            .grid-main { grid-template-columns:1fr !important; }
+
+            /* Forms */
+            .form-grid-2 { grid-template-columns:1fr !important; }
+            .page-header { flex-direction:column;gap:0.625rem;align-items:flex-start; }
+            .filter-bar { gap:0.5rem; }
+            .filter-input { min-width:0;flex:1; }
+            dialog { max-width:calc(100vw - 1.5rem);padding:1.25rem; }
+
+            /* Dashboard grids */
+            .dash-kpi-grid { grid-template-columns:repeat(2,1fr) !important; }
+            .dash-main-grid { grid-template-columns:1fr !important; }
+            .dash-charts-grid { grid-template-columns:1fr !important; }
+        }
+
+        @media (max-width: 480px) {
+            .dash-kpi-grid { grid-template-columns:1fr !important; }
+            .topbar-title { font-size:0.875rem; }
+        }
     </style>
     @stack('styles')
 </head>
-<body>
+<body x-data="{ mobileNav: false }">
 {{-- Livewire request progress bar --}}
 <div id="lw-bar" style="position:fixed;top:0;left:0;z-index:99999;height:2px;width:0;background:var(--accent);opacity:0;transition:width .35s ease,opacity .2s;pointer-events:none;box-shadow:0 0 12px var(--accent-glow);"></div>
+
+{{-- Mobile sidebar backdrop --}}
+<div class="sidebar-backdrop"
+     x-show="mobileNav"
+     x-transition:enter="transition ease-out duration-200"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     @click="mobileNav = false"
+     style="display:none;"></div>
 
 {{-- ============================================================
      SIDEBAR
      ============================================================ --}}
-<aside class="sidebar">
-    <a href="{{ route('dashboard') }}" class="sidebar-brand">
+<aside class="sidebar" :class="{ 'sidebar-open': mobileNav }">
+    <a href="{{ route('dashboard') }}" class="sidebar-brand" @click="mobileNav = false">
         <img src="{{ asset('images/menro-logo.png') }}" alt="MENRO Logo"
              style="width:3.25rem;height:3.25rem;object-fit:contain;flex-shrink:0;">
         <div>
@@ -594,7 +661,7 @@
     <nav class="sidebar-nav">
         <div class="nav-section">Workspace</div>
 
-        <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+        <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                 <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
@@ -610,7 +677,7 @@
                 \App\Models\Violation::where('resolution_status', 'open')->count()
             );
         @endphp
-        <a href="{{ route('notifications.index') }}" class="nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+        <a href="{{ route('notifications.index') }}" class="nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
             </svg>
@@ -624,7 +691,7 @@
         {{-- ── Setup: prerequisite reference data ─────────────────────────── --}}
         <div class="nav-section" style="margin-top:.375rem;">Setup</div>
 
-        <a href="{{ route('barangays.index') }}" class="nav-item {{ request()->routeIs('barangays.*') ? 'active' : '' }}">
+        <a href="{{ route('barangays.index') }}" class="nav-item {{ request()->routeIs('barangays.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                 <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -635,7 +702,7 @@
         {{-- ── Operations: follow steps 1 → 4 ────────────────────────────── --}}
         <div class="nav-section" style="margin-top:.375rem;">Operations</div>
 
-        <a href="{{ route('generators.index') }}" class="nav-item {{ request()->routeIs('generators.*') ? 'active' : '' }}">
+        <a href="{{ route('generators.index') }}" class="nav-item {{ request()->routeIs('generators.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
             </svg>
@@ -644,7 +711,7 @@
             <span class="nav-step">1</span>
         </a>
 
-        <a href="{{ route('entries.index') }}" class="nav-item {{ request()->routeIs('entries.*') ? 'active' : '' }}">
+        <a href="{{ route('entries.index') }}" class="nav-item {{ request()->routeIs('entries.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
@@ -653,7 +720,7 @@
             <span class="nav-step">2</span>
         </a>
 
-        <a href="{{ route('collections.index') }}" class="nav-item {{ request()->routeIs('collections.*') ? 'active' : '' }}">
+        <a href="{{ route('collections.index') }}" class="nav-item {{ request()->routeIs('collections.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <rect x="1" y="3" width="15" height="13"/>
                 <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
@@ -665,7 +732,7 @@
             <span class="nav-step">3</span>
         </a>
 
-        <a href="{{ route('compliance.index') }}" class="nav-item {{ request()->routeIs('compliance.*') || request()->routeIs('inspections.*') || request()->routeIs('violations.*') || request()->routeIs('incidents.*') ? 'active' : '' }}">
+        <a href="{{ route('compliance.index') }}" class="nav-item {{ request()->routeIs('compliance.*') || request()->routeIs('inspections.*') || request()->routeIs('violations.*') || request()->routeIs('incidents.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
             </svg>
@@ -678,7 +745,7 @@
         {{-- ── Insights ────────────────────────────────────────────────────── --}}
         <div class="nav-section" style="margin-top:.375rem;">Insights</div>
 
-        <a href="{{ route('analytics.index') }}" class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}">
+        <a href="{{ route('analytics.index') }}" class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <line x1="18" y1="20" x2="18" y2="10"/>
                 <line x1="12" y1="20" x2="12" y2="4"/>
@@ -687,7 +754,7 @@
             Analytics
         </a>
 
-        <a href="{{ route('reports.index') }}" class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+        <a href="{{ route('reports.index') }}" class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
@@ -701,7 +768,7 @@
         @if(isAdmin())
         <div class="nav-section" style="margin-top:.375rem;">Admin</div>
 
-        <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+        <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
@@ -711,14 +778,14 @@
             Users
         </a>
 
-        <a href="{{ route('audit.index') }}" class="nav-item {{ request()->routeIs('audit.*') ? 'active' : '' }}">
+        <a href="{{ route('audit.index') }}" class="nav-item {{ request()->routeIs('audit.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
             Audit Trail
         </a>
 
-        <a href="{{ route('settings') }}" class="nav-item {{ request()->routeIs('settings*') ? 'active' : '' }}">
+        <a href="{{ route('settings') }}" class="nav-item {{ request()->routeIs('settings*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -760,6 +827,15 @@
      ============================================================ --}}
 <div class="main">
     <header class="topbar">
+        {{-- Hamburger (mobile only) --}}
+        <button class="hamburger-btn" @click="mobileNav = !mobileNav" aria-label="Toggle menu">
+            <svg x-show="!mobileNav" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            <svg x-show="mobileNav" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
         <div class="topbar-title">
             @yield('page-title', 'Dashboard')
             @hasSection('page-subtitle')

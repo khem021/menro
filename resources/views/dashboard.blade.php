@@ -6,7 +6,7 @@
 <div style="display:flex;flex-direction:column;gap:0.75rem;">
 
     {{-- ── KPI Row ── --}}
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;flex-shrink:0;">
+    <div class="dash-kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;">
 
         <a href="{{ route('generators.index') }}" class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#34d399'" onmouseout="this.style.borderColor=''">
             <div>
@@ -88,18 +88,18 @@
     @endif
 
     {{-- ── Main Content ── --}}
-    <div style="display:grid;grid-template-columns:2fr 3fr;gap:0.75rem;align-items:start;">
+    <div class="dash-main-grid" style="display:grid;grid-template-columns:2fr 3fr;gap:0.75rem;align-items:start;">
 
         {{-- Left: Cluster Config --}}
-        <div>
+        <div style="min-width:0;">
             @livewire('dashboard.cluster-config')
         </div>
 
         {{-- Right: Charts + Recent Entries --}}
-        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div style="display:flex;flex-direction:column;gap:0.75rem;min-width:0;">
 
             {{-- Charts --}}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+            <div class="dash-charts-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
 
                 <div class="card" style="padding:0.75rem;">
                     <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Waste by Cluster</div>
