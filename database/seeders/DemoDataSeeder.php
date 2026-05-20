@@ -15,178 +15,191 @@ class DemoDataSeeder extends Seeder
         $encoderId  = DB::table('users')->where('username', 'encoder')->value('user_id');
         $inspectorId= DB::table('users')->where('username', 'inspector')->value('user_id');
 
+        // Barangay name → ID lookup
+        // 14 barangays: Bagsac, Bayogo, Linibonan, Magsaysay, Manga,
+        //               Panayogon, Patong Patong, Quirino, San Antonio, San Juan,
+        //               San Roque, San Vicente, Songkit, Union
+        $brgys = DB::table('barangays')->pluck('barangay_id', 'barangay_name');
+
         // ─── Waste Generators ────────────────────────────────────────────────
         // Types: 1=Residential, 2=Commercial, 3=Industrial, 4=Institutional, 5=Agricultural
-        // Barangays: 1=Alegria, 2=Anahawan, 3=Bgy1, 4=Bgy2, 5=Bgy3, 6=Bgy4, 7=Bgy5
-        //            8=Bgy6, 9=Bgy7, 10=Hinagdanan, 11=Libertad, 12=Lourdes, 13=Mabini
-        //            14=Magsaysay, 15=Mahayahay, 16=Malixi, 17=Managok, 18=Manoligao
-        //            19=Marga, 20=New Visayas, 21=Pangi, 22=Punta, 23=San Isidro, 24=Tagbayagan
-
         $generators = [
-            ['generator_name' => 'Madrid Public Market', 'generator_type_id' => 2, 'barangay_id' => 3,
-             'address' => 'Purok 1, Bgy. 1 Poblacion, Madrid', 'contact_person' => 'Maria Santos',
+            ['generator_name' => 'Madrid Public Market',           'generator_type_id' => 2, 'brgy' => 'Magsaysay',
+             'address' => 'Magsaysay, Madrid',           'contact_person' => 'Maria Santos',
              'contact_number' => '09171234567', 'email' => 'market@madrid.gov.ph',
-             'estimated_daily_waste_kg' => 320.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' => 320.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Madrid Municipal Hall', 'generator_type_id' => 4, 'barangay_id' => 4,
-             'address' => 'Bgy. 2 Poblacion, Madrid', 'contact_person' => 'Jose Reyes',
+            ['generator_name' => 'Madrid Municipal Hall',          'generator_type_id' => 4, 'brgy' => 'Magsaysay',
+             'address' => 'Magsaysay, Madrid',           'contact_person' => 'Jose Reyes',
              'contact_number' => '09182345678', 'email' => 'lgu@madrid.gov.ph',
-             'estimated_daily_waste_kg' => 45.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  45.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Madrid Central Elementary School', 'generator_type_id' => 4, 'barangay_id' => 5,
-             'address' => 'Bgy. 3 Poblacion, Madrid', 'contact_person' => 'Ana Cruz',
+            ['generator_name' => 'Madrid Central Elementary School','generator_type_id' => 4, 'brgy' => 'Magsaysay',
+             'address' => 'Magsaysay, Madrid',           'contact_person' => 'Ana Cruz',
              'contact_number' => '09193456789', 'email' => 'mces@deped.ph',
-             'estimated_daily_waste_kg' => 60.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  60.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'St. Joseph Parish Church', 'generator_type_id' => 4, 'barangay_id' => 6,
-             'address' => 'Bgy. 4 Poblacion, Madrid', 'contact_person' => 'Fr. Eduardo Tan',
+            ['generator_name' => 'St. Joseph Parish Church',       'generator_type_id' => 4, 'brgy' => 'Magsaysay',
+             'address' => 'Magsaysay, Madrid',           'contact_person' => 'Fr. Eduardo Tan',
              'contact_number' => '09204567890', 'email' => '',
-             'estimated_daily_waste_kg' => 25.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  25.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Golden Palace Restaurant', 'generator_type_id' => 2, 'barangay_id' => 7,
-             'address' => 'National Hwy, Bgy. 5 Poblacion, Madrid', 'contact_person' => 'Lin Wei',
+            ['generator_name' => 'Golden Palace Restaurant',       'generator_type_id' => 2, 'brgy' => 'Magsaysay',
+             'address' => 'National Hwy, Magsaysay, Madrid', 'contact_person' => 'Lin Wei',
              'contact_number' => '09215678901', 'email' => '',
-             'estimated_daily_waste_kg' => 85.00, 'compliance_status' => 'for_inspection', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  85.00, 'compliance_status' => 'for_inspection','status' => 'active'],
 
-            ['generator_name' => 'Alegria Barangay Hall', 'generator_type_id' => 4, 'barangay_id' => 1,
-             'address' => 'Alegria, Madrid', 'contact_person' => 'Capt. Pedro Velasco',
+            ['generator_name' => 'Bagsac Barangay Hall',           'generator_type_id' => 4, 'brgy' => 'Bagsac',
+             'address' => 'Bagsac, Madrid',              'contact_person' => 'Capt. Pedro Velasco',
              'contact_number' => '09226789012', 'email' => '',
-             'estimated_daily_waste_kg' => 15.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  15.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Anahawan Elementary School', 'generator_type_id' => 4, 'barangay_id' => 2,
-             'address' => 'Anahawan, Madrid', 'contact_person' => 'Mila Domingo',
+            ['generator_name' => 'Bayogo Elementary School',       'generator_type_id' => 4, 'brgy' => 'Bayogo',
+             'address' => 'Bayogo, Madrid',              'contact_person' => 'Mila Domingo',
              'contact_number' => '09237890123', 'email' => '',
-             'estimated_daily_waste_kg' => 20.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  20.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Libertad Tiangge Market', 'generator_type_id' => 2, 'barangay_id' => 11,
-             'address' => 'Libertad, Madrid', 'contact_person' => 'Rosa Montoya',
+            ['generator_name' => 'Linibonan Tiangge Market',       'generator_type_id' => 2, 'brgy' => 'Linibonan',
+             'address' => 'Linibonan, Madrid',           'contact_person' => 'Rosa Montoya',
              'contact_number' => '09248901234', 'email' => '',
              'estimated_daily_waste_kg' => 110.00, 'compliance_status' => 'non_compliant', 'status' => 'active'],
 
-            ['generator_name' => 'Mabini Farm Supply Store', 'generator_type_id' => 2, 'barangay_id' => 13,
-             'address' => 'Mabini, Madrid', 'contact_person' => 'Renato Flores',
+            ['generator_name' => 'Manga Farm Supply Store',        'generator_type_id' => 2, 'brgy' => 'Manga',
+             'address' => 'Manga, Madrid',               'contact_person' => 'Renato Flores',
              'contact_number' => '09259012345', 'email' => '',
-             'estimated_daily_waste_kg' => 30.00, 'compliance_status' => 'for_inspection', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  30.00, 'compliance_status' => 'for_inspection','status' => 'active'],
 
-            ['generator_name' => 'Magsaysay Rice Mill', 'generator_type_id' => 3, 'barangay_id' => 14,
-             'address' => 'Magsaysay, Madrid', 'contact_person' => 'Eduardo Bautista',
+            ['generator_name' => 'Magsaysay Rice Mill',            'generator_type_id' => 3, 'brgy' => 'Magsaysay',
+             'address' => 'Magsaysay, Madrid',           'contact_person' => 'Eduardo Bautista',
              'contact_number' => '09260123456', 'email' => 'ricemill@gmail.com',
              'estimated_daily_waste_kg' => 200.00, 'compliance_status' => 'non_compliant', 'status' => 'active'],
 
-            ['generator_name' => 'Mahayahay Health Center', 'generator_type_id' => 4, 'barangay_id' => 15,
-             'address' => 'Mahayahay, Madrid', 'contact_person' => 'Dr. Carmen Lim',
+            ['generator_name' => 'Panayogon Health Center',        'generator_type_id' => 4, 'brgy' => 'Panayogon',
+             'address' => 'Panayogon, Madrid',           'contact_person' => 'Dr. Carmen Lim',
              'contact_number' => '09271234560', 'email' => '',
-             'estimated_daily_waste_kg' => 18.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  18.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Malixi Coconut Processing Plant', 'generator_type_id' => 3, 'barangay_id' => 16,
-             'address' => 'Malixi, Madrid', 'contact_person' => 'Fernando Garcia',
+            ['generator_name' => 'Quirino Coconut Processing Plant','generator_type_id' => 3, 'brgy' => 'Quirino',
+             'address' => 'Quirino, Madrid',             'contact_person' => 'Fernando Garcia',
              'contact_number' => '09282345671', 'email' => '',
-             'estimated_daily_waste_kg' => 280.00, 'compliance_status' => 'for_inspection', 'status' => 'active'],
+             'estimated_daily_waste_kg' => 280.00, 'compliance_status' => 'for_inspection','status' => 'active'],
 
-            ['generator_name' => 'Managok Fishermen\'s Village', 'generator_type_id' => 1, 'barangay_id' => 17,
-             'address' => 'Managok, Madrid', 'contact_person' => 'Benjamin Navarro',
+            ['generator_name' => 'San Antonio Fishermen\'s Village','generator_type_id' => 1, 'brgy' => 'San Antonio',
+             'address' => 'San Antonio, Madrid',         'contact_person' => 'Benjamin Navarro',
              'contact_number' => '09293456782', 'email' => '',
-             'estimated_daily_waste_kg' => 95.00, 'compliance_status' => 'for_inspection', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  95.00, 'compliance_status' => 'for_inspection','status' => 'active'],
 
-            ['generator_name' => 'Manoligao Barangay Hall', 'generator_type_id' => 4, 'barangay_id' => 18,
-             'address' => 'Manoligao, Madrid', 'contact_person' => 'Capt. Leonora Padilla',
+            ['generator_name' => 'San Juan Barangay Hall',         'generator_type_id' => 4, 'brgy' => 'San Juan',
+             'address' => 'San Juan, Madrid',            'contact_person' => 'Capt. Leonora Padilla',
              'contact_number' => '09204567893', 'email' => '',
-             'estimated_daily_waste_kg' => 12.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  12.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'New Visayas Cooperative Store', 'generator_type_id' => 2, 'barangay_id' => 20,
-             'address' => 'New Visayas, Madrid', 'contact_person' => 'Gloria Ramos',
+            ['generator_name' => 'San Roque Cooperative Store',    'generator_type_id' => 2, 'brgy' => 'San Roque',
+             'address' => 'San Roque, Madrid',           'contact_person' => 'Gloria Ramos',
              'contact_number' => '09215678904', 'email' => '',
-             'estimated_daily_waste_kg' => 40.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  40.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Pangi Poultry Farm', 'generator_type_id' => 5, 'barangay_id' => 21,
-             'address' => 'Pangi, Madrid', 'contact_person' => 'Ricardo Santos',
+            ['generator_name' => 'Patong Patong Poultry Farm',     'generator_type_id' => 5, 'brgy' => 'Patong Patong',
+             'address' => 'Patong Patong, Madrid',       'contact_person' => 'Ricardo Santos',
              'contact_number' => '09226789015', 'email' => '',
              'estimated_daily_waste_kg' => 150.00, 'compliance_status' => 'non_compliant', 'status' => 'active'],
 
-            ['generator_name' => 'Punta Gasoline Station', 'generator_type_id' => 2, 'barangay_id' => 22,
-             'address' => 'Punta, Madrid', 'contact_person' => 'Alfredo Cruz',
+            ['generator_name' => 'San Vicente Gasoline Station',   'generator_type_id' => 2, 'brgy' => 'San Vicente',
+             'address' => 'San Vicente, Madrid',         'contact_person' => 'Alfredo Cruz',
              'contact_number' => '09237890126', 'email' => '',
-             'estimated_daily_waste_kg' => 22.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  22.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'San Isidro National High School', 'generator_type_id' => 4, 'barangay_id' => 23,
-             'address' => 'San Isidro, Madrid', 'contact_person' => 'Principal Roberto De Leon',
-             'contact_number' => '09248901237', 'email' => 'sinhs@deped.ph',
-             'estimated_daily_waste_kg' => 75.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+            ['generator_name' => 'Songkit National High School',   'generator_type_id' => 4, 'brgy' => 'Songkit',
+             'address' => 'Songkit, Madrid',             'contact_person' => 'Principal Roberto De Leon',
+             'contact_number' => '09248901237', 'email' => 'snhs@deped.ph',
+             'estimated_daily_waste_kg' =>  75.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Tagbayagan Barangay Hall', 'generator_type_id' => 4, 'barangay_id' => 24,
-             'address' => 'Tagbayagan, Madrid', 'contact_person' => 'Capt. Virgilio Abad',
+            ['generator_name' => 'Union Barangay Hall',            'generator_type_id' => 4, 'brgy' => 'Union',
+             'address' => 'Union, Madrid',               'contact_person' => 'Capt. Virgilio Abad',
              'contact_number' => '09259012348', 'email' => '',
-             'estimated_daily_waste_kg' => 10.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  10.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Lourdes Hardware Store', 'generator_type_id' => 2, 'barangay_id' => 12,
-             'address' => 'Lourdes, Madrid', 'contact_person' => 'Dante Mercado',
+            ['generator_name' => 'Linibonan Hardware Store',       'generator_type_id' => 2, 'brgy' => 'Linibonan',
+             'address' => 'Linibonan, Madrid',           'contact_person' => 'Dante Mercado',
              'contact_number' => '09260123459', 'email' => '',
-             'estimated_daily_waste_kg' => 35.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  35.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Hinagdanan Banana Plantation', 'generator_type_id' => 5, 'barangay_id' => 10,
-             'address' => 'Hinagdanan, Madrid', 'contact_person' => 'Nestor Villanueva',
+            ['generator_name' => 'Manga Banana Plantation',        'generator_type_id' => 5, 'brgy' => 'Manga',
+             'address' => 'Manga, Madrid',               'contact_person' => 'Nestor Villanueva',
              'contact_number' => '09271234570', 'email' => '',
-             'estimated_daily_waste_kg' => 180.00, 'compliance_status' => 'for_inspection', 'status' => 'active'],
+             'estimated_daily_waste_kg' => 180.00, 'compliance_status' => 'for_inspection','status' => 'active'],
 
-            ['generator_name' => 'Marga Piggery Farm', 'generator_type_id' => 5, 'barangay_id' => 19,
-             'address' => 'Marga, Madrid', 'contact_person' => 'Erlinda Castro',
+            ['generator_name' => 'San Roque Piggery Farm',         'generator_type_id' => 5, 'brgy' => 'San Roque',
+             'address' => 'San Roque, Madrid',           'contact_person' => 'Erlinda Castro',
              'contact_number' => '09282345681', 'email' => '',
              'estimated_daily_waste_kg' => 220.00, 'compliance_status' => 'non_compliant', 'status' => 'active'],
 
-            ['generator_name' => 'Bgy. 6 Day Care Center', 'generator_type_id' => 4, 'barangay_id' => 8,
-             'address' => 'Bgy. 6 Poblacion, Madrid', 'contact_person' => 'Teresita Gomez',
+            ['generator_name' => 'Bagsac Day Care Center',         'generator_type_id' => 4, 'brgy' => 'Bagsac',
+             'address' => 'Bagsac, Madrid',              'contact_person' => 'Teresita Gomez',
              'contact_number' => '09293456792', 'email' => '',
-             'estimated_daily_waste_kg' => 8.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>   8.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Bgy. 7 Sari-Sari Stores Cluster', 'generator_type_id' => 2, 'barangay_id' => 9,
-             'address' => 'Bgy. 7 Poblacion, Madrid', 'contact_person' => 'Corazon Dela Cruz',
+            ['generator_name' => 'Bayogo Sari-Sari Stores Cluster','generator_type_id' => 2, 'brgy' => 'Bayogo',
+             'address' => 'Bayogo, Madrid',              'contact_person' => 'Corazon Dela Cruz',
              'contact_number' => '09204567803', 'email' => '',
-             'estimated_daily_waste_kg' => 55.00, 'compliance_status' => 'for_inspection', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  55.00, 'compliance_status' => 'for_inspection','status' => 'active'],
 
-            ['generator_name' => 'Madrid District Hospital', 'generator_type_id' => 4, 'barangay_id' => 4,
-             'address' => 'Bgy. 2 Poblacion, Madrid', 'contact_person' => 'Dr. Ramon Aquino',
+            ['generator_name' => 'Madrid District Hospital',       'generator_type_id' => 4, 'brgy' => 'Magsaysay',
+             'address' => 'Magsaysay, Madrid',           'contact_person' => 'Dr. Ramon Aquino',
              'contact_number' => '09215678914', 'email' => 'hospital@doh.gov.ph',
-             'estimated_daily_waste_kg' => 90.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  90.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Madrid Abattoir', 'generator_type_id' => 3, 'barangay_id' => 5,
-             'address' => 'Bgy. 3 Poblacion, Madrid', 'contact_person' => 'Rodrigo Espiritu',
+            ['generator_name' => 'Madrid Abattoir',                'generator_type_id' => 3, 'brgy' => 'Magsaysay',
+             'address' => 'Magsaysay, Madrid',           'contact_person' => 'Rodrigo Espiritu',
              'contact_number' => '09226789025', 'email' => '',
-             'estimated_daily_waste_kg' => 130.00, 'compliance_status' => 'for_inspection', 'status' => 'active'],
+             'estimated_daily_waste_kg' => 130.00, 'compliance_status' => 'for_inspection','status' => 'active'],
 
-            ['generator_name' => 'Punta Beach Resort', 'generator_type_id' => 2, 'barangay_id' => 22,
-             'address' => 'Punta, Madrid', 'contact_person' => 'Cristina Morales',
-             'contact_number' => '09237890136', 'email' => 'resort@punta.ph',
-             'estimated_daily_waste_kg' => 65.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+            ['generator_name' => 'San Vicente Beach Resort',       'generator_type_id' => 2, 'brgy' => 'San Vicente',
+             'address' => 'San Vicente, Madrid',         'contact_person' => 'Cristina Morales',
+             'contact_number' => '09237890136', 'email' => 'resort@sanvicente.ph',
+             'estimated_daily_waste_kg' =>  65.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Managok Fishing Port', 'generator_type_id' => 2, 'barangay_id' => 17,
-             'address' => 'Managok, Madrid', 'contact_person' => 'Abelardo Jimenez',
+            ['generator_name' => 'San Juan Fishing Port',          'generator_type_id' => 2, 'brgy' => 'San Juan',
+             'address' => 'San Juan, Madrid',            'contact_person' => 'Abelardo Jimenez',
              'contact_number' => '09248901247', 'email' => '',
              'estimated_daily_waste_kg' => 175.00, 'compliance_status' => 'non_compliant', 'status' => 'active'],
 
-            ['generator_name' => 'Magsaysay Hardware & Lumber', 'generator_type_id' => 2, 'barangay_id' => 14,
-             'address' => 'Magsaysay, Madrid', 'contact_person' => 'Hernando Velarde',
+            ['generator_name' => 'Magsaysay Hardware & Lumber',    'generator_type_id' => 2, 'brgy' => 'Magsaysay',
+             'address' => 'Magsaysay, Madrid',           'contact_person' => 'Hernando Velarde',
              'contact_number' => '09259012358', 'email' => '',
-             'estimated_daily_waste_kg' => 50.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' =>  50.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Alegria Farm Cooperative', 'generator_type_id' => 5, 'barangay_id' => 1,
-             'address' => 'Alegria, Madrid', 'contact_person' => 'Conchita Peralta',
+            ['generator_name' => 'Bagsac Farm Cooperative',        'generator_type_id' => 5, 'brgy' => 'Bagsac',
+             'address' => 'Bagsac, Madrid',              'contact_person' => 'Conchita Peralta',
              'contact_number' => '09260123469', 'email' => '',
-             'estimated_daily_waste_kg' => 140.00, 'compliance_status' => 'compliant', 'status' => 'active'],
+             'estimated_daily_waste_kg' => 140.00, 'compliance_status' => 'compliant',     'status' => 'active'],
 
-            ['generator_name' => 'Madrid Cockpit Arena', 'generator_type_id' => 2, 'barangay_id' => 6,
-             'address' => 'Bgy. 4 Poblacion, Madrid', 'contact_person' => 'Dionisio Aguilar',
+            ['generator_name' => 'Madrid Cockpit Arena',           'generator_type_id' => 2, 'brgy' => 'Songkit',
+             'address' => 'Songkit, Madrid',             'contact_person' => 'Dionisio Aguilar',
              'contact_number' => '09271234580', 'email' => '',
-             'estimated_daily_waste_kg' => 70.00, 'compliance_status' => 'for_inspection', 'status' => 'inactive'],
+             'estimated_daily_waste_kg' =>  70.00, 'compliance_status' => 'for_inspection','status' => 'inactive'],
         ];
 
         $now = now();
         $generatorRows = [];
         foreach ($generators as $g) {
-            $generatorRows[] = array_merge($g, [
-                'created_by' => $adminId,
-                'created_at' => $now->copy()->subDays(rand(60, 365)),
-                'updated_at' => $now,
-            ]);
+            $bid = $brgys[$g['brgy']] ?? null;
+            if (!$bid) continue;
+            $generatorRows[] = [
+                'generator_name'           => $g['generator_name'],
+                'generator_type_id'        => $g['generator_type_id'],
+                'barangay_id'              => $bid,
+                'address'                  => $g['address'],
+                'contact_person'           => $g['contact_person'],
+                'contact_number'           => $g['contact_number'],
+                'email'                    => $g['email'],
+                'estimated_daily_waste_kg' => $g['estimated_daily_waste_kg'],
+                'compliance_status'        => $g['compliance_status'],
+                'status'                   => $g['status'],
+                'created_by'               => $adminId,
+                'created_at'               => $now->copy()->subDays(rand(60, 365)),
+                'updated_at'               => $now,
+            ];
         }
         DB::table('waste_generators')->insert($generatorRows);
 
@@ -248,36 +261,32 @@ class DemoDataSeeder extends Seeder
             ];
         }
 
-        // Chunk inserts to avoid hitting MySQL packet limits
         foreach (array_chunk($entries, 200) as $chunk) {
             DB::table('waste_entries')->insert($chunk);
         }
 
         // ─── Inspections ─────────────────────────────────────────────────────
         $inspectionData = [
-            // compliant generators
-            ['gid_name' => 'Madrid Public Market',       'status' => 'compliant',    'score' => 88, 'days_ago' => 30],
-            ['gid_name' => 'Madrid Municipal Hall',       'status' => 'compliant',    'score' => 95, 'days_ago' => 45],
-            ['gid_name' => 'Madrid Central Elementary School', 'status' => 'compliant', 'score' => 91, 'days_ago' => 20],
-            ['gid_name' => 'St. Joseph Parish Church',   'status' => 'compliant',    'score' => 92, 'days_ago' => 60],
-            ['gid_name' => 'Alegria Barangay Hall',       'status' => 'compliant',    'score' => 89, 'days_ago' => 15],
-            ['gid_name' => 'Anahawan Elementary School',  'status' => 'compliant',    'score' => 93, 'days_ago' => 25],
-            ['gid_name' => 'Madrid District Hospital',    'status' => 'compliant',    'score' => 97, 'days_ago' => 10],
-            ['gid_name' => 'Mahayahay Health Center',     'status' => 'compliant',    'score' => 94, 'days_ago' => 35],
-            // for_inspection
-            ['gid_name' => 'Golden Palace Restaurant',   'status' => 'warning',      'score' => 65, 'days_ago' => 14],
-            ['gid_name' => 'Mabini Farm Supply Store',   'status' => 'for_follow_up','score' => 58, 'days_ago' => 21],
-            ['gid_name' => 'Malixi Coconut Processing Plant', 'status' => 'warning', 'score' => 60, 'days_ago' => 7],
-            ['gid_name' => 'Managok Fishermen\'s Village','status' => 'for_follow_up','score' => 62, 'days_ago' => 18],
-            ['gid_name' => 'Bgy. 7 Sari-Sari Stores Cluster','status' => 'warning',  'score' => 68, 'days_ago' => 12],
-            ['gid_name' => 'Hinagdanan Banana Plantation','status' => 'for_follow_up','score' => 55, 'days_ago' => 5],
-            ['gid_name' => 'Madrid Abattoir',             'status' => 'warning',      'score' => 63, 'days_ago' => 9],
-            // violation / non-compliant
-            ['gid_name' => 'Libertad Tiangge Market',    'status' => 'violation',    'score' => 32, 'days_ago' => 8],
-            ['gid_name' => 'Magsaysay Rice Mill',        'status' => 'violation',    'score' => 28, 'days_ago' => 11],
-            ['gid_name' => 'Pangi Poultry Farm',         'status' => 'violation',    'score' => 25, 'days_ago' => 6],
-            ['gid_name' => 'Marga Piggery Farm',         'status' => 'violation',    'score' => 20, 'days_ago' => 13],
-            ['gid_name' => 'Managok Fishing Port',       'status' => 'violation',    'score' => 30, 'days_ago' => 4],
+            ['gid_name' => 'Madrid Public Market',            'status' => 'compliant',    'score' => 88, 'days_ago' => 30],
+            ['gid_name' => 'Madrid Municipal Hall',            'status' => 'compliant',    'score' => 95, 'days_ago' => 45],
+            ['gid_name' => 'Madrid Central Elementary School', 'status' => 'compliant',    'score' => 91, 'days_ago' => 20],
+            ['gid_name' => 'St. Joseph Parish Church',         'status' => 'compliant',    'score' => 92, 'days_ago' => 60],
+            ['gid_name' => 'Bagsac Barangay Hall',             'status' => 'compliant',    'score' => 89, 'days_ago' => 15],
+            ['gid_name' => 'Bayogo Elementary School',         'status' => 'compliant',    'score' => 93, 'days_ago' => 25],
+            ['gid_name' => 'Madrid District Hospital',         'status' => 'compliant',    'score' => 97, 'days_ago' => 10],
+            ['gid_name' => 'Panayogon Health Center',          'status' => 'compliant',    'score' => 94, 'days_ago' => 35],
+            ['gid_name' => 'Golden Palace Restaurant',         'status' => 'warning',      'score' => 65, 'days_ago' => 14],
+            ['gid_name' => 'Manga Farm Supply Store',          'status' => 'for_follow_up','score' => 58, 'days_ago' => 21],
+            ['gid_name' => 'Quirino Coconut Processing Plant', 'status' => 'warning',      'score' => 60, 'days_ago' =>  7],
+            ['gid_name' => 'San Antonio Fishermen\'s Village', 'status' => 'for_follow_up','score' => 62, 'days_ago' => 18],
+            ['gid_name' => 'Bayogo Sari-Sari Stores Cluster',  'status' => 'warning',      'score' => 68, 'days_ago' => 12],
+            ['gid_name' => 'Manga Banana Plantation',          'status' => 'for_follow_up','score' => 55, 'days_ago' =>  5],
+            ['gid_name' => 'Madrid Abattoir',                  'status' => 'warning',      'score' => 63, 'days_ago' =>  9],
+            ['gid_name' => 'Linibonan Tiangge Market',         'status' => 'violation',    'score' => 32, 'days_ago' =>  8],
+            ['gid_name' => 'Magsaysay Rice Mill',              'status' => 'violation',    'score' => 28, 'days_ago' => 11],
+            ['gid_name' => 'Patong Patong Poultry Farm',       'status' => 'violation',    'score' => 25, 'days_ago' =>  6],
+            ['gid_name' => 'San Roque Piggery Farm',           'status' => 'violation',    'score' => 20, 'days_ago' => 13],
+            ['gid_name' => 'San Juan Fishing Port',            'status' => 'violation',    'score' => 30, 'days_ago' =>  4],
         ];
 
         $inspectionIds = [];
@@ -390,16 +399,16 @@ class DemoDataSeeder extends Seeder
             $date = Carbon::now()->subWeeks($week + 1)->startOfWeek()->addDays(1); // Tuesdays
             foreach (array_slice($barangayIds, 0, 12) as $bid) {
                 $schedules[] = [
-                    'barangay_id'     => $bid,
-                    'collection_date' => $date->toDateString(),
-                    'waste_type'      => $wasteTypes[array_rand($wasteTypes)],
-                    'assigned_team'   => $teams[array_rand($teams)],
-                    'assigned_vehicle'=> $vehicles[array_rand($vehicles)],
-                    'status'          => rand(0, 10) > 1 ? 'completed' : 'missed',
-                    'notes'           => null,
-                    'created_by'      => $menroId,
-                    'created_at'      => $date->copy()->subDays(7),
-                    'updated_at'      => $date->copy()->addDays(1),
+                    'barangay_id'      => $bid,
+                    'collection_date'  => $date->toDateString(),
+                    'waste_type'       => $wasteTypes[array_rand($wasteTypes)],
+                    'assigned_team'    => $teams[array_rand($teams)],
+                    'assigned_vehicle' => $vehicles[array_rand($vehicles)],
+                    'status'           => rand(0, 10) > 1 ? 'completed' : 'missed',
+                    'notes'            => null,
+                    'created_by'       => $menroId,
+                    'created_at'       => $date->copy()->subDays(7),
+                    'updated_at'       => $date->copy()->addDays(1),
                 ];
             }
         }
@@ -407,18 +416,18 @@ class DemoDataSeeder extends Seeder
         // Upcoming/pending schedules (next 2 months)
         for ($week = 0; $week < 8; $week++) {
             $date = Carbon::now()->addWeeks($week)->next(Carbon::TUESDAY);
-            foreach (array_slice($barangayIds, 0, 16) as $bid) {
+            foreach ($barangayIds as $bid) {
                 $schedules[] = [
-                    'barangay_id'     => $bid,
-                    'collection_date' => $date->toDateString(),
-                    'waste_type'      => $wasteTypes[array_rand($wasteTypes)],
-                    'assigned_team'   => $teams[array_rand($teams)],
-                    'assigned_vehicle'=> $vehicles[array_rand($vehicles)],
-                    'status'          => $week === 0 ? 'confirmed' : 'pending',
-                    'notes'           => null,
-                    'created_by'      => $menroId,
-                    'created_at'      => Carbon::now()->subDays(rand(1, 7)),
-                    'updated_at'      => Carbon::now(),
+                    'barangay_id'      => $bid,
+                    'collection_date'  => $date->toDateString(),
+                    'waste_type'       => $wasteTypes[array_rand($wasteTypes)],
+                    'assigned_team'    => $teams[array_rand($teams)],
+                    'assigned_vehicle' => $vehicles[array_rand($vehicles)],
+                    'status'           => $week === 0 ? 'confirmed' : 'pending',
+                    'notes'            => null,
+                    'created_by'       => $menroId,
+                    'created_at'       => Carbon::now()->subDays(rand(1, 7)),
+                    'updated_at'       => Carbon::now(),
                 ];
             }
         }
@@ -429,51 +438,53 @@ class DemoDataSeeder extends Seeder
 
         // ─── Incidents ────────────────────────────────────────────────────────
         $incidentData = [
-            ['barangay_id' => 8,  'type' => 'illegal_dumping',    'status' => 'under_investigation',
+            ['brgy' => 'Bagsac',       'type' => 'illegal_dumping',   'status' => 'under_investigation',
              'desc' => 'Illegal dumping of construction debris found along the access road near the creek.',
-             'location' => 'Near the creek, Bgy. 6 Poblacion', 'days_ago' => 3],
+             'location' => 'Near the creek, Bagsac', 'days_ago' => 3],
 
-            ['barangay_id' => 11, 'type' => 'open_burning',       'status' => 'reported',
+            ['brgy' => 'Linibonan',    'type' => 'open_burning',      'status' => 'reported',
              'desc' => 'Residents reported smoke from open burning of solid waste at the back of the market area.',
-             'location' => 'Behind Libertad Market', 'days_ago' => 1],
+             'location' => 'Behind Linibonan Tiangge Market', 'days_ago' => 1],
 
-            ['barangay_id' => 14, 'type' => 'improper_disposal',  'status' => 'under_investigation',
+            ['brgy' => 'Magsaysay',    'type' => 'improper_disposal', 'status' => 'under_investigation',
              'desc' => 'Rice mill waste water and husk discharged directly into the irrigation canal.',
              'location' => 'Irrigation canal near Magsaysay Rice Mill', 'days_ago' => 5],
 
-            ['barangay_id' => 21, 'type' => 'improper_disposal',  'status' => 'reported',
+            ['brgy' => 'Patong Patong','type' => 'improper_disposal', 'status' => 'reported',
              'desc' => 'Poultry farm waste not properly treated before disposal, causing foul odor complaints.',
-             'location' => 'Pangi Poultry Farm vicinity', 'days_ago' => 2],
+             'location' => 'Patong Patong Poultry Farm vicinity', 'days_ago' => 2],
 
-            ['barangay_id' => 17, 'type' => 'illegal_dumping',    'status' => 'for_validation',
+            ['brgy' => 'San Juan',     'type' => 'illegal_dumping',   'status' => 'for_validation',
              'desc' => 'Suspected midnight dumping of fish processing waste near the fishing port access road.',
-             'location' => 'Managok Fishing Port access road', 'days_ago' => 4],
+             'location' => 'San Juan Fishing Port access road', 'days_ago' => 4],
 
-            ['barangay_id' => 3,  'type' => 'other',              'status' => 'resolved',
+            ['brgy' => 'Magsaysay',    'type' => 'other',             'status' => 'resolved',
              'desc' => 'Overflowing public market waste bins causing spillover onto pedestrian walkway.',
-             'location' => 'Madrid Public Market, Bgy. 1 Poblacion', 'days_ago' => 14],
+             'location' => 'Madrid Public Market, Magsaysay', 'days_ago' => 14],
 
-            ['barangay_id' => 19, 'type' => 'open_burning',       'status' => 'resolved',
+            ['brgy' => 'San Roque',    'type' => 'open_burning',      'status' => 'resolved',
              'desc' => 'Piggery farm burning animal waste and plastic materials together.',
-             'location' => 'Marga, behind the piggery compound', 'days_ago' => 21],
+             'location' => 'San Roque, behind the piggery compound', 'days_ago' => 21],
 
-            ['barangay_id' => 16, 'type' => 'improper_disposal',  'status' => 'under_investigation',
+            ['brgy' => 'Quirino',      'type' => 'improper_disposal', 'status' => 'under_investigation',
              'desc' => 'Coconut husk and processing liquid waste found dumped in the nearby ravine.',
-             'location' => 'Ravine at the north side of Malixi Processing Plant', 'days_ago' => 7],
+             'location' => 'Ravine at the north side of Quirino Processing Plant', 'days_ago' => 7],
 
-            ['barangay_id' => 22, 'type' => 'illegal_dumping',    'status' => 'reported',
+            ['brgy' => 'San Vicente',  'type' => 'illegal_dumping',   'status' => 'reported',
              'desc' => 'Tourist area littering issue — overnight visitors leaving waste on the beach.',
-             'location' => 'Punta Beach shoreline', 'days_ago' => 1],
+             'location' => 'San Vicente Beach shoreline', 'days_ago' => 1],
 
-            ['barangay_id' => 10, 'type' => 'improper_disposal',  'status' => 'for_validation',
+            ['brgy' => 'Manga',        'type' => 'improper_disposal', 'status' => 'for_validation',
              'desc' => 'Agricultural chemicals containers improperly disposed near water source.',
-             'location' => 'Hinagdanan Banana Plantation, east boundary', 'days_ago' => 6],
+             'location' => 'Manga Banana Plantation, east boundary', 'days_ago' => 6],
         ];
 
         foreach ($incidentData as $d) {
+            $bid = $brgys[$d['brgy']] ?? null;
+            if (!$bid) continue;
             $isResolved = $d['status'] === 'resolved';
             DB::table('incidents')->insert([
-                'barangay_id'      => $d['barangay_id'],
+                'barangay_id'      => $bid,
                 'reported_by'      => $inspectorId,
                 'incident_type'    => $d['type'],
                 'description'      => $d['desc'],
