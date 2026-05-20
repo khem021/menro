@@ -41,8 +41,8 @@ class GeneratorIndex extends Component
         $generators = WasteGenerator::with(['barangay:barangay_id,barangay_name', 'generatorType:generator_type_id,type_name'])
             ->when($this->search, fn($q) =>
                 $q->where(fn($w) => $w
-                    ->where('generator_name', 'like', "%{$this->search}%")
-                    ->orWhere('contact_person', 'like', "%{$this->search}%"))
+                    ->where('generator_name', 'ilike', "%{$this->search}%")
+                    ->orWhere('contact_person', 'ilike', "%{$this->search}%"))
             )
             ->when($this->status, fn($q) => $q->where('status', $this->status))
             ->when($this->compliance_status, fn($q) => $q->where('compliance_status', $this->compliance_status))

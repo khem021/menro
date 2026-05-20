@@ -55,8 +55,7 @@
     {{-- Table --}}
     <style>.col-tbl::-webkit-scrollbar{display:none}</style>
     <div class="card tbl-card" style="flex:1;min-height:0;display:flex;flex-direction:column;padding:0;overflow:hidden;">
-        <div wire:loading class="tbl-overlay"><div class="lw-spinner"></div></div>
-        <div class="col-tbl" wire:loading.class="tbl-dimmed" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="col-tbl" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
             <table style="width:100%;border-collapse:collapse;">
                 <thead style="position:sticky;top:0;z-index:1;background:var(--card-bg);">
                     <tr>

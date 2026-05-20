@@ -570,13 +570,6 @@
         .topbar-breadcrumb a { color:var(--text-muted);text-decoration:none;transition:color .15s; }
         .topbar-breadcrumb a:hover { color:var(--text); }
         .topbar-breadcrumb .sep { opacity:0.4; }
-
-        /* ── Table loading overlay ── */
-        .tbl-card { position:relative; isolation:isolate; }
-        .tbl-overlay { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:20;pointer-events:none;border-radius:0.75rem; }
-        .tbl-dimmed { opacity:0.2;pointer-events:none; }
-        .lw-spinner { width:2.25rem;height:2.25rem;border:2.5px solid rgba(253,184,19,0.18);border-top-color:var(--accent);border-radius:50%;animation:lw-spin .7s linear infinite;filter:drop-shadow(0 0 10px rgba(253,184,19,.5)); }
-        @keyframes lw-spin { to { transform:rotate(360deg); } }
     </style>
     @stack('styles')
 </head>

@@ -217,7 +217,7 @@ class BarangayIndex extends Component
     public function render()
     {
         $barangays = Barangay::with('sectors')
-            ->when($this->search, fn($q) => $q->where('barangay_name', 'like', '%' . $this->search . '%'))
+            ->when($this->search, fn($q) => $q->where('barangay_name', 'ilike', '%' . $this->search . '%'))
             ->orderBy('barangay_name')
             ->get();
 

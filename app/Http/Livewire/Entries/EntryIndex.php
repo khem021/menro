@@ -47,7 +47,7 @@ class EntryIndex extends Component
             ])
             ->when($this->search, fn($q) =>
                 $q->whereHas('wasteGenerator', fn($q2) =>
-                    $q2->where('generator_name', 'like', '%' . $this->search . '%')
+                    $q2->where('generator_name', 'ilike', '%' . $this->search . '%')
                 )
             )
             ->when($this->generator_id, fn($q) => $q->where('generator_id', $this->generator_id))
