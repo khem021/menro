@@ -1,0 +1,56 @@
+services:
+  - type: web
+    name: menro
+    plan: free
+    branch: main
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: MENRO
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        fromService:
+          type: web
+          name: menro
+          property: url
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: menro-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: menro-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: menro-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: menro-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: menro-db
+          property: password
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: LOG_CHANNEL
+        value: stderr
+
+databases:
+  - name: menro-db
+    plan: free
+    databaseName: menro
+    user: menro
