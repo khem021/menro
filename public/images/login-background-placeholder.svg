@@ -1,0 +1,50 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MENRO login background placeholder">
+    <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="1000" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#091015"/>
+            <stop offset="0.55" stop-color="#11181C"/>
+            <stop offset="1" stop-color="#070B0D"/>
+        </linearGradient>
+        <linearGradient id="beam" x1="1060" y1="0" x2="1520" y2="700" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#D8C7A3" stop-opacity="0.0"/>
+            <stop offset="0.5" stop-color="#D8C7A3" stop-opacity="0.16"/>
+            <stop offset="1" stop-color="#AFC69E" stop-opacity="0.0"/>
+        </linearGradient>
+        <linearGradient id="ridge1" x1="0" y1="640" x2="1600" y2="980" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#1D2A25"/>
+            <stop offset="1" stop-color="#0F1518"/>
+        </linearGradient>
+        <linearGradient id="ridge2" x1="0" y1="720" x2="1600" y2="1000" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#24342D"/>
+            <stop offset="1" stop-color="#131A1C"/>
+        </linearGradient>
+        <linearGradient id="ridge3" x1="0" y1="790" x2="1600" y2="1000" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#35473C"/>
+            <stop offset="1" stop-color="#182020"/>
+        </linearGradient>
+        <pattern id="grid" width="120" height="120" patternUnits="userSpaceOnUse">
+            <path d="M120 0H0V120" fill="none" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1"/>
+        </pattern>
+    </defs>
+
+    <rect width="1600" height="1000" fill="url(#bg)"/>
+    <rect width="1600" height="1000" fill="url(#grid)" opacity="0.45"/>
+
+    <path d="M980 -80L1550 20L1600 460L1380 690L1120 560L940 180Z" fill="url(#beam)"/>
+
+    <path d="M0 690C180 610 260 600 410 642C560 684 710 792 880 778C1035 764 1120 648 1270 632C1420 616 1510 678 1600 714V1000H0V690Z" fill="url(#ridge1)"/>
+    <path d="M0 760C180 708 286 700 420 734C556 768 682 880 846 872C1012 864 1128 756 1276 732C1422 708 1524 760 1600 792V1000H0V760Z" fill="url(#ridge2)"/>
+    <path d="M0 834C150 804 276 814 394 852C522 892 622 962 778 960C924 958 1014 884 1150 850C1290 816 1462 824 1600 860V1000H0V834Z" fill="url(#ridge3)"/>
+
+    <path d="M110 320C220 280 342 270 464 296C582 322 664 372 768 388C900 408 1020 366 1128 322C1238 276 1346 254 1488 286" stroke="#F0F3EC" stroke-opacity="0.08" stroke-width="2" fill="none"/>
+    <path d="M70 420C188 376 310 370 442 396C574 422 672 478 782 494C912 512 1020 472 1134 428C1244 386 1364 366 1528 396" stroke="#DCE7DA" stroke-opacity="0.08" stroke-width="2" fill="none"/>
+    <path d="M130 520C250 482 350 474 470 494C600 516 706 570 828 586C952 602 1062 574 1178 532C1298 490 1410 474 1518 494" stroke="#D4E0D0" stroke-opacity="0.07" stroke-width="2" fill="none"/>
+
+    <g opacity="0.12">
+        <path d="M1130 120H1456V444H1130V120Z" fill="none" stroke="#F2ECDD" stroke-width="2"/>
+        <path d="M1130 188H1456M1130 256H1456M1130 324H1456M1130 392H1456" stroke="#F2ECDD" stroke-opacity="0.12" stroke-width="1"/>
+        <path d="M1188 120V444M1246 120V444M1304 120V444M1362 120V444M1420 120V444" stroke="#F2ECDD" stroke-opacity="0.08" stroke-width="1"/>
+    </g>
+
+    <path d="M0 0H1600" stroke="#FFFFFF" stroke-opacity="0.04" stroke-width="1"/>
+</svg>

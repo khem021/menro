@@ -1,0 +1,197 @@
+@import url('https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Philippine Government Theme (Navy + Gold) ── */
+:root {
+    --bg:           #0a1628;
+    --sidebar-bg:   #071020;
+    --card-bg:      #0f1d35;
+    --card-border:  #1c2d4a;
+    --accent-mid:   #b8860b;
+    --accent:       #FDB813;
+    --highlight:    #FFD54F;
+    --accent-glow:  #FDB81330;
+    --text:         #e8edf5;
+    --text-muted:   #7b8fad;
+    --text-dim:     #4a5d7a;
+    --danger:       #CE1126;
+    --warning:      #FDB813;
+    --info:         #60a5fa;
+
+    /* Legacy compat vars */
+    --clr-p:    #FDB813;
+    --clr-ph:   #d4990f;
+    --clr-pa:   #FFD54F;
+    --clr-plt:  #e8edf5;
+    --clr-pdt:  #FFD54F;
+    --clr-pdk:  #b8860b;
+    --clr-prng: 253 184 19;
+}
+
+@layer base {
+    html { font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); }
+    aside nav::-webkit-scrollbar { display: none; }
+    aside nav { scrollbar-width: none; -ms-overflow-style: none; }
+    * { box-sizing: border-box; }
+}
+
+@layer components {
+
+    /* ── Buttons ── */
+    .btn-primary {
+        @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-150 focus:outline-none;
+        color: #071020;
+        background: linear-gradient(135deg, #b8860b, #FDB813);
+    }
+    .btn-primary:hover  { opacity: 0.85; }
+    .btn-primary:focus-visible { box-shadow: 0 0 0 4px rgba(253, 184, 19, 0.3); }
+
+    .btn-secondary {
+        @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-150;
+        background: transparent;
+        border: 1px solid var(--card-border);
+        color: var(--text-muted);
+    }
+    .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+    .btn-danger {
+        @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-150;
+        background: #7f1d1d33;
+        border: 1px solid #7f1d1d55;
+        color: var(--danger);
+    }
+    .btn-danger:hover { background: #7f1d1d55; }
+
+    .btn-ghost {
+        @apply inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-150;
+        color: var(--text-muted);
+    }
+    .btn-ghost:hover { color: var(--text); background: var(--card-border); }
+
+    .btn-icon      { @apply inline-flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-150 focus:outline-none; }
+    .btn-icon-edit { @apply btn-icon; color: var(--text-muted); }
+    .btn-icon-edit:hover { color: var(--highlight); background: var(--accent-glow); }
+    .btn-icon-del  { @apply btn-icon; color: var(--text-muted); }
+    .btn-icon-del:hover  { color: var(--danger); background: #7f1d1d33; }
+    .btn-icon-view { @apply btn-icon; color: var(--text-muted); }
+    .btn-icon-view:hover { color: var(--info); background: #0c4a6e33; }
+
+    /* ── Forms ── */
+    .form-input {
+        @apply block w-full rounded-lg text-sm transition focus:outline-none;
+        padding: 0.5625rem 0.875rem;
+        color: var(--text);
+        background: #0b1425;
+        border: 1px solid var(--card-border);
+    }
+    .form-input::placeholder { color: var(--text-dim); }
+    .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(253, 184, 19, 0.15); }
+
+    .form-select {
+        @apply block w-full rounded-lg text-sm transition focus:outline-none;
+        padding: 0.5625rem 0.875rem;
+        color: var(--text);
+        background: #0b1425;
+        border: 1px solid var(--card-border);
+    }
+    .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(253, 184, 19, 0.15); }
+    .form-select option { background: var(--card-bg); color: var(--text); }
+
+    .form-label {
+        @apply block text-xs font-semibold uppercase tracking-wide mb-1.5;
+        color: #93afd4;
+    }
+    .form-error { @apply mt-1.5 text-xs flex items-center gap-1; color: var(--danger); }
+
+    .form-section {
+        @apply rounded-xl p-6 mb-5;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+    }
+    .form-section-title {
+        @apply text-sm font-semibold mb-4 pb-3;
+        color: var(--text);
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    /* ── Cards ── */
+    .card      { @apply rounded-xl; background: var(--card-bg); border: 1px solid var(--card-border); }
+    .stat-card { @apply card p-5 flex items-start justify-between; }
+    .page-card { @apply card overflow-hidden; }
+
+    /* ── Tables ── */
+    .table-header {
+        @apply px-4 py-3 text-left uppercase;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: var(--text-dim);
+        border-bottom: 1px solid var(--card-border);
+    }
+    .table-cell {
+        @apply px-4 py-3 text-sm;
+        color: var(--text-muted);
+        border-bottom: 1px solid #152540;
+    }
+    .table-cell.text-main { color: var(--text); font-weight: 500; }
+    .table-row { @apply transition-colors duration-150; }
+    .table-row:hover { background: #1e3f7a10; }
+
+    /* ── Badges ── */
+    .badge        { @apply inline-flex items-center px-2.5 py-0.5 rounded-full font-semibold; font-size: 0.6875rem; }
+    .badge-green  { @apply badge; background: rgba(52,211,153,0.12);  color: #34d399; }
+    .badge-blue   { @apply badge; background: rgba(96,165,250,0.12);  color: #60a5fa; }
+    .badge-yellow { @apply badge; background: rgba(253,184,19,0.12);  color: #FDB813; }
+    .badge-red    { @apply badge; background: rgba(248,113,113,0.12); color: #f87171; }
+    .badge-gray   { @apply badge; background: rgba(28,45,74,0.9);     color: var(--text-muted); }
+    .badge-violet { @apply badge; background: rgba(167,139,250,0.12); color: #a78bfa; }
+    .badge-orange { @apply badge; background: rgba(251,146,60,0.12);  color: #fb923c; }
+
+    /* ── Sidebar ── */
+    .sidebar-link { @apply flex items-center gap-3 py-2 rounded-lg text-sm font-medium transition-all duration-150; padding-left: 0.75rem; padding-right: 0.75rem; }
+    .sidebar-link-active {
+        color: var(--highlight);
+        background: #FDB81318;
+        border-left: 3px solid var(--accent);
+        padding-left: calc(0.75rem - 3px);
+    }
+    .sidebar-link-inactive { color: var(--text-muted); }
+    .sidebar-link-inactive:hover { color: var(--text); background: #1e3f7a20; }
+
+    /* ── Brand ── */
+    .brand-icon { background: linear-gradient(135deg, #1e3f7a, #2952a3); box-shadow: 0 0 12px rgba(253, 184, 19, 0.12); }
+    .brand-text { color: var(--highlight); letter-spacing: 0.08em; }
+    .avatar-bg  { background-color: #1e3f7a; }
+
+    /* ── Topbar icon active ── */
+    .tab-active        { border-color: var(--accent) !important; color: var(--highlight) !important; }
+    .topbar-icon-active { background: rgba(253, 184, 19, 0.12); color: var(--highlight); }
+
+    /* ── Flash messages ── */
+    .flash-success {
+        @apply mb-5 flex items-center gap-3 rounded-xl px-4 py-3 text-sm;
+        background: #1e3f7a22;
+        border: 1px solid #FDB81344;
+        color: var(--highlight);
+    }
+    .flash-error {
+        @apply mb-5 flex items-center gap-3 rounded-xl px-4 py-3 text-sm;
+        background: #7f1d1d22;
+        border: 1px solid #dc262644;
+        color: var(--danger);
+    }
+
+    /* ── Filter bar ── */
+    .filter-bar   { @apply card p-4 mb-5; }
+    .filter-row   { @apply flex flex-wrap gap-3 items-end; }
+    .filter-group { @apply flex flex-col gap-1; }
+    .filter-label { @apply uppercase; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.12em; color: var(--text-dim); }
+
+    /* ── Progress bars ── */
+    .progress-track { height: 5px; background: var(--card-border); border-radius: 999px; overflow: hidden; }
+    .progress-fill  { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #1e3f7a, #FDB813); }
+}
