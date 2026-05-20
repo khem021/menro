@@ -1,9 +1,9 @@
 <?php
 
 if (!function_exists('authUser')) {
-    function authUser() {
+    function authUser(bool $fresh = false) {
         static $cache;
-        if ($cache === null) {
+        if ($fresh || $cache === null) {
             $id = session('auth_user_id');
             $cache = $id ? \App\Models\User::with('role')->find($id) : false;
         }

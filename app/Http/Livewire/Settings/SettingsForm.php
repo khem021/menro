@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Settings;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -28,10 +29,6 @@ class SettingsForm extends Component
 
     public function mount(): void
     {
-        if (!isAdmin()) {
-            abort(403, 'Access denied.');
-        }
-
         $user = $this->currentUser();
         $this->full_name = $user->full_name;
         $this->email     = $user->email ?? '';
@@ -63,6 +60,7 @@ class SettingsForm extends Component
             'username'  => $this->username,
         ]);
 
+        authUser(true); // refresh static cache so sidebar shows updated name
         $this->activeTab = 'profile';
         session()->flash('success', 'Profile updated successfully.');
     }
@@ -76,9 +74,8 @@ class SettingsForm extends Component
 
         $user = $this->currentUser();
 
-        // Delete old avatar file if it exists
-        if ($user->avatar && file_exists(storage_path('app/public/avatars/' . $user->avatar))) {
-            unlink(storage_path('app/public/avatars/' . $user->avatar));
+        if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
+            Storage::disk('public')->delete('avatars/' . $user->avatar);
         }
 
         $filename = $this->photo->store('avatars', 'public');
@@ -98,8 +95,8 @@ class SettingsForm extends Component
     {
         $user = $this->currentUser();
 
-        if ($user->avatar && file_exists(storage_path('app/public/avatars/' . $user->avatar))) {
-            unlink(storage_path('app/public/avatars/' . $user->avatar));
+        if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
+            Storage::disk('public')->delete('avatars/' . $user->avatar);
         }
 
         $user->update(['avatar' => null]);

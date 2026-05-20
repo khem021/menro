@@ -16,7 +16,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $kpis = Cache::remember('dashboard:kpis', 60, function () {
+        $kpis = Cache::remember('dashboard:kpis', 120, function () {
             $thisMonthStart = now()->startOfMonth()->toDateString();
             $lastMonthStart = now()->subMonth()->startOfMonth()->toDateString();
             $lastMonthEnd   = now()->subMonth()->endOfMonth()->toDateString();
@@ -90,7 +90,7 @@ class DashboardController extends Controller
                 ->get()
         );
 
-        $charts = Cache::remember('dashboard:charts', 300, function () {
+        $charts = Cache::remember('dashboard:charts', 600, function () {
             $since = now()->subMonths(12)->toDateString();
 
             $monthly = DB::select("
