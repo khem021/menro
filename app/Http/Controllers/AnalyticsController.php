@@ -11,7 +11,7 @@ class AnalyticsController extends Controller
     {
         $since = now()->subMonths(12)->toDateString();
 
-        $wasteByCategory = Cache::remember('analytics:waste_by_category', 300, fn() use ($since) => DB::select("
+        $wasteByCategory = Cache::remember('analytics:waste_by_category', 300, fn() => DB::select("
             SELECT
                 wc.category_name,
                 SUM(we.quantity) AS total
@@ -22,7 +22,7 @@ class AnalyticsController extends Controller
             ORDER BY total DESC
         ", [$since]));
 
-        $wasteByGeneratorType = Cache::remember('analytics:waste_by_generator_type', 300, fn() use ($since) => DB::select("
+        $wasteByGeneratorType = Cache::remember('analytics:waste_by_generator_type', 300, fn() => DB::select("
             SELECT
                 gt.type_name,
                 SUM(we.quantity) AS total
@@ -34,7 +34,7 @@ class AnalyticsController extends Controller
             ORDER BY total DESC
         ", [$since]));
 
-        $wasteByCluster = Cache::remember('analytics:waste_by_cluster', 300, fn() use ($since) => DB::select("
+        $wasteByCluster = Cache::remember('analytics:waste_by_cluster', 300, fn() => DB::select("
             SELECT
                 b.cluster,
                 SUM(we.quantity) AS total
@@ -47,7 +47,7 @@ class AnalyticsController extends Controller
             ORDER BY total DESC
         ", [$since]));
 
-        $topGenerators = Cache::remember('analytics:top_generators', 300, fn() use ($since) => DB::select("
+        $topGenerators = Cache::remember('analytics:top_generators', 300, fn() => DB::select("
             SELECT
                 wg.generator_name,
                 wg.compliance_status,

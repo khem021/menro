@@ -131,7 +131,7 @@ class DashboardController extends Controller
         $categoryWaste    = $charts['category'];
 
         $today = now()->toDateString();
-        $upcomingByCluster = Cache::remember('dashboard:upcoming_collections', 120, fn() use ($today) => DB::select("
+        $upcomingByCluster = Cache::remember('dashboard:upcoming_collections', 120, fn() => DB::select("
             SELECT
                 b.cluster,
                 b.barangay_name,
