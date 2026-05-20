@@ -1,7 +1,24 @@
 FROM php:8.2-cli-alpine
 
-RUN apk add --no-cache libpq-dev libzip-dev zip unzip oniguruma-dev \
-    && docker-php-ext-install pdo pdo_pgsql mbstring zip opcache
+RUN apk add --no-cache \
+    libpq-dev \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    icu-dev \
+    oniguruma-dev \
+    zip \
+    unzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo \
+        pdo_pgsql \
+        zip \
+        gd \
+        intl \
+        bcmath \
+    && docker-php-ext-enable opcache
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
