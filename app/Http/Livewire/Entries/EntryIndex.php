@@ -69,9 +69,9 @@ class EntryIndex extends Component
             $today      = today()->toDateString();
             $row = WasteEntry::selectRaw("
                 COUNT(*) AS total,
-                SUM(entry_date >= ?) AS month_entries,
+                SUM(CASE WHEN entry_date >= ? THEN 1 ELSE 0 END) AS month_entries,
                 SUM(CASE WHEN entry_date >= ? THEN quantity ELSE 0 END) AS month_volume,
-                SUM(entry_date = ?) AS today_entries
+                SUM(CASE WHEN entry_date = ? THEN 1 ELSE 0 END) AS today_entries
             ", [$monthStart, $monthStart, $today])->first();
             return [
                 'total'         => (int) $row->total,

@@ -63,9 +63,9 @@ class CollectionIndex extends Component
         $stats = Cache::remember('stats:collections', 60, function () {
             $row = CollectionSchedule::selectRaw("
                 COUNT(*) AS total,
-                SUM(status = 'pending') AS pending,
-                SUM(status = 'confirmed') AS confirmed,
-                SUM(status = 'completed') AS completed
+                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
+                SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) AS confirmed,
+                SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed
             ")->first();
             return [
                 'total'     => (int) $row->total,

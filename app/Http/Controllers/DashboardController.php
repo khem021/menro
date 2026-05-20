@@ -23,10 +23,10 @@ class DashboardController extends Controller
 
             $gen = WasteGenerator::selectRaw("
                 COUNT(*) AS total,
-                SUM(status = 'active') AS active,
-                SUM(compliance_status = 'compliant') AS compliant,
-                SUM(compliance_status = 'non_compliant') AS non_compliant,
-                SUM(compliance_status = 'for_inspection') AS for_inspection
+                SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active,
+                SUM(CASE WHEN compliance_status = 'compliant' THEN 1 ELSE 0 END) AS compliant,
+                SUM(CASE WHEN compliance_status = 'non_compliant' THEN 1 ELSE 0 END) AS non_compliant,
+                SUM(CASE WHEN compliance_status = 'for_inspection' THEN 1 ELSE 0 END) AS for_inspection
             ")->first();
 
             $waste = WasteEntry::selectRaw("
@@ -35,8 +35,8 @@ class DashboardController extends Controller
             ", [$thisMonthStart, $lastMonthStart, $lastMonthEnd])->first();
 
             $viol = Violation::selectRaw("
-                SUM(resolution_status = 'open') AS open_,
-                SUM(severity = 'critical' AND resolution_status = 'open') AS critical_
+                SUM(CASE WHEN resolution_status = 'open' THEN 1 ELSE 0 END) AS open_,
+                SUM(CASE WHEN severity = 'critical' AND resolution_status = 'open' THEN 1 ELSE 0 END) AS critical_
             ")->first();
 
             $openIncidents      = Incident::whereIn('status', ['reported', 'for_validation', 'under_investigation'])->count();
@@ -91,36 +91,38 @@ class DashboardController extends Controller
         );
 
         $charts = Cache::remember('dashboard:charts', 300, function () {
+            $since = now()->subMonths(12)->toDateString();
+
             $monthly = DB::select("
                 SELECT
-                    YEAR(entry_date) AS yr,
-                    MONTH(entry_date) AS mo,
+                    EXTRACT(YEAR FROM entry_date) AS yr,
+                    EXTRACT(MONTH FROM entry_date) AS mo,
                     SUM(quantity) AS total
                 FROM waste_entries
-                WHERE entry_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
-                GROUP BY YEAR(entry_date), MONTH(entry_date)
+                WHERE entry_date >= ?
+                GROUP BY EXTRACT(YEAR FROM entry_date), EXTRACT(MONTH FROM entry_date)
                 ORDER BY yr ASC, mo ASC
-            ");
+            ", [$since]);
 
             $cluster = DB::select("
                 SELECT b.cluster, SUM(we.quantity) AS total
                 FROM waste_entries we
                 JOIN waste_generators wg ON we.generator_id = wg.generator_id
                 JOIN barangays b ON wg.barangay_id = b.barangay_id
-                WHERE we.entry_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+                WHERE we.entry_date >= ?
                   AND b.cluster IS NOT NULL
                 GROUP BY b.cluster
                 ORDER BY b.cluster ASC
-            ");
+            ", [$since]);
 
             $category = DB::select("
                 SELECT wc.category_name, SUM(we.quantity) AS total
                 FROM waste_entries we
                 JOIN waste_categories wc ON we.category_id = wc.category_id
-                WHERE we.entry_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+                WHERE we.entry_date >= ?
                 GROUP BY wc.category_id, wc.category_name
                 ORDER BY total DESC
-            ");
+            ", [$since]);
 
             return compact('monthly', 'cluster', 'category');
         });
@@ -128,7 +130,8 @@ class DashboardController extends Controller
         $clusterWaste     = $charts['cluster'];
         $categoryWaste    = $charts['category'];
 
-        $upcomingByCluster = Cache::remember('dashboard:upcoming_collections', 120, fn() => DB::select("
+        $today = now()->toDateString();
+        $upcomingByCluster = Cache::remember('dashboard:upcoming_collections', 120, fn() use ($today) => DB::select("
             SELECT
                 b.cluster,
                 b.barangay_name,
@@ -143,12 +146,12 @@ class DashboardController extends Controller
             INNER JOIN (
                 SELECT barangay_id, MIN(collection_date) AS next_date
                 FROM collection_schedules
-                WHERE collection_date >= CURDATE()
+                WHERE collection_date >= ?
                   AND status IN ('pending', 'confirmed')
                 GROUP BY barangay_id
             ) nxt ON cs.barangay_id = nxt.barangay_id AND cs.collection_date = nxt.next_date
             ORDER BY b.cluster ASC, cs.collection_date ASC, b.barangay_name ASC
-        "));
+        ", [$today]));
 
         $collectionsByCluster = collect($upcomingByCluster)->groupBy('cluster');
 

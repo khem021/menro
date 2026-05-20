@@ -52,9 +52,9 @@ class GeneratorIndex extends Component
         $stats = Cache::remember('stats:generators', 60, function () {
             $row = WasteGenerator::selectRaw("
                 COUNT(*) AS total,
-                SUM(status = 'active') AS active,
-                SUM(compliance_status = 'compliant') AS compliant,
-                SUM(compliance_status = 'non_compliant') AS non_compliant
+                SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active,
+                SUM(CASE WHEN compliance_status = 'compliant' THEN 1 ELSE 0 END) AS compliant,
+                SUM(CASE WHEN compliance_status = 'non_compliant' THEN 1 ELSE 0 END) AS non_compliant
             ")->first();
             return [
                 'total'         => (int) $row->total,

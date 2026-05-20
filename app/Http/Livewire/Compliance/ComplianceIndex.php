@@ -166,20 +166,20 @@ class ComplianceIndex extends Component
         $pipeline = Cache::remember('stats:compliance_pipeline', 60, function () {
             $insp = Inspection::selectRaw(
                 "COUNT(*) AS total,
-                 SUM(compliance_status = 'compliant') AS compliant,
-                 SUM(compliance_status IN ('for_follow_up','warning','violation')) AS pending"
+                 SUM(CASE WHEN compliance_status = 'compliant' THEN 1 ELSE 0 END) AS compliant,
+                 SUM(CASE WHEN compliance_status IN ('for_follow_up','warning','violation') THEN 1 ELSE 0 END) AS pending"
             )->first();
 
             $vio = Violation::selectRaw(
                 "COUNT(*) AS total,
-                 SUM(resolution_status = 'open') AS open,
-                 SUM(severity = 'critical' AND resolution_status = 'open') AS critical"
+                 SUM(CASE WHEN resolution_status = 'open' THEN 1 ELSE 0 END) AS open,
+                 SUM(CASE WHEN severity = 'critical' AND resolution_status = 'open' THEN 1 ELSE 0 END) AS critical"
             )->first();
 
             $inc = Incident::selectRaw(
                 "COUNT(*) AS total,
-                 SUM(status IN ('reported','for_validation','under_investigation')) AS active,
-                 SUM(status = 'resolved') AS resolved"
+                 SUM(CASE WHEN status IN ('reported','for_validation','under_investigation') THEN 1 ELSE 0 END) AS active,
+                 SUM(CASE WHEN status = 'resolved' THEN 1 ELSE 0 END) AS resolved"
             )->first();
 
             return [

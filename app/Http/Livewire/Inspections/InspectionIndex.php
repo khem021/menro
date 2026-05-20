@@ -54,9 +54,9 @@ class InspectionIndex extends Component
             $today = today()->toDateString();
             $row = Inspection::selectRaw("
                 COUNT(*) AS total,
-                SUM(compliance_status = 'compliant') AS compliant,
-                SUM(compliance_status = 'violation') AS violations,
-                SUM(compliance_status = 'for_follow_up' AND next_follow_up IS NOT NULL AND next_follow_up >= ?) AS follow_ups
+                SUM(CASE WHEN compliance_status = 'compliant' THEN 1 ELSE 0 END) AS compliant,
+                SUM(CASE WHEN compliance_status = 'violation' THEN 1 ELSE 0 END) AS violations,
+                SUM(CASE WHEN compliance_status = 'for_follow_up' AND next_follow_up IS NOT NULL AND next_follow_up >= ? THEN 1 ELSE 0 END) AS follow_ups
             ", [$today])->first();
             return [
                 'total'      => (int) $row->total,

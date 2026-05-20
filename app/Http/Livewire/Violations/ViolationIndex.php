@@ -43,9 +43,9 @@ class ViolationIndex extends Component
         $stats = Cache::remember('stats:violations', 60, function () {
             $row = Violation::selectRaw("
                 COUNT(*) AS total,
-                SUM(resolution_status = 'open') AS open,
-                SUM(severity = 'critical' AND resolution_status = 'open') AS critical,
-                SUM(resolution_status = 'resolved') AS resolved
+                SUM(CASE WHEN resolution_status = 'open' THEN 1 ELSE 0 END) AS open,
+                SUM(CASE WHEN severity = 'critical' AND resolution_status = 'open' THEN 1 ELSE 0 END) AS critical,
+                SUM(CASE WHEN resolution_status = 'resolved' THEN 1 ELSE 0 END) AS resolved
             ")->first();
             return [
                 'total'    => (int) $row->total,

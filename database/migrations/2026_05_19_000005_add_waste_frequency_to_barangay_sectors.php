@@ -1,22 +1,21 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void
     {
-        DB::statement("
-            ALTER TABLE barangay_sectors
-                ADD COLUMN waste_frequency VARCHAR(10) NULL AFTER estimated_daily_waste_kg
-        ");
+        Schema::table('barangay_sectors', function (Blueprint $table) {
+            $table->string('waste_frequency', 10)->nullable()->after('estimated_daily_waste_kg');
+        });
     }
 
     public function down(): void
     {
-        DB::statement("
-            ALTER TABLE barangay_sectors
-                DROP COLUMN waste_frequency
-        ");
+        Schema::table('barangay_sectors', function (Blueprint $table) {
+            $table->dropColumn('waste_frequency');
+        });
     }
 };

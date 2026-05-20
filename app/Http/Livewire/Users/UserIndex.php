@@ -66,7 +66,7 @@ class UserIndex extends Component
         );
 
         $stats = Cache::remember('stats:users', 60, function () {
-            $row = User::selectRaw("COUNT(*) AS total, SUM(status = 'active') AS active")->first();
+            $row = User::selectRaw("COUNT(*) AS total, SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active")->first();
             return [
                 'total'    => (int) $row->total,
                 'active'   => (int) $row->active,

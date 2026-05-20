@@ -54,9 +54,9 @@ class IncidentIndex extends Component
         $stats = Cache::remember('stats:incidents', 60, function () {
             $row = Incident::selectRaw("
                 COUNT(*) AS total,
-                SUM(status IN ('reported','for_validation')) AS open,
-                SUM(status = 'under_investigation') AS under_inv,
-                SUM(status = 'resolved') AS resolved
+                SUM(CASE WHEN status IN ('reported','for_validation') THEN 1 ELSE 0 END) AS open,
+                SUM(CASE WHEN status = 'under_investigation' THEN 1 ELSE 0 END) AS under_inv,
+                SUM(CASE WHEN status = 'resolved' THEN 1 ELSE 0 END) AS resolved
             ")->first();
             return [
                 'total'     => (int) $row->total,
