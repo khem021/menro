@@ -35,6 +35,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+COPY docker-php.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
