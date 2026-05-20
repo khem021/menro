@@ -15,13 +15,19 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
-        value: https://menro.onrender.com
+        value: https://menro.onrender.com   # change to your actual URL
       - key: DB_CONNECTION
-        value: pgsql
-      - key: DATABASE_URL
-        fromDatabase:
-          name: menro-db
-          property: connectionString
+        value: mysql
+      - key: DB_HOST
+        sync: false   # set in Render dashboard — your external MySQL host
+      - key: DB_PORT
+        value: 3306
+      - key: DB_DATABASE
+        sync: false   # set in Render dashboard
+      - key: DB_USERNAME
+        sync: false   # set in Render dashboard
+      - key: DB_PASSWORD
+        sync: false   # set in Render dashboard
       - key: SESSION_DRIVER
         value: cookie
       - key: CACHE_DRIVER
@@ -32,9 +38,3 @@ services:
         value: stderr
       - key: LOG_LEVEL
         value: error
-
-databases:
-  - name: menro-db
-    plan: free
-    databaseName: menro
-    user: menro

@@ -1,13 +1,13 @@
 FROM php:8.3-cli-alpine
 
 RUN apk add --no-cache \
-    libpq-dev \
     libzip-dev \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
     icu-dev \
     oniguruma-dev \
+    mysql-client \
     zip \
     unzip \
     nodejs \
@@ -15,7 +15,8 @@ RUN apk add --no-cache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo \
-        pdo_pgsql \
+        pdo_mysql \
+        mysqli \
         zip \
         gd \
         intl \
