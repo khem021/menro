@@ -2,28 +2,28 @@
     @section('title', 'Audit Trail — MENRO')
     @section('page-title', 'Audit Trail')
 
-    <div style="height:calc(100vh - 72px - 3.5rem); display:flex; flex-direction:column; overflow:hidden;">
+    <div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;overflow:hidden;">
 
         {{-- Filter bar --}}
         <div class="filter-bar flex-shrink-0">
             <div class="filter-row">
-                <div class="filter-group"><span class="filter-label">Module</span>
+                <div class="filter-group mob-fgroup"><span class="filter-label">Module</span>
                     <select wire:model="module" class="form-select w-40"><option value="">All Modules</option>@foreach($modules as $mod)<option value="{{ $mod }}">{{ $mod }}</option>@endforeach</select>
                 </div>
-                <div class="filter-group"><span class="filter-label">Action</span>
+                <div class="filter-group mob-fgroup"><span class="filter-label">Action</span>
                     <select wire:model="action" class="form-select w-32"><option value="">All Actions</option>@foreach($actions as $act)<option value="{{ $act }}">{{ ucfirst($act) }}</option>@endforeach</select>
                 </div>
-                <div class="filter-group"><span class="filter-label">User</span>
+                <div class="filter-group mob-fgroup"><span class="filter-label">User</span>
                     <select wire:model="user_id" class="form-select w-44"><option value="">All Users</option>@foreach($users as $u)<option value="{{ $u->user_id }}">{{ $u->full_name }}</option>@endforeach</select>
                 </div>
-                <div class="filter-group"><span class="filter-label">From</span><input type="date" wire:model="date_from" class="form-input w-36" /></div>
-                <div class="filter-group"><span class="filter-label">To</span><input type="date" wire:model="date_to" class="form-input w-36" /></div>
+                <div class="filter-group mob-fgroup"><span class="filter-label">From</span><input type="date" wire:model="date_from" class="form-input w-36" /></div>
+                <div class="filter-group mob-fgroup"><span class="filter-label">To</span><input type="date" wire:model="date_to" class="form-input w-36" /></div>
             </div>
         </div>
 
         {{-- Table card --}}
-        <div class="page-card flex-1 min-h-0 flex flex-col overflow-hidden">
-            <div class="flex-1 min-h-0 overflow-y-auto" style="scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="page-card tbl-card flex-1 min-h-0 flex flex-col overflow-hidden">
+            <div class="flex-1 min-h-0 overflow-y-auto mob-tbl-inner" style="scrollbar-width:none;-ms-overflow-style:none;">
                 <table class="w-full">
                     <thead class="sticky top-0 z-10" style="background:var(--card-bg)"><tr>
                         <th class="table-header">Timestamp</th>

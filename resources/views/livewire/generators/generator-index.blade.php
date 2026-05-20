@@ -1,11 +1,11 @@
-<div style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
+<div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
     @section('title', 'Generators — MENRO')
     @section('page-title', 'Waste Generators')
 
     {{-- flash handled by global toast --}}
 
     {{-- Stat Cards --}}
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;flex-shrink:0;">
+    <div class="mob-stats-grid" style="flex-shrink:0;">
         <div class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
             <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Total</div><div style="font-size:1.375rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ $stats['total'] }}</div></div>
             <div style="width:1.875rem;height:1.875rem;border-radius:0.5rem;background:#1c2d4a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
@@ -26,17 +26,17 @@
 
     {{-- Filters --}}
     <div class="card" style="padding:0.625rem 0.875rem;flex-shrink:0;">
-        <div style="display:flex;align-items:flex-end;gap:0.625rem;flex-wrap:wrap;">
-            <div style="display:flex;flex-direction:column;gap:0.25rem;flex:1;min-width:160px;">
+        <div class="mob-filter-bar">
+            <div class="mob-fgroup" style="flex:1;min-width:160px;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Search</span>
                 <div style="position:relative;"><svg style="position:absolute;left:0.625rem;top:50%;transform:translateY(-50%);color:var(--text-dim);" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 <input wire:model.debounce.400ms="search" type="text" placeholder="Name, contact, address…" class="form-input" style="padding-left:2rem;" /></div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Status</span>
                 <select wire:model="status" class="form-select" style="width:9rem;"><option value="">All Statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Compliance</span>
                 <select wire:model="compliance_status" class="form-select" style="width:11rem;"><option value="">All</option><option value="compliant">Compliant</option><option value="for_inspection">For Inspection</option><option value="non_compliant">Non-Compliant</option></select>
             </div>
@@ -52,7 +52,7 @@
     {{-- Table --}}
     <style>.gen-tbl::-webkit-scrollbar{display:none}</style>
     <div class="card tbl-card" style="flex:1;min-height:0;display:flex;flex-direction:column;padding:0;overflow:hidden;">
-        <div class="gen-tbl" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="gen-tbl mob-tbl-inner" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
             <table style="width:100%;border-collapse:collapse;">
                 <thead style="position:sticky;top:0;z-index:1;background:var(--card-bg);">
                     <tr>

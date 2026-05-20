@@ -626,6 +626,56 @@
             .dash-kpi-grid { grid-template-columns:1fr !important; }
             .topbar-title { font-size:0.875rem; }
         }
+
+        /* ── Shared mobile page helpers ── */
+        .mob-page { display:flex;flex-direction:column;gap:0.5rem; }
+        .mob-stats-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem; }
+        .mob-tbl-inner { overflow-x:auto;-webkit-overflow-scrolling:touch; }
+        .mob-tbl-inner > table { min-width:520px; }
+        .mob-fgroup { display:flex;flex-direction:column;gap:0.25rem; }
+        .mob-filter-bar { display:flex;align-items:flex-end;gap:0.625rem;flex-wrap:wrap; }
+        .mob-pipeline { display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:stretch;gap:0;flex-shrink:0;border-radius:0.75rem;overflow:hidden;border:1px solid var(--card-border); }
+        .mob-brgy-layout { display:flex;gap:0.75rem;flex:1;min-height:0;overflow:hidden; }
+        .mob-analytics { display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:0.5rem; }
+        .mob-report-type-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem; }
+        .mob-report-date-row { display:grid;grid-template-columns:1fr 1fr auto auto;gap:0.625rem;align-items:end; }
+
+        @media (max-width: 768px) {
+            /* Remove height locks — pages become naturally scrollable */
+            .mob-page { height:auto !important;overflow:visible !important; }
+            /* Stat grids: 4 → 2 columns */
+            .mob-stats-grid { grid-template-columns:repeat(2,1fr) !important; }
+            /* Tbl-card: stop height-locking flex children */
+            .mob-page .tbl-card { flex:none !important;min-height:0 !important;overflow:visible !important;height:auto !important; }
+            .mob-page .tbl-card .mob-tbl-inner { flex:none !important;max-height:none !important;height:auto !important; }
+            /* Filter controls: fluid width */
+            .mob-fgroup { flex:1;min-width:140px; }
+            .mob-fgroup .form-select,
+            .mob-fgroup .form-input { width:100% !important;min-width:0 !important; }
+            /* Compliance pipeline: 2-col, hide arrows */
+            .mob-pipeline { grid-template-columns:1fr 1fr !important; }
+            .pipe-arrow { display:none !important; }
+            /* Barangay two-panel: stack */
+            .mob-brgy-layout { flex-direction:column !important;overflow:visible !important;height:auto !important; }
+            .mob-brgy-layout .brgy-list { width:100% !important;height:260px !important;flex-shrink:0 !important; }
+            .mob-brgy-layout .brgy-detail { flex:none !important;height:auto !important;overflow:visible !important; }
+            /* Analytics: single column */
+            .mob-page .mob-analytics { flex:none !important; }
+            .mob-analytics { grid-template-columns:1fr !important;grid-template-rows:auto !important;height:auto !important;overflow:visible !important; }
+            .mob-analytics > .card { min-height:240px;height:240px; }
+            /* Reports */
+            .mob-report-type-grid { grid-template-columns:1fr !important; }
+            .mob-report-date-row { grid-template-columns:1fr 1fr !important; }
+            .mob-report-date-row > a { justify-content:center; }
+            /* Barangay stat strip */
+            .mob-brgy-stats { flex-wrap:wrap !important; }
+            .mob-brgy-stats > div { flex:1;min-width:140px; }
+        }
+        @media (max-width: 480px) {
+            .mob-stats-grid { grid-template-columns:1fr !important; }
+            .mob-report-date-row { grid-template-columns:1fr !important; }
+            .mob-analytics > .card { min-height:180px; }
+        }
     </style>
     @stack('styles')
 </head>

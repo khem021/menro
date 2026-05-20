@@ -5,7 +5,7 @@
     @if(session('success'))<div class="flash-success" style="flex-shrink:0;margin-bottom:0.75rem;"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>{{ session('success') }}</div>@endif
     @if(session('error'))<div class="flash-error" style="flex-shrink:0;margin-bottom:0.75rem;"><svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>{{ session('error') }}</div>@endif
 
-    <div style="height:calc(100vh - 72px - 3.5rem); display:flex; flex-direction:column; overflow:hidden;">
+    <div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;overflow:hidden;">
 
         {{-- Stat cards --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5 flex-shrink-0">
@@ -38,16 +38,16 @@
         {{-- Filter bar --}}
         <div class="filter-bar flex-shrink-0">
             <div class="filter-row">
-                <div class="filter-group flex-1 min-w-[180px]"><span class="filter-label">Search</span>
+                <div class="filter-group mob-fgroup flex-1 min-w-[180px]"><span class="filter-label">Search</span>
                     <div class="relative">
                         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-dim)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input wire:model.debounce.300ms="search" type="text" placeholder="Name, username, email…" class="form-input pl-9" />
                     </div>
                 </div>
-                <div class="filter-group"><span class="filter-label">Role</span>
+                <div class="filter-group mob-fgroup"><span class="filter-label">Role</span>
                     <select wire:model="role_id" class="form-select w-44"><option value="">All Roles</option>@foreach($roles as $r)<option value="{{ $r->role_id }}">{{ $r->role_name }}</option>@endforeach</select>
                 </div>
-                <div class="filter-group"><span class="filter-label">Status</span>
+                <div class="filter-group mob-fgroup"><span class="filter-label">Status</span>
                     <select wire:model="status" class="form-select w-36"><option value="">All</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
                 </div>
                 <div class="ml-auto flex items-end">
@@ -60,8 +60,8 @@
         </div>
 
         {{-- Table card --}}
-        <div class="page-card flex-1 min-h-0 flex flex-col overflow-hidden">
-            <div class="flex-1 min-h-0 overflow-y-auto" style="scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="page-card tbl-card flex-1 min-h-0 flex flex-col overflow-hidden">
+            <div class="flex-1 min-h-0 overflow-y-auto mob-tbl-inner" style="scrollbar-width:none;-ms-overflow-style:none;">
                 <style>.usr-tbl::-webkit-scrollbar{display:none}</style>
                 <table class="w-full">
                     <thead class="sticky top-0 z-10" style="background:var(--card-bg)"><tr>

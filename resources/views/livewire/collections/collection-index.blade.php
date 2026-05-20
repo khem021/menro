@@ -1,11 +1,11 @@
-<div style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
+<div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
     @section('title', 'Collections — MENRO')
     @section('page-title', 'Collection Schedules')
 
     {{-- flash handled by global toast --}}
 
     {{-- Stat Cards --}}
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;flex-shrink:0;">
+    <div class="mob-stats-grid" style="flex-shrink:0;">
         <div class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
             <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Total Schedules</div><div style="font-size:1.375rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ $stats['total'] }}</div></div>
             <div style="width:1.875rem;height:1.875rem;border-radius:0.5rem;background:#1c2d4a;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
@@ -26,20 +26,20 @@
 
     {{-- Filters --}}
     <div class="card" style="padding:0.625rem 0.875rem;flex-shrink:0;">
-        <div style="display:flex;align-items:flex-end;gap:0.625rem;flex-wrap:wrap;">
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+        <div class="mob-filter-bar">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Barangay</span>
                 <select wire:model="barangay_id" class="form-select" style="width:11rem;"><option value="">All Barangays</option>@foreach($barangays as $b)<option value="{{ $b->barangay_id }}">{{ $b->barangay_name }}</option>@endforeach</select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Status</span>
                 <select wire:model="status" class="form-select" style="width:9rem;"><option value="">All Statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="missed">Missed</option><option value="cancelled">Cancelled</option></select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">From</span>
                 <input type="date" wire:model="date_from" class="form-input" style="width:9rem;" />
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">To</span>
                 <input type="date" wire:model="date_to" class="form-input" style="width:9rem;" />
             </div>
@@ -55,7 +55,7 @@
     {{-- Table --}}
     <style>.col-tbl::-webkit-scrollbar{display:none}</style>
     <div class="card tbl-card" style="flex:1;min-height:0;display:flex;flex-direction:column;padding:0;overflow:hidden;">
-        <div class="col-tbl" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="col-tbl mob-tbl-inner" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
             <table style="width:100%;border-collapse:collapse;">
                 <thead style="position:sticky;top:0;z-index:1;background:var(--card-bg);">
                     <tr>

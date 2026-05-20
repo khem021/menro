@@ -1,4 +1,4 @@
-<div style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;max-width:720px;margin:0 auto;">
+<div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;max-width:720px;margin:0 auto;overflow:hidden;">
     @section('title', 'Reports — MENRO')
     @section('page-title', 'Reports')
 
@@ -9,7 +9,7 @@
     </div>
 
     {{-- ── Report Type Cards ── --}}
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-bottom:0.75rem;flex-shrink:0;">
+    <div class="mob-report-type-grid" style="margin-bottom:0.75rem;flex-shrink:0;">
         @foreach([
             ['monthly_waste',      'Monthly Waste Report',  'Waste entries grouped by month',         '<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>'],
             ['compliance_summary', 'Compliance Summary',    'Generator compliance status overview',   '<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>'],
@@ -60,7 +60,7 @@
 
     {{-- ── Date Range + Export ── --}}
     <div class="card" style="padding:0.875rem;margin-bottom:0.75rem;flex-shrink:0;">
-        <div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:0.625rem;align-items:end;">
+        <div class="mob-report-date-row">
             <div>
                 <label class="form-label">From Date</label>
                 <input type="date" wire:model="date_from" class="form-input" />
@@ -96,7 +96,7 @@
     </div>
 
     {{-- ── Recent Exports (fills remaining height) ── --}}
-    <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:0;">
+    <div class="card tbl-card" style="padding:0;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:0;">
         <div style="padding:0.75rem 1rem;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
             <div class="card-title" style="margin-bottom:0;">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -106,7 +106,7 @@
         </div>
 
         {{-- Scrollable table body, no visible scrollbar --}}
-        <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="mob-tbl-inner" style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
             <style>#report-table-wrap::-webkit-scrollbar{display:none}</style>
             <div id="report-table-wrap" style="height:100%;overflow-y:auto;scrollbar-width:none;">
             <table style="width:100%;border-collapse:collapse;">

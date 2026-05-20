@@ -5,10 +5,10 @@
 
 @section('content')
 
-<div style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
+<div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
 
     {{-- 2×2 Grid --}}
-    <div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:0.5rem;">
+    <div class="mob-analytics" style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:0.5rem;">
 
         {{-- Waste by Category --}}
         <div class="card" style="padding:0.75rem;display:flex;flex-direction:column;overflow:hidden;">

@@ -9,10 +9,10 @@
     <div class="flash-error" style="flex-shrink:0;margin-bottom:0.75rem;"><svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>{{ session('error') }}</div>
     @endif
 
-    <div style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;overflow:hidden;">
+    <div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;overflow:hidden;">
 
         {{-- ── Stat strip + toolbar ── --}}
-        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-shrink:0;">
+        <div class="mob-brgy-stats" style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-shrink:0;">
             <div class="card" style="display:flex;align-items:center;gap:0.625rem;padding:0.625rem 1rem;min-width:150px;">
                 <div style="width:1.875rem;height:1.875rem;border-radius:0.5rem;background:rgba(253,184,19,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg width="13" height="13" style="color:var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -49,10 +49,10 @@
         </div>
 
         {{-- ── Two-panel layout ── --}}
-        <div style="display:flex;gap:0.75rem;flex:1;min-height:0;overflow:hidden;">
+        <div class="mob-brgy-layout">
 
             {{-- LEFT: Barangay list ── --}}
-            <div class="card" style="width:256px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;padding:0;">
+            <div class="card brgy-list" style="width:256px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;padding:0;">
                 {{-- Search --}}
                 <div style="padding:0.625rem;flex-shrink:0;border-bottom:1px solid var(--card-border);">
                     <div style="position:relative;">
@@ -89,7 +89,7 @@
             </div>
 
             {{-- RIGHT: Detail panel ── --}}
-            <div class="card" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:0;">
+            <div class="card brgy-detail" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:0;">
                 @if($selected)
                     {{-- Header --}}
                     <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1.25rem;flex-shrink:0;border-bottom:1px solid var(--card-border);">
@@ -117,7 +117,7 @@
                     {{-- Sectors grid --}}
                     <div style="flex:1;min-height:0;overflow-y:auto;padding:1rem 1.25rem;scrollbar-width:none;-ms-overflow-style:none;">
                         <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem;">Sectors / Puroks</div>
-                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;">
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;">
                             @foreach($selected->sectors as $sector)
                             <div style="background:var(--bg);border:1px solid var(--card-border);border-radius:0.75rem;overflow:hidden;transition:border-color .15s;"
                                  onmouseover="this.style.borderColor='rgba(253,184,19,0.35)'" onmouseout="this.style.borderColor='var(--card-border)'">

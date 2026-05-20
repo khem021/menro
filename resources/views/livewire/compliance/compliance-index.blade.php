@@ -1,11 +1,11 @@
-<div style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
+<div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;gap:0.5rem;overflow:hidden;">
     @section('title', 'Compliance — MENRO')
     @section('page-title', 'Compliance & Enforcement')
 
     {{-- flash handled by global toast --}}
 
     {{-- ── Enforcement Pipeline ── --}}
-    <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:stretch;gap:0;flex-shrink:0;border-radius:0.75rem;overflow:hidden;border:1px solid var(--card-border);">
+    <div class="mob-pipeline" style="flex-shrink:0;">
 
         {{-- Step 1: Inspect --}}
         <button wire:click="setTab('inspections')"
@@ -24,7 +24,7 @@
         </button>
 
         {{-- Arrow --}}
-        <div style="display:flex;align-items:center;justify-content:center;background:var(--card-bg);padding:0 0.5rem;border-left:1px solid var(--card-border);border-right:1px solid var(--card-border);">
+        <div class="pipe-arrow" style="display:flex;align-items:center;justify-content:center;background:var(--card-bg);padding:0 0.5rem;border-left:1px solid var(--card-border);border-right:1px solid var(--card-border);">
             <svg width="14" height="14" fill="none" stroke="var(--text-dim)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </div>
 
@@ -45,7 +45,7 @@
         </button>
 
         {{-- Arrow --}}
-        <div style="display:flex;align-items:center;justify-content:center;background:var(--card-bg);padding:0 0.5rem;border-left:1px solid var(--card-border);border-right:1px solid var(--card-border);">
+        <div class="pipe-arrow" style="display:flex;align-items:center;justify-content:center;background:var(--card-bg);padding:0 0.5rem;border-left:1px solid var(--card-border);border-right:1px solid var(--card-border);">
             <svg width="14" height="14" fill="none" stroke="var(--text-dim)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </div>
 
@@ -63,7 +63,7 @@
         </button>
 
         {{-- Arrow --}}
-        <div style="display:flex;align-items:center;justify-content:center;background:var(--card-bg);padding:0 0.5rem;border-left:1px solid var(--card-border);border-right:1px solid var(--card-border);">
+        <div class="pipe-arrow" style="display:flex;align-items:center;justify-content:center;background:var(--card-bg);padding:0 0.5rem;border-left:1px solid var(--card-border);border-right:1px solid var(--card-border);">
             <svg width="14" height="14" fill="none" stroke="var(--text-dim)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </div>
 
@@ -83,48 +83,48 @@
 
     {{-- ── Filters + Add Button ── --}}
     <div class="card" style="padding:0.625rem 0.875rem;flex-shrink:0;">
-        <div style="display:flex;align-items:flex-end;gap:0.625rem;flex-wrap:wrap;">
+        <div class="mob-filter-bar">
 
             @if($tab === 'inspections')
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Generator</span>
                 <select wire:model="insp_generator_id" class="form-select" style="width:12rem;"><option value="">All Generators</option>@foreach($generators as $g)<option value="{{ $g->generator_id }}">{{ $g->generator_name }}</option>@endforeach</select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Compliance</span>
                 <select wire:model="insp_compliance_status" class="form-select" style="width:10rem;"><option value="">All</option><option value="compliant">Compliant</option><option value="warning">Warning</option><option value="for_follow_up">For Follow-up</option><option value="violation">Violation</option></select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">From</span>
                 <input type="date" wire:model="insp_date_from" class="form-input" style="width:9rem;" />
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">To</span>
                 <input type="date" wire:model="insp_date_to" class="form-input" style="width:9rem;" />
             </div>
             <a href="{{ route('inspections.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add Inspection</a>
 
             @elseif($tab === 'violations')
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Severity</span>
                 <select wire:model="vio_severity" class="form-select" style="width:9rem;"><option value="">All Severities</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Resolution</span>
                 <select wire:model="vio_resolution_status" class="form-select" style="width:10rem;"><option value="">All Statuses</option><option value="open">Open</option><option value="in_progress">In Progress</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select>
             </div>
             <a href="{{ route('violations.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>File Violation</a>
 
             @elseif($tab === 'incidents')
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Type</span>
                 <select wire:model="inc_type" class="form-select" style="width:11rem;"><option value="">All Types</option><option value="illegal_dumping">Illegal Dumping</option><option value="open_burning">Open Burning</option><option value="improper_disposal">Improper Disposal</option><option value="other">Other</option></select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Status</span>
                 <select wire:model="inc_status" class="form-select" style="width:11rem;"><option value="">All Statuses</option><option value="reported">Reported</option><option value="for_validation">For Validation</option><option value="under_investigation">Under Investigation</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.25rem;">
+            <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Barangay</span>
                 <select wire:model="inc_barangay_id" class="form-select" style="width:11rem;"><option value="">All Barangays</option>@foreach($barangays as $b)<option value="{{ $b->barangay_id }}">{{ $b->barangay_name }}</option>@endforeach</select>
             </div>
@@ -140,7 +140,7 @@
 
         {{-- ===== INSPECTIONS TABLE ===== --}}
         @if($tab === 'inspections')
-        <div class="comp-tbl" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="comp-tbl mob-tbl-inner" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
             <table style="width:100%;border-collapse:collapse;">
                 <thead style="position:sticky;top:0;z-index:1;background:var(--card-bg);">
                     <tr>
@@ -196,7 +196,7 @@
 
         {{-- ===== VIOLATIONS TABLE ===== --}}
         @elseif($tab === 'violations')
-        <div class="comp-tbl" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="comp-tbl mob-tbl-inner" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
             <table style="width:100%;border-collapse:collapse;">
                 <thead style="position:sticky;top:0;z-index:1;background:var(--card-bg);">
                     <tr>
@@ -259,7 +259,7 @@
 
         {{-- ===== INCIDENTS TABLE ===== --}}
         @elseif($tab === 'incidents')
-        <div class="comp-tbl" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
+        <div class="comp-tbl mob-tbl-inner" style="flex:1;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;">
             <table style="width:100%;border-collapse:collapse;">
                 <thead style="position:sticky;top:0;z-index:1;background:var(--card-bg);">
                     <tr>
