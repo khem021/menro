@@ -314,7 +314,7 @@ class DemoDataSeeder extends Seeder
                 'next_follow_up'    => $followUp,
                 'created_at'        => $insDate,
                 'updated_at'        => $insDate,
-            ]);
+            ], 'inspection_id');
 
             if (in_array($d['status'], ['violation', 'warning'])) {
                 $inspectionIds[$d['gid_name']] = ['inspection_id' => $inspectionId, 'status' => $d['status']];

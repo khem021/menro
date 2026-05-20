@@ -284,7 +284,7 @@ class FreshDemoSeeder extends Seeder
                 'next_follow_up'    => $followUp,
                 'created_at'        => $insDate,
                 'updated_at'        => $insDate,
-            ]);
+            ], 'inspection_id');
 
             if ($d['status'] === 'violation') {
                 $violationInspectionIds[] = $insId;
@@ -383,7 +383,7 @@ class FreshDemoSeeder extends Seeder
                     'created_by'       => $menroId,
                     'created_at'       => $date->copy()->subDays(7),
                     'updated_at'       => $date->copy()->addDay(),
-                ]);
+                ], 'schedule_id');
 
                 if ($status === 'completed') {
                     $recordRows[] = [
