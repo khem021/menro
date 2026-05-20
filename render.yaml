@@ -4,6 +4,8 @@ services:
     plan: free
     branch: main
     healthCheckPath: /
+    buildCommand: composer install --no-dev --optimize-autoloader --no-interaction
+    startCommand: php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=$PORT
     envVars:
       - key: APP_NAME
         value: MENRO
@@ -14,10 +16,8 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
-        fromService:
-          type: web
-          name: menro
-          property: url
+        value: https://menro.onrender.com
+        sync: false
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
