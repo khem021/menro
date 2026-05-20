@@ -1,30 +1,31 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void
     {
-        DB::statement("
-            ALTER TABLE barangay_sectors
-                ADD COLUMN household_count          SMALLINT UNSIGNED NULL AFTER sector_name,
-                ADD COLUMN purok_leader_name        VARCHAR(100)      NULL AFTER household_count,
-                ADD COLUMN purok_leader_contact     VARCHAR(30)       NULL AFTER purok_leader_name,
-                ADD COLUMN estimated_daily_waste_kg DECIMAL(8,2)      NULL AFTER purok_leader_contact,
-                ADD COLUMN collection_day           VARCHAR(15)       NULL AFTER estimated_daily_waste_kg
-        ");
+        Schema::table('barangay_sectors', function (Blueprint $table) {
+            $table->smallInteger('household_count')->unsigned()->nullable()->after('sector_name');
+            $table->string('purok_leader_name', 100)->nullable()->after('household_count');
+            $table->string('purok_leader_contact', 30)->nullable()->after('purok_leader_name');
+            $table->decimal('estimated_daily_waste_kg', 8, 2)->nullable()->after('purok_leader_contact');
+            $table->string('collection_day', 15)->nullable()->after('estimated_daily_waste_kg');
+        });
     }
 
     public function down(): void
     {
-        DB::statement("
-            ALTER TABLE barangay_sectors
-                DROP COLUMN household_count,
-                DROP COLUMN purok_leader_name,
-                DROP COLUMN purok_leader_contact,
-                DROP COLUMN estimated_daily_waste_kg,
-                DROP COLUMN collection_day
-        ");
+        Schema::table('barangay_sectors', function (Blueprint $table) {
+            $table->dropColumn([
+                'household_count',
+                'purok_leader_name',
+                'purok_leader_contact',
+                'estimated_daily_waste_kg',
+                'collection_day',
+            ]);
+        });
     }
 };
