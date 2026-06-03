@@ -768,6 +768,112 @@
         /* Icon button hover scale */
         .btn-icon { transition: all .15s, transform .12s; }
         .btn-icon:hover { transform: scale(1.1); }
+
+        /* ── Mobile / Tablet Responsive Fixes ── */
+
+        /* Minimum touch target size for inputs, selects & buttons */
+        .form-input, .form-select, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost {
+            min-height: 40px;
+        }
+
+        /* Compliance pipeline: horizontal scroll on ALL mobile sizes instead of broken 2-col grid */
+        @media (max-width: 900px) {
+            .mob-pipeline {
+                display: flex !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                border-radius: 0.75rem;
+                border: 1px solid var(--card-border);
+            }
+            .mob-pipeline::-webkit-scrollbar { display: none; }
+            .mob-pipeline > button {
+                flex: 0 0 auto !important;
+                min-width: 150px;
+                border-radius: 0 !important;
+                border: none !important;
+                border-right: 1px solid var(--card-border) !important;
+            }
+            .mob-pipeline > button:last-child { border-right: none !important; }
+            .mob-pipeline > .pipe-arrow {
+                flex: 0 0 auto !important;
+                display: flex !important;
+                border: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Filter inputs and selects always fill their group */
+            .mob-fgroup .form-input,
+            .mob-fgroup .form-select {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+
+            /* Filter group fills available space */
+            .mob-fgroup { flex: 1 !important; min-width: 140px !important; }
+
+            /* "Add ..." button on its own row at the bottom of filter bar */
+            .mob-filter-bar > a.btn-primary,
+            .mob-filter-bar > button.btn-primary {
+                flex: 1 1 100% !important;
+                justify-content: center !important;
+                margin-left: 0 !important;
+                order: 99;
+            }
+
+            /* Tables always scroll horizontally */
+            .mob-tbl-inner { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+            .mob-tbl-inner table { min-width: 540px; }
+
+            /* Pagination wraps */
+            nav[aria-label="Pagination Navigation"],
+            .pagination { flex-wrap: wrap !important; justify-content: center !important; gap: 0.25rem !important; }
+
+            /* Reduce stat card font on small tablets */
+            .mob-stats-grid .card { padding: 0.5rem 0.75rem !important; }
+
+            /* Modal full width on mobile */
+            dialog { padding: 1.25rem !important; }
+        }
+
+        @media (max-width: 480px) {
+            /* Two filter groups per row, search always full width */
+            .mob-fgroup { flex: 1 1 calc(50% - 0.4rem) !important; min-width: 0 !important; }
+            .mob-filter-bar > .mob-fgroup:first-child { flex: 1 1 100% !important; }
+
+            /* Stat values slightly smaller on tiny screens */
+            .mob-stats-grid { gap: 0.375rem !important; }
+            .mob-stats-grid .card div[style*="1.375rem"] { font-size: 1.125rem !important; }
+
+            /* Topbar: hide date to give title more room */
+            .topbar-date { display: none !important; }
+
+            /* Reduce page padding */
+            .page-content { padding: 0.75rem !important; }
+
+            /* Card padding tighter */
+            .card { padding: 0.875rem !important; }
+
+            /* Form grid always 1 column */
+            .form-grid-2 { grid-template-columns: 1fr !important; }
+
+            /* Modal full screen on very small phones */
+            dialog {
+                max-width: calc(100vw - 1rem) !important;
+                padding: 1rem !important;
+            }
+
+            /* Page header stack */
+            .page-header { flex-direction: column !important; gap: 0.5rem !important; }
+            .page-header-right { width: 100% !important; justify-content: flex-end !important; }
+        }
+
+        @media (max-width: 360px) {
+            /* Very small phones */
+            .mob-stats-grid { grid-template-columns: 1fr 1fr !important; }
+            .topbar-title { font-size: 0.8125rem !important; }
+        }
     </style>
 
     @stack('styles')

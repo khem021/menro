@@ -29,15 +29,15 @@
         <div style="display:flex;align-items:flex-end;gap:0.625rem;flex-wrap:wrap;">
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Type</span>
-                <select wire:model="incident_type" class="form-select" style="width:11rem;"><option value="">All Types</option><option value="illegal_dumping">Illegal Dumping</option><option value="open_burning">Open Burning</option><option value="improper_disposal">Improper Disposal</option><option value="other">Other</option></select>
+                <select wire:model="incident_type" class="form-select"><option value="">All Types</option><option value="illegal_dumping">Illegal Dumping</option><option value="open_burning">Open Burning</option><option value="improper_disposal">Improper Disposal</option><option value="other">Other</option></select>
             </div>
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Status</span>
-                <select wire:model="status" class="form-select" style="width:11rem;"><option value="">All Statuses</option><option value="reported">Reported</option><option value="for_validation">For Validation</option><option value="under_investigation">Under Investigation</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select>
+                <select wire:model="status" class="form-select"><option value="">All Statuses</option><option value="reported">Reported</option><option value="for_validation">For Validation</option><option value="under_investigation">Under Investigation</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select>
             </div>
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Barangay</span>
-                <select wire:model="barangay_id" class="form-select" style="width:11rem;"><option value="">All Barangays</option>@foreach($barangays as $b)<option value="{{ $b->barangay_id }}">{{ $b->barangay_name }}</option>@endforeach</select>
+                <select wire:model="barangay_id" class="form-select"><option value="">All Barangays</option>@foreach($barangays as $b)<option value="{{ $b->barangay_id }}">{{ $b->barangay_name }}</option>@endforeach</select>
             </div>
             <a href="{{ route('incidents.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Report Incident</a>
         </div>

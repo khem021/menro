@@ -29,19 +29,19 @@
         <div style="display:flex;align-items:flex-end;gap:0.625rem;flex-wrap:wrap;">
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Generator</span>
-                <select wire:model="generator_id" class="form-select" style="width:12rem;"><option value="">All Generators</option>@foreach($generators as $g)<option value="{{ $g->generator_id }}">{{ $g->generator_name }}</option>@endforeach</select>
+                <select wire:model="generator_id" class="form-select"><option value="">All Generators</option>@foreach($generators as $g)<option value="{{ $g->generator_id }}">{{ $g->generator_name }}</option>@endforeach</select>
             </div>
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Compliance</span>
-                <select wire:model="compliance_status" class="form-select" style="width:10rem;"><option value="">All</option><option value="compliant">Compliant</option><option value="warning">Warning</option><option value="for_follow_up">For Follow-up</option><option value="violation">Violation</option></select>
+                <select wire:model="compliance_status" class="form-select"><option value="">All</option><option value="compliant">Compliant</option><option value="warning">Warning</option><option value="for_follow_up">For Follow-up</option><option value="violation">Violation</option></select>
             </div>
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">From</span>
-                <input type="date" wire:model="date_from" class="form-input" style="width:9rem;" />
+                <input type="date" wire:model="date_from" class="form-input" />
             </div>
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">To</span>
-                <input type="date" wire:model="date_to" class="form-input" style="width:9rem;" />
+                <input type="date" wire:model="date_to" class="form-input" />
             </div>
             <a href="{{ route('inspections.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add Inspection</a>
         </div>

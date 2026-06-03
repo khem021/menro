@@ -29,19 +29,19 @@
         <div class="mob-filter-bar">
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Barangay</span>
-                <select wire:model="barangay_id" class="form-select" style="width:11rem;"><option value="">All Barangays</option>@foreach($barangays as $b)<option value="{{ $b->barangay_id }}">{{ $b->barangay_name }}</option>@endforeach</select>
+                <select wire:model="barangay_id" class="form-select"><option value="">All Barangays</option>@foreach($barangays as $b)<option value="{{ $b->barangay_id }}">{{ $b->barangay_name }}</option>@endforeach</select>
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Status</span>
-                <select wire:model="status" class="form-select" style="width:9rem;"><option value="">All Statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="missed">Missed</option><option value="cancelled">Cancelled</option></select>
+                <select wire:model="status" class="form-select"><option value="">All Statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="missed">Missed</option><option value="cancelled">Cancelled</option></select>
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">From</span>
-                <input type="date" wire:model="date_from" class="form-input" style="width:9rem;" />
+                <input type="date" wire:model="date_from" class="form-input" />
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">To</span>
-                <input type="date" wire:model="date_to" class="form-input" style="width:9rem;" />
+                <input type="date" wire:model="date_to" class="form-input" />
             </div>
             @if($barangay_id || $status || $date_from || $date_to)
             <button wire:click="$set('barangay_id','');$set('status','');$set('date_from','');$set('date_to','')" class="btn-ghost" style="font-size:0.75rem;">

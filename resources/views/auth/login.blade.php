@@ -209,6 +209,29 @@
 
         .spin { animation: spin .7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Mobile responsiveness ── */
+        @media (max-width: 480px) {
+            body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
+            .login-wrap { max-width: 100%; }
+            .login-card { padding: 1.5rem 1.25rem; }
+
+            /* Shrink logos and stack tighter */
+            .logo-row img { width: 2.75rem !important; height: 2.75rem !important; }
+            .logo-row .menro-logo { width: 3.25rem !important; height: 3.25rem !important; }
+            .logo-row { gap: 1rem !important; }
+
+            /* Input touch targets */
+            .input-field { padding-top: 0.875rem; padding-bottom: 0.875rem; min-height: 48px; }
+            .btn-submit { padding: 0.9375rem 1rem; font-size: 0.9375rem; }
+        }
+
+        @media (max-width: 360px) {
+            body { padding: 0.75rem; padding-top: 1.25rem; }
+            .logo-row img { width: 2.25rem !important; height: 2.25rem !important; }
+            .logo-row .menro-logo { width: 2.75rem !important; height: 2.75rem !important; }
+            .logo-row { gap: 0.75rem !important; }
+        }
     </style>
 </head>
 <body>
@@ -223,10 +246,10 @@
 
         {{-- Logos --}}
         <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-bottom:1.875rem;">
-            <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;">
+            <div class="logo-row" style="display:flex;align-items:center;justify-content:center;gap:1.5rem;">
                 <img src="{{ asset('images/bagong-pilipinas.png') }}" alt="Bagong Pilipinas"
                      style="width:3.75rem;height:3.75rem;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.5));">
-                <img src="{{ asset('images/menro-logo.png') }}" alt="MENRO Logo"
+                <img class="menro-logo" src="{{ asset('images/menro-logo.png') }}" alt="MENRO Logo"
                      style="width:4.25rem;height:4.25rem;object-fit:contain;filter:drop-shadow(0 4px 20px rgba(253,184,19,0.3));">
                 <img src="{{ asset('images/madrid-seal.png') }}" alt="Madrid Seal"
                      style="width:3.75rem;height:3.75rem;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.5));">
