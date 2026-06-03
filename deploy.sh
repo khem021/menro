@@ -188,6 +188,7 @@ QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 SESSION_LIFETIME=120
 ENV
+    chmod 600 "${APP_DIR}/.env"
     info ".env created"
 else
     warn ".env already exists — skipping (update DB credentials manually if needed)"
@@ -198,6 +199,8 @@ if [ -f "${APP_DIR}/composer.json" ]; then
     section "Installing Laravel dependencies"
     cd "$APP_DIR"
 
+    # Ensure www-data owns all app files (handles git-clone or SCP uploads done as root)
+    chown -R www-data:www-data "$APP_DIR"
     sudo -u www-data composer install --no-dev --optimize-autoloader --no-interaction
     info "Composer packages installed"
 
@@ -258,13 +261,11 @@ echo -e "  ${YELLOW}Site URL:${NC}      http://${DOMAIN}"
 echo -e "  ${YELLOW}App path:${NC}      ${APP_DIR}"
 echo -e "  ${YELLOW}DB Name:${NC}       ${DB_NAME}"
 echo -e "  ${YELLOW}DB User:${NC}       ${DB_USER}"
-echo -e "  ${YELLOW}DB Password:${NC}   ${DB_PASS}"
 echo ""
-echo -e "  ${YELLOW}Default logins:${NC}"
-echo -e "    admin / admin123   (System Administrator)"
-echo -e "    menro / admin123   (MENRO Officer)"
-echo ""
-echo -e "  ${RED}⚠  Change all default passwords after first login!${NC}"
+echo -e "  ${RED}⚠  SECURITY ACTIONS REQUIRED BEFORE USE:${NC}"
+echo -e "  ${RED}   1. Change the default admin and menro passwords immediately.${NC}"
+echo -e "  ${RED}   2. DB credentials are stored in ${APP_DIR}/.env — restrict access with: chmod 600 ${APP_DIR}/.env${NC}"
+echo -e "  ${RED}   3. Enable HTTPS (see below) before any real data is entered.${NC}"
 echo ""
 echo -e "  ${YELLOW}Next step — enable HTTPS:${NC}"
 echo -e "    apt-get install -y certbot python3-certbot-nginx"

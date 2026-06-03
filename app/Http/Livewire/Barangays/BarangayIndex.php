@@ -66,6 +66,10 @@ class BarangayIndex extends Component
 
     public function saveBrgy(): void
     {
+        if (!isAdmin()) {
+            abort(403, 'Access denied.');
+        }
+
         $this->validate(['brgy_name' => 'required|string|max:100']);
 
         if ($this->editingBrgyId) {
@@ -97,6 +101,10 @@ class BarangayIndex extends Component
 
     public function deleteBrgy(int $id): void
     {
+        if (!isAdmin()) {
+            abort(403, 'Access denied.');
+        }
+
         $b = Barangay::withCount(['wasteGenerators', 'collectionSchedules', 'incidents'])
                      ->findOrFail($id);
 
@@ -137,6 +145,10 @@ class BarangayIndex extends Component
 
     public function saveNewMember(): void
     {
+        if (!isAdmin()) {
+            abort(403, 'Access denied.');
+        }
+
         $this->validate([
             'member_name'    => 'required|string|max:150',
             'member_address' => 'nullable|string|max:255',
@@ -159,6 +171,10 @@ class BarangayIndex extends Component
 
     public function deleteMember(int $memberId): void
     {
+        if (!isAdmin()) {
+            abort(403, 'Access denied.');
+        }
+
         $member = SectorMember::findOrFail($memberId);
         logAudit('delete', 'SectorMember', $memberId, $member->toArray());
         $member->delete();
@@ -185,6 +201,10 @@ class BarangayIndex extends Component
 
     public function saveSector(): void
     {
+        if (!isAdmin()) {
+            abort(403, 'Access denied.');
+        }
+
         $this->validate([
             'sector_name'             => 'required|string|max:100',
             'sector_household_count'  => 'nullable|integer|min:0|max:9999',
@@ -217,7 +237,7 @@ class BarangayIndex extends Component
     public function render()
     {
         $barangays = Barangay::with('sectors')
-            ->when($this->search, fn($q) => $q->where('barangay_name', 'ilike', '%' . $this->search . '%'))
+            ->when($this->search, fn($q) => $q->where('barangay_name', 'LIKE', '%' . $this->search . '%'))
             ->orderBy('barangay_name')
             ->get();
 

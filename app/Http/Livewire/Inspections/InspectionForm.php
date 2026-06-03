@@ -34,6 +34,10 @@ class InspectionForm extends Component
 
     public function mount($id = null)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer', 'Field Inspector')) {
+            abort(403, 'Access denied.');
+        }
+
         $this->inspection_date = now()->format('Y-m-d');
         $this->inspector_id    = (string) session('auth_user_id');
 

@@ -38,6 +38,10 @@ class GeneratorForm extends Component
 
     public function mount($id = null)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         if ($id) {
             $this->generatorId = (int) $id;
             $g = WasteGenerator::findOrFail($id);

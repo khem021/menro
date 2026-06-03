@@ -31,6 +31,8 @@ class AuthController extends Controller
             return back()->withErrors(['login' => 'Invalid username or password.'])->withInput(['username' => $request->username]);
         }
 
+        session()->regenerate();
+
         session([
             'auth_user_id' => $user->user_id,
             'auth_role'    => $user->role->role_name ?? 'Unknown',

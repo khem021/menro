@@ -57,9 +57,13 @@ class EntryForm extends Component
         ];
 
         if ($this->entryId) {
-            $old = WasteEntry::find($this->entryId)?->toArray();
-            WasteEntry::findOrFail($this->entryId)->update($data);
-            logAudit('update', 'WasteEntry', $this->entryId, $old, $data);
+            $entry = WasteEntry::findOrFail($this->entryId);
+            if (!isAdmin() && $entry->encoded_by !== session('auth_user_id')) {
+                abort(403, 'You can only edit your own entries.');
+            }
+            $old = $entry->toArray();
+            $entry->update($data);
+            logAudit('update', 'WasteEntry', $entry->entry_id, $old, $data);
         } else {
             $data['encoded_by'] = session('auth_user_id');
             $new = WasteEntry::create($data);

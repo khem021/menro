@@ -73,6 +73,10 @@ class NotificationIndex extends Component
 
     public function sendNotification()
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $this->validate();
 
         $userIds = match ($this->form_target) {

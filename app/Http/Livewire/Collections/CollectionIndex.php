@@ -25,6 +25,10 @@ class CollectionIndex extends Component
 
     public function delete($id)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $s = CollectionSchedule::findOrFail($id);
         logAudit('delete', 'CollectionSchedule', $id, $s->toArray());
         $s->delete();
@@ -35,6 +39,10 @@ class CollectionIndex extends Component
 
     public function markCompleted($id)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $s = CollectionSchedule::findOrFail($id);
         $s->update(['status' => 'completed']);
         logAudit('update', 'CollectionSchedule', $id, ['status' => $s->getOriginal('status')], ['status' => 'completed']);

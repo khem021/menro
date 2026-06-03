@@ -31,6 +31,10 @@ class ViolationForm extends Component
 
     public function mount($id = null)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer', 'Field Inspector')) {
+            abort(403, 'Access denied.');
+        }
+
         if (!$id && request()->filled('inspection_id')) {
             $this->inspection_id = (string) request()->integer('inspection_id');
         }

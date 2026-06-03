@@ -54,6 +54,9 @@ class ComplianceIndex extends Component
     // ── Delete handlers ──
     public function deleteInspection(int $id): void
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
         $r = Inspection::findOrFail($id);
         logAudit('delete', 'Inspection', $id, $r->toArray());
         $r->delete();
@@ -64,6 +67,10 @@ class ComplianceIndex extends Component
 
     public function advanceViolation(int $id): void
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $v = Violation::findOrFail($id);
         $old = $v->only(['resolution_status', 'resolved_date']);
 
@@ -93,6 +100,10 @@ class ComplianceIndex extends Component
 
     public function deleteViolation(int $id): void
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $r = Violation::findOrFail($id);
         logAudit('delete', 'Violation', $id, $r->toArray());
         $r->delete();
@@ -105,6 +116,10 @@ class ComplianceIndex extends Component
 
     public function deleteIncident(int $id): void
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $r = Incident::findOrFail($id);
         logAudit('delete', 'Incident', $id, $r->toArray());
         $r->delete();

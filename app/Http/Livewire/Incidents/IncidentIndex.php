@@ -25,6 +25,10 @@ class IncidentIndex extends Component
 
     public function delete($id)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $i = Incident::findOrFail($id);
         logAudit('delete', 'Incident', $id, $i->toArray());
         $i->delete();

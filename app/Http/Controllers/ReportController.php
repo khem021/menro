@@ -44,10 +44,14 @@ class ReportController extends Controller
 
     public function printView(Request $request)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $request->validate([
             'type' => 'required|in:monthly_waste,compliance_summary,incident_summary,collection_summary',
-            'from' => 'nullable|date',
-            'to'   => 'nullable|date',
+            'from' => 'nullable|date|before_or_equal:to',
+            'to'   => 'nullable|date|after_or_equal:from',
         ]);
 
         $type = $request->type;
@@ -61,10 +65,14 @@ class ReportController extends Controller
 
     public function export(Request $request)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $request->validate([
             'type' => 'required|in:monthly_waste,compliance_summary,incident_summary,collection_summary',
-            'from' => 'nullable|date',
-            'to'   => 'nullable|date',
+            'from' => 'nullable|date|before_or_equal:to',
+            'to'   => 'nullable|date|after_or_equal:from',
         ]);
 
         $type = $request->type;
@@ -83,7 +91,9 @@ class ReportController extends Controller
                 'file_path'    => 'reports/' . $filename,
                 'remarks'      => "Export: {$from} to {$to}",
             ]);
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Report audit record failed: ' . $e->getMessage());
+        }
 
         $spreadsheet = $this->buildSpreadsheet($title, $headers, $rows, $from, $to, $colorKeyCol);
         $writer = new Xlsx($spreadsheet);
@@ -159,7 +169,8 @@ class ReportController extends Controller
                     FROM incidents i
                     LEFT JOIN barangays b ON i.barangay_id = b.barangay_id
                     LEFT JOIN users u ON i.assigned_to = u.user_id
-                    WHERE i.date_reported BETWEEN ? AND ?
+                    WHERE i.deleted_at IS NULL
+                      AND i.date_reported BETWEEN ? AND ?
                     ORDER BY i.date_reported DESC
                 ", [$from, $to]);
                 foreach ($data as $row) {

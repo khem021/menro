@@ -37,6 +37,9 @@ class IncidentForm extends Component
         $this->date_reported = now()->format('Y-m-d');
 
         if ($id) {
+            if (!canAccess('System Administrator', 'MENRO Officer', 'Field Inspector')) {
+                abort(403, 'Access denied.');
+            }
             $this->incidentId = (int) $id;
             $i = Incident::findOrFail($id);
             $this->barangay_id      = (string) $i->barangay_id;

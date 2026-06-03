@@ -13,6 +13,10 @@ class ReportIndex extends Component
 
     public function mount()
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $this->date_from = now()->startOfMonth()->format('Y-m-d');
         $this->date_to   = now()->format('Y-m-d');
     }
@@ -50,7 +54,7 @@ class ReportIndex extends Component
 
     public function render()
     {
-        $reports = Report::with('generatedBy')
+        $reports = Report::with('generatedBy:user_id,full_name')
             ->orderByDesc('generated_at')
             ->limit(20)
             ->get();

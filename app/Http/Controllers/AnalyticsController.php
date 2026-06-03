@@ -9,6 +9,10 @@ class AnalyticsController extends Controller
 {
     public function index()
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $since = now()->subMonths(12)->toDateString();
 
         $wasteByCategory = Cache::remember('analytics:waste_by_category', 300, fn() => DB::select("

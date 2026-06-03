@@ -22,6 +22,10 @@ class ViolationIndex extends Component
 
     public function delete($id)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $v = Violation::findOrFail($id);
         logAudit('delete', 'Violation', $id, $v->toArray());
         $v->delete();

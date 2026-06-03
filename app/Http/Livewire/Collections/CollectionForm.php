@@ -31,6 +31,10 @@ class CollectionForm extends Component
 
     public function mount($id = null)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $this->collection_date = now()->addDay()->format('Y-m-d');
 
         if ($id) {

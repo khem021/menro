@@ -19,6 +19,10 @@ class ClusterConfig extends Component
 
     public function addToCluster(int $cluster): void
     {
+        if (!isAdmin()) {
+            abort(403, 'Access denied.');
+        }
+
         $prop = 'new' . $cluster;
         $name = trim($this->{$prop});
 
@@ -37,6 +41,10 @@ class ClusterConfig extends Component
 
     public function removeFromCluster(int $barangayId): void
     {
+        if (!isAdmin()) {
+            abort(403, 'Access denied.');
+        }
+
         $b = Barangay::find($barangayId);
         if ($b) {
             $old = $b->cluster;

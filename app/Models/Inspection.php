@@ -5,9 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inspection extends Model
 {
+    use SoftDeletes;
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::deleting(function (Inspection $inspection) {
+            $inspection->violations()->each(fn($v) => $v->delete());
+        });
+    }
     protected $table = 'inspections';
     protected $primaryKey = 'inspection_id';
 
