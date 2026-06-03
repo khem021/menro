@@ -677,6 +677,99 @@
             .mob-analytics > .card { min-height:180px; }
         }
     </style>
+
+    <style>
+        /* ── UI Enhancements ── */
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1c2d4a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #263f63; }
+
+        /* Page content entrance */
+        .page-content { animation: pageIn .3s cubic-bezier(0.16,1,0.3,1) both; }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sidebar subtle gradient */
+        .sidebar { background: linear-gradient(180deg, #071020 0%, #08121f 100%); }
+
+        /* Smooth nav item transitions */
+        .nav-item { transition: background .18s, color .18s; }
+        .nav-item.active { box-shadow: inset 0 0 24px rgba(253,184,19,0.04); }
+
+        /* Button lift & glow */
+        .btn-primary  { transition: opacity .15s, transform .15s, box-shadow .2s; }
+        .btn-primary:hover  { opacity:1; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(253,184,19,0.32); }
+        .btn-primary:active { transform: translateY(0); box-shadow: none; }
+        .btn-secondary { transition: all .15s, transform .15s; }
+        .btn-secondary:hover { transform: translateY(-1px); }
+        .btn-secondary:active { transform: translateY(0); }
+        .btn-danger { transition: all .15s, transform .15s; }
+        .btn-danger:hover { transform: translateY(-1px); }
+        .btn-danger:active { transform: translateY(0); }
+
+        /* Stat card hover lift */
+        .stat-card { transition: border-color .2s, box-shadow .2s, transform .2s; }
+        .stat-card:hover { border-color: rgba(253,184,19,0.18); box-shadow: 0 8px 28px rgba(0,0,0,0.35); transform: translateY(-2px); }
+
+        /* Card border transition */
+        .card { transition: border-color .2s; }
+
+        /* Table row smooth highlight */
+        tbody tr { transition: background .12s; }
+
+        /* Progress bar shimmer */
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position:  200% center; }
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #1a3668, var(--accent), #1a3668);
+            background-size: 200% 100%;
+            animation: shimmer 2.5s linear infinite;
+        }
+
+        /* Flash fade-in */
+        .flash-success, .flash-error { animation: pageIn .25s ease both; }
+
+        /* Topbar glass effect */
+        .topbar { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(10,22,40,0.92); }
+
+        /* Modal entrance */
+        dialog[open] { animation: modalIn .22s cubic-bezier(0.16,1,0.3,1) both; }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translate(-50%,-52%) scale(0.97); }
+            to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+        }
+
+        /* Focus ring consistency */
+        .btn-primary:focus-visible, .btn-secondary:focus-visible, .btn-danger:focus-visible {
+            outline: 2px solid var(--accent); outline-offset: 2px;
+        }
+
+        /* Danger badge pulse */
+        .nav-badge.danger { animation: badgePulse 2.5s ease-in-out infinite; }
+        @keyframes badgePulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(206,17,38,0); }
+            50%      { box-shadow: 0 0 0 4px rgba(206,17,38,0.15); }
+        }
+
+        /* Toast slide-in */
+        .toast { animation: toastIn .3s cubic-bezier(0.16,1,0.3,1) both; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(16px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Icon button hover scale */
+        .btn-icon { transition: all .15s, transform .12s; }
+        .btn-icon:hover { transform: scale(1.1); }
+    </style>
+
     @stack('styles')
 </head>
 <body x-data="{ mobileNav: false }">
