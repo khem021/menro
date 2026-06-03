@@ -8,6 +8,7 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev \
     mysql-client \
+    libpq-dev \
     zip \
     unzip \
     nodejs \
