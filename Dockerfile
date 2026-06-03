@@ -33,6 +33,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction \
     && npm ci --ignore-scripts \
     && npm run build \
     && rm -rf node_modules \
+    && mkdir -p storage/app/livewire-tmp storage/app/public/avatars \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 

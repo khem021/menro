@@ -29,7 +29,7 @@ services:
       - key: DB_PASSWORD
         sync: false   # set in Render dashboard
       - key: SESSION_DRIVER
-        value: cookie
+        value: database
       - key: CACHE_DRIVER
         value: file
       - key: QUEUE_CONNECTION
