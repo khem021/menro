@@ -17,11 +17,11 @@ services:
       - key: APP_URL
         value: https://menro.onrender.com   # change to your actual URL
       - key: DB_CONNECTION
-        value: mysql
+        value: pgsql
       - key: DB_HOST
-        sync: false   # set in Render dashboard — your external MySQL host
+        sync: false   # set in Render dashboard — your PostgreSQL host
       - key: DB_PORT
-        value: 3306
+        value: 5432
       - key: DB_DATABASE
         sync: false   # set in Render dashboard
       - key: DB_USERNAME
