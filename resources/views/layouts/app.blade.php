@@ -199,16 +199,26 @@
             color: var(--text-muted);
         }
         .logout-btn {
+            width: 100%;
+            margin-top: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.75rem;
             background: none;
             border: none;
-            color: var(--text-dim);
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+            font-weight: 500;
             cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 0.375rem;
-            display: flex;
-            transition: color .15s;
+            border-radius: 0.5rem;
+            transition: background .15s, color .15s;
         }
-        .logout-btn:hover { color: var(--danger); }
+        .logout-btn svg { flex-shrink: 0; opacity: 0.7; }
+        .logout-btn:hover,
+        .logout-btn:active { background: rgba(206,17,38,0.1); color: var(--danger); }
+        .logout-btn:hover svg,
+        .logout-btn:active svg { opacity: 1; }
 
         /* ── Main ── */
         .main {
@@ -1214,17 +1224,18 @@
                 <div class="user-name">{{ $u->full_name ?? 'User' }}</div>
                 <div class="user-role">{{ authRole() }}</div>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="logout-btn" title="Sign out">
-                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        <polyline points="16 17 21 12 16 7"/>
-                        <line x1="21" y1="12" x2="9" y2="12"/>
-                    </svg>
-                </button>
-            </form>
         </div>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="logout-btn">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Sign out</span>
+            </button>
+        </form>
     </div>
 </aside>
 
