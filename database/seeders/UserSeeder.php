@@ -14,11 +14,10 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        if (DB::table('users')->count() === 0) {
-            // Fetch all roles keyed by role_name for easy lookup
-            $roles = DB::table('roles')->pluck('role_id', 'role_name');
+        // Fetch all roles keyed by role_name for easy lookup
+        $roles = DB::table('roles')->pluck('role_id', 'role_name');
 
-            $users = [
+        $users = [
                 [
                     'username'      => 'admin',
                     'full_name'     => 'System Admin',
@@ -63,21 +62,23 @@ class UserSeeder extends Seeder
                 ],
             ];
 
-            $rows = [];
-            foreach ($users as $user) {
-                $rows[] = [
-                    'username'      => $user['username'],
-                    'full_name'     => $user['full_name'],
-                    'email'         => $user['email'],
-                    'password_hash' => bcrypt('admin123'),
-                    'role_id'       => $roles[$user['role_name']],
-                    'status'        => $user['status'],
-                    'created_at'    => now(),
-                    'updated_at'    => now(),
-                ];
+        // Create any user that is missing; never touch an existing one
+        // (so passwords changed in production are preserved).
+        foreach ($users as $user) {
+            if (DB::table('users')->where('username', $user['username'])->exists()) {
+                continue;
             }
 
-            DB::table('users')->insert($rows);
+            DB::table('users')->insert([
+                'username'      => $user['username'],
+                'full_name'     => $user['full_name'],
+                'email'         => $user['email'],
+                'password_hash' => bcrypt('admin123'),
+                'role_id'       => $roles[$user['role_name']] ?? null,
+                'status'        => $user['status'],
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
         }
     }
 }
