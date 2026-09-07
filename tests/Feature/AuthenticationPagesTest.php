@@ -16,11 +16,11 @@ class AuthenticationPagesTest extends TestCase
         $this->get('/login')
             ->assertOk()
             ->assertSee('MENRO')
-            ->assertSee('Sign in');
+            ->assertSee('Sign In');
     }
 
-    public function test_guests_are_redirected_from_home_to_login(): void
+    public function test_guests_are_redirected_from_protected_pages_to_login(): void
     {
-        $this->get('/home')->assertRedirect('/login');
+        $this->get('/dashboard')->assertRedirect('/login');
     }
 }

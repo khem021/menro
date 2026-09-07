@@ -27,18 +27,18 @@
     {{-- Filters --}}
     <div class="card" style="padding:0.625rem 0.875rem;flex-shrink:0;">
         <div class="mob-filter-bar">
-            <div class="mob-fgroup" style="flex:1;min-width:160px;">
+            <div class="mob-fgroup" style="flex:2;min-width:160px;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Search</span>
                 <div style="position:relative;"><svg style="position:absolute;left:0.625rem;top:50%;transform:translateY(-50%);color:var(--text-dim);" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 <input wire:model.debounce.400ms="search" type="text" placeholder="Name, contact, address…" class="form-input" style="padding-left:2rem;" /></div>
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Status</span>
-                <select wire:model="status" class="form-select" style="width:9rem;"><option value="">All Statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
+                <select wire:model="status" class="form-select"><option value="">All Statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Compliance</span>
-                <select wire:model="compliance_status" class="form-select" style="width:11rem;"><option value="">All</option><option value="compliant">Compliant</option><option value="for_inspection">For Inspection</option><option value="non_compliant">Non-Compliant</option></select>
+                <select wire:model="compliance_status" class="form-select"><option value="">All</option><option value="compliant">Compliant</option><option value="for_inspection">For Inspection</option><option value="non_compliant">Non-Compliant</option></select>
             </div>
             @if($search || $status || $compliance_status)
             <button wire:click="$set('search','');$set('status','');$set('compliance_status','')" class="btn-ghost" style="font-size:0.75rem;">

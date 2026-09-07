@@ -27,28 +27,28 @@
     {{-- Filters --}}
     <div class="card" style="padding:0.625rem 0.875rem;flex-shrink:0;">
         <div class="mob-filter-bar">
-            <div class="mob-fgroup" style="flex:1;min-width:150px;">
+            <div class="mob-fgroup" style="flex:2;min-width:150px;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Search</span>
                 <div style="position:relative;">
                     <svg style="position:absolute;left:0.5rem;top:50%;transform:translateY(-50%);width:0.875rem;height:0.875rem;color:var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input wire:model.debounce.300ms="search" type="text" placeholder="Generator name…" class="form-input" style="padding-left:1.875rem;width:13rem;" />
+                    <input wire:model.debounce.300ms="search" type="text" placeholder="Generator name…" class="form-input" style="padding-left:1.875rem;" />
                 </div>
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Generator</span>
-                <select wire:model="generator_id" class="form-select" style="width:12rem;"><option value="">All Generators</option>@foreach($generators as $g)<option value="{{ $g->generator_id }}">{{ $g->generator_name }}</option>@endforeach</select>
+                <select wire:model="generator_id" class="form-select"><option value="">All Generators</option>@foreach($generators as $g)<option value="{{ $g->generator_id }}">{{ $g->generator_name }}</option>@endforeach</select>
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Category</span>
-                <select wire:model="category_id" class="form-select" style="width:10rem;"><option value="">All Categories</option>@foreach($categories as $c)<option value="{{ $c->category_id }}">{{ $c->category_name }}</option>@endforeach</select>
+                <select wire:model="category_id" class="form-select"><option value="">All Categories</option>@foreach($categories as $c)<option value="{{ $c->category_id }}">{{ $c->category_name }}</option>@endforeach</select>
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">From</span>
-                <input type="date" wire:model="date_from" class="form-input" style="width:9rem;" />
+                <input type="date" wire:model="date_from" class="form-input" />
             </div>
             <div class="mob-fgroup">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">To</span>
-                <input type="date" wire:model="date_to" class="form-input" style="width:9rem;" />
+                <input type="date" wire:model="date_to" class="form-input" />
             </div>
             @if($search || $generator_id || $category_id || $date_from || $date_to)
             <button wire:click="$set('search','');$set('generator_id','');$set('category_id','');$set('date_from','');$set('date_to','')" class="btn-ghost" style="font-size:0.75rem;">

@@ -12,6 +12,13 @@ class ClusterConfig extends Component
     public string $new2 = '';
     public string $new3 = '';
 
+    public function mount(): void
+    {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+    }
+
     public function setCluster(string $c): void
     {
         $this->activeCluster = $c;
@@ -19,7 +26,7 @@ class ClusterConfig extends Component
 
     public function addToCluster(int $cluster): void
     {
-        if (!isAdmin()) {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
             abort(403, 'Access denied.');
         }
 
@@ -41,7 +48,7 @@ class ClusterConfig extends Component
 
     public function removeFromCluster(int $barangayId): void
     {
-        if (!isAdmin()) {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
             abort(403, 'Access denied.');
         }
 
@@ -62,6 +69,7 @@ class ClusterConfig extends Component
         ];
         $allBarangays = Barangay::orderBy('barangay_name')->get(['barangay_id', 'barangay_name']);
 
-        return view('livewire.dashboard.cluster-config', compact('clusters', 'allBarangays'));
+        return view('livewire.dashboard.cluster-config', compact('clusters', 'allBarangays'))
+            ->extends('layouts.app');
     }
 }

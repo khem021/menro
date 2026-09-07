@@ -294,6 +294,25 @@
         }
         .card-title svg { opacity: 0.7; }
 
+        /* ── Dashboard helpers ── */
+        .dash-card-title {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .dash-panel { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .dash-panel-head {
+            padding: 0.5rem 0.875rem;
+            border-bottom: 1px solid var(--card-border);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .dash-panel-body { flex: 1; overflow-y: auto; min-height: 0; }
+        .dash-panel-link { font-size: 0.6875rem; color: var(--accent); text-decoration: none; font-weight: 500; }
+
         /* ── Stat card ── */
         .stat-card {
             background: var(--card-bg);
@@ -620,6 +639,9 @@
             .dash-kpi-grid { grid-template-columns:repeat(2,1fr) !important; }
             .dash-main-grid { grid-template-columns:1fr !important; }
             .dash-charts-grid { grid-template-columns:1fr !important; }
+            .dash-analytics-grid { grid-template-columns:1fr !important; }
+            .dash-activity-grid { grid-template-columns:1fr !important; }
+            .dash-activity-grid > .card { height:auto !important; max-height:280px; }
         }
 
         @media (max-width: 480px) {
@@ -768,6 +790,237 @@
         /* Icon button hover scale */
         .btn-icon { transition: all .15s, transform .12s; }
         .btn-icon:hover { transform: scale(1.1); }
+
+        /* ── Mobile Bottom Navigation ── */
+        .mob-bottom-nav { display: none; }
+
+        @media (max-width: 768px) {
+            /* Remove browser default tap flash everywhere */
+            * { -webkit-tap-highlight-color: transparent; }
+
+            /* Bottom nav bar */
+            .mob-bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                height: 58px;
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+                background: rgba(5,12,24,0.97);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-top: 1px solid rgba(28,45,74,0.9);
+                z-index: 200;
+                align-items: stretch;
+                box-shadow: 0 -8px 32px rgba(0,0,0,0.45);
+            }
+
+            .mob-nav-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                text-decoration: none;
+                color: #3a4f6e;
+                font-size: 0.5625rem;
+                font-weight: 600;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                padding: 6px 2px 4px;
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-family: inherit;
+                transition: color .15s;
+                touch-action: manipulation;
+                position: relative;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+
+            .mob-nav-item svg { transition: transform .18s cubic-bezier(.34,1.56,.64,1); }
+            .mob-nav-item:active { opacity: 0.65; }
+            .mob-nav-item:active svg { transform: scale(0.88) !important; }
+
+            .mob-nav-item.mob-nav-active { color: var(--accent); }
+            .mob-nav-item.mob-nav-active svg {
+                transform: scale(1.08);
+                filter: drop-shadow(0 0 5px rgba(253,184,19,0.45));
+            }
+            .mob-nav-item.mob-nav-active::after {
+                content: '';
+                position: absolute;
+                top: 0; left: 50%;
+                transform: translateX(-50%);
+                width: 22px; height: 2px;
+                background: var(--accent);
+                border-radius: 0 0 3px 3px;
+                box-shadow: 0 0 8px rgba(253,184,19,0.5);
+            }
+
+            /* Notification badge on bottom nav */
+            .mob-nav-badge {
+                position: absolute;
+                top: 4px;
+                left: calc(50% + 5px);
+                min-width: 15px;
+                height: 15px;
+                padding: 0 3px;
+                background: var(--danger);
+                color: #fff;
+                font-size: 0.5rem;
+                font-weight: 700;
+                letter-spacing: 0;
+                border-radius: 999px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1.5px solid rgba(5,12,24,0.97);
+            }
+
+            /* Push main content above bottom nav */
+            .main { padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px)) !important; }
+
+            /* Topbar compact on mobile */
+            .topbar { height: 56px !important; }
+
+            /* Better active press on all interactive elements */
+            .btn-primary:active, .btn-secondary:active,
+            .btn-danger:active, .btn-ghost:active { transform: scale(0.96) !important; }
+            .btn-icon:active { transform: scale(0.88) !important; }
+            .nav-item:active { background: rgba(253,184,19,0.06) !important; }
+
+            /* Table rows — taller tap targets */
+            tbody tr td { padding: 0.75rem 0.75rem !important; }
+            thead th { padding: 0.5rem 0.75rem 0.625rem !important; }
+
+            /* Smooth native scrolling */
+            .mob-tbl-inner,
+            .sidebar-nav,
+            .page-content { -webkit-overflow-scrolling: touch; }
+
+            /* Safe-area top padding if browser chrome overlaps */
+            .topbar { padding-top: env(safe-area-inset-top, 0px); }
+        }
+
+        /* Hide bottom nav when keyboard is visible (screen height shrinks) */
+        @media (max-width: 768px) and (max-height: 500px) {
+            .mob-bottom-nav { display: none !important; }
+            .main { padding-bottom: 0 !important; }
+        }
+
+        /* Extra-large touch targets on very small phones */
+        @media (max-width: 360px) {
+            .mob-nav-item svg { width: 18px !important; height: 18px !important; }
+            .btn-primary, .btn-secondary, .btn-danger { min-height: 46px !important; }
+        }
+
+        /* ── Mobile / Tablet Responsive Fixes ── */
+
+        /* Minimum touch target size for inputs, selects & buttons */
+        .form-input, .form-select, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost {
+            min-height: 40px;
+        }
+
+        /* Compliance pipeline: horizontal scroll on ALL mobile sizes instead of broken 2-col grid */
+        @media (max-width: 900px) {
+            .mob-pipeline {
+                display: flex !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                border-radius: 0.75rem;
+                border: 1px solid var(--card-border);
+            }
+            .mob-pipeline::-webkit-scrollbar { display: none; }
+            .mob-pipeline > button {
+                flex: 0 0 auto !important;
+                min-width: 150px;
+                border-radius: 0 !important;
+                border: none !important;
+                border-right: 1px solid var(--card-border) !important;
+            }
+            .mob-pipeline > button:last-child { border-right: none !important; }
+            .mob-pipeline > .pipe-arrow {
+                flex: 0 0 auto !important;
+                display: flex !important;
+                border: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Filter inputs and selects always fill their group */
+            .mob-fgroup .form-input,
+            .mob-fgroup .form-select {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+
+            /* Filter group fills available space */
+            .mob-fgroup { flex: 1 !important; min-width: 140px !important; }
+
+            /* "Add ..." button on its own row at the bottom of filter bar */
+            .mob-filter-bar > a.btn-primary,
+            .mob-filter-bar > button.btn-primary {
+                flex: 1 1 100% !important;
+                justify-content: center !important;
+                margin-left: 0 !important;
+                order: 99;
+            }
+
+            /* Tables always scroll horizontally */
+            .mob-tbl-inner { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+            .mob-tbl-inner table { min-width: 540px; }
+
+            /* Pagination wraps */
+            nav[aria-label="Pagination Navigation"],
+            .pagination { flex-wrap: wrap !important; justify-content: center !important; gap: 0.25rem !important; }
+
+            /* Reduce stat card font on small tablets */
+            .mob-stats-grid .card { padding: 0.5rem 0.75rem !important; }
+
+            /* Modal full width on mobile */
+            dialog { padding: 1.25rem !important; }
+        }
+
+        @media (max-width: 480px) {
+            /* Two filter groups per row, search always full width */
+            .mob-fgroup { flex: 1 1 calc(50% - 0.4rem) !important; min-width: 0 !important; }
+            .mob-filter-bar > .mob-fgroup:first-child { flex: 1 1 100% !important; }
+
+            /* Stat values slightly smaller on tiny screens */
+            .mob-stats-grid { gap: 0.375rem !important; }
+            .mob-stats-grid .card div[style*="1.375rem"] { font-size: 1.125rem !important; }
+
+            /* Topbar: hide date to give title more room */
+            .topbar-date { display: none !important; }
+
+            /* Reduce page padding */
+            .page-content { padding: 0.75rem !important; }
+
+            /* Card padding tighter */
+            .card { padding: 0.875rem !important; }
+
+            /* Form grid always 1 column */
+            .form-grid-2 { grid-template-columns: 1fr !important; }
+
+            /* Modal full screen on very small phones */
+            dialog {
+                max-width: calc(100vw - 1rem) !important;
+                padding: 1rem !important;
+            }
+
+            /* Page header stack */
+            .page-header { flex-direction: column !important; gap: 0.5rem !important; }
+            .page-header-right { width: 100% !important; justify-content: flex-end !important; }
+        }
+
+        @media (max-width: 360px) {
+            /* Very small phones */
+            .mob-stats-grid { grid-template-columns: 1fr 1fr !important; }
+            .topbar-title { font-size: 0.8125rem !important; }
+        }
     </style>
 
     @stack('styles')
@@ -840,6 +1093,16 @@
                 <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
             Barangays
+        </a>
+
+        <a href="{{ route('clusters.index') }}" class="nav-item {{ request()->routeIs('clusters.*') ? 'active' : '' }}" @click="mobileNav = false">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Barangay Clusters
         </a>
 
         {{-- ── Operations: follow steps 1 → 4 ────────────────────────────── --}}
@@ -1041,6 +1304,70 @@
     </div>
     @endif
 </div>
+
+{{-- ============================================================
+     MOBILE BOTTOM NAVIGATION (hidden on desktop via CSS)
+     ============================================================ --}}
+<nav class="mob-bottom-nav">
+
+    {{-- Home --}}
+    <a href="{{ route('dashboard') }}"
+       class="mob-nav-item {{ request()->routeIs('dashboard') ? 'mob-nav-active' : '' }}">
+        <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span>Home</span>
+    </a>
+
+    {{-- Entries --}}
+    <a href="{{ route('entries.index') }}"
+       class="mob-nav-item {{ request()->routeIs('entries.*') ? 'mob-nav-active' : '' }}">
+        <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+        </svg>
+        <span>Entries</span>
+    </a>
+
+    {{-- Collections --}}
+    <a href="{{ route('collections.index') }}"
+       class="mob-nav-item {{ request()->routeIs('collections.*') ? 'mob-nav-active' : '' }}">
+        <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <rect x="1" y="3" width="15" height="13"/>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+            <circle cx="5.5" cy="18.5" r="2.5"/>
+            <circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+        <span>Collect</span>
+    </a>
+
+    {{-- Compliance (with open violations badge) --}}
+    <a href="{{ route('compliance.index') }}"
+       class="mob-nav-item {{ request()->routeIs('compliance.*') || request()->routeIs('inspections.*') || request()->routeIs('violations.*') || request()->routeIs('incidents.*') ? 'mob-nav-active' : '' }}">
+        @if(isset($openVio) && $openVio > 0)
+            <span class="mob-nav-badge">{{ $openVio > 9 ? '9+' : $openVio }}</span>
+        @endif
+        <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        <span>Comply</span>
+    </a>
+
+    {{-- Menu (opens full sidebar; shows badge if unread notifications) --}}
+    <button class="mob-nav-item {{ !request()->routeIs('dashboard') && !request()->routeIs('entries.*') && !request()->routeIs('collections.*') && !request()->routeIs('compliance.*') && !request()->routeIs('inspections.*') && !request()->routeIs('violations.*') && !request()->routeIs('incidents.*') ? 'mob-nav-active' : '' }}"
+            @click="mobileNav = true">
+        @if(isset($unread) && $unread > 0)
+            <span class="mob-nav-badge">{{ $unread > 9 ? '9+' : $unread }}</span>
+        @endif
+        <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+        <span>Menu</span>
+    </button>
+
+</nav>
 
 @livewireScripts
 <script>

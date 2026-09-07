@@ -1,10 +1,16 @@
+databases:
+  - name: menro-db
+    plan: free
+    databaseName: menro
+    user: menro
+
 services:
   - type: web
     name: menro
     env: docker
     plan: free
     branch: main
-    healthCheckPath: /
+    healthCheckPath: /login
     envVars:
       - key: APP_NAME
         value: MENRO
@@ -15,21 +21,35 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
-        value: https://menro.onrender.com   # change to your actual URL
+        value: https://menro.onrender.com   # change to your actual Render URL
+
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
-        sync: false   # set in Render dashboard — your PostgreSQL host
+        fromDatabase:
+          name: menro-db
+          property: host
       - key: DB_PORT
-        value: 5432
+        fromDatabase:
+          name: menro-db
+          property: port
       - key: DB_DATABASE
-        sync: false   # set in Render dashboard
+        fromDatabase:
+          name: menro-db
+          property: database
       - key: DB_USERNAME
-        sync: false   # set in Render dashboard
+        fromDatabase:
+          name: menro-db
+          property: user
       - key: DB_PASSWORD
-        sync: false   # set in Render dashboard
+        fromDatabase:
+          name: menro-db
+          property: password
+
       - key: SESSION_DRIVER
         value: database
+      - key: SESSION_SECURE_COOKIE
+        value: true
       - key: CACHE_DRIVER
         value: file
       - key: QUEUE_CONNECTION

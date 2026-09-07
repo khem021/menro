@@ -29,11 +29,11 @@
         <div style="display:flex;align-items:flex-end;gap:0.625rem;flex-wrap:wrap;">
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Severity</span>
-                <select wire:model="severity" class="form-select" style="width:9rem;"><option value="">All Severities</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
+                <select wire:model="severity" class="form-select"><option value="">All Severities</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
             </div>
             <div style="display:flex;flex-direction:column;gap:0.25rem;">
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Resolution</span>
-                <select wire:model="resolution_status" class="form-select" style="width:10rem;"><option value="">All Statuses</option><option value="open">Open</option><option value="in_progress">In Progress</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select>
+                <select wire:model="resolution_status" class="form-select"><option value="">All Statuses</option><option value="open">Open</option><option value="in_progress">In Progress</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select>
             </div>
             <a href="{{ route('violations.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add Violation</a>
         </div>
