@@ -10,32 +10,18 @@ php artisan storage:link --force 2>/dev/null || true
 mkdir -p storage/app/livewire-tmp storage/app/public/avatars
 chmod -R 775 storage bootstrap/cache
 
-# Seed the essentials whenever the admin login user is missing. All five
-# seeders below are idempotent (guarded counts / insertOrIgnore), so this is
-# safe to run on every boot and recovers from a partially-seeded database.
-# Demo/sample seeders (NotificationSeeder, DemoDataSeeder) are intentionally
-# left out of the automatic boot — run `php artisan db:seed` manually if wanted.
-echo "[start] checking whether core data needs seeding..."
-NEEDS_SEED=$(php -r '
-  $app = require "bootstrap/app.php";
-  $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-  try {
-      echo \Illuminate\Support\Facades\DB::table("users")->where("username", "admin")->exists() ? "no" : "yes";
-  } catch (\Throwable $e) {
-      echo "yes";
-  }
-' 2>/dev/null || echo "yes")
-
-if [ "$NEEDS_SEED" = "yes" ]; then
-    echo "[start] seeding core data (roles, barangays, lookups, users)..."
-    php artisan db:seed --force --class=RoleSeeder
-    php artisan db:seed --force --class=BarangaySeeder
-    php artisan db:seed --force --class=GeneratorTypeSeeder
-    php artisan db:seed --force --class=WasteCategorySeeder
-    php artisan db:seed --force --class=UserSeeder
-else
-    echo "[start] core data present — skipping seed."
-fi
+# Seed core data every boot. All five seeders are idempotent (guarded row
+# counts / insertOrIgnore / per-username checks), so re-running them on an
+# already-populated database is a cheap no-op — and this reliably recovers a
+# fresh or partially-seeded database without a fragile "is it seeded?" probe.
+# Demo/sample seeders (NotificationSeeder, DemoDataSeeder) are left out of the
+# automatic boot — run `php artisan db:seed` by hand if you want sample data.
+echo "[start] seeding core data (roles, barangays, lookups, users)..."
+php artisan db:seed --force --class=RoleSeeder
+php artisan db:seed --force --class=BarangaySeeder
+php artisan db:seed --force --class=GeneratorTypeSeeder
+php artisan db:seed --force --class=WasteCategorySeeder
+php artisan db:seed --force --class=UserSeeder
 
 echo "[start] caching config, routes and views..."
 php artisan config:cache
