@@ -64,7 +64,7 @@ class InspectionForm extends Component
             'inspection_date'   => $this->inspection_date,
             'inspector_id'      => $this->inspector_id,
             'compliance_status' => $this->compliance_status,
-            'segregation_score' => $this->segregation_score ?: null,
+            'segregation_score' => $this->segregation_score === '' ? 0 : (int) $this->segregation_score,
             'remarks'           => $this->remarks ?: null,
             'recommendation'    => $this->recommendation ?: null,
             'next_follow_up'    => $this->next_follow_up ?: null,

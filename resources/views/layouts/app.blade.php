@@ -294,6 +294,25 @@
         }
         .card-title svg { opacity: 0.7; }
 
+        /* ── Dashboard helpers ── */
+        .dash-card-title {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .dash-panel { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .dash-panel-head {
+            padding: 0.5rem 0.875rem;
+            border-bottom: 1px solid var(--card-border);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .dash-panel-body { flex: 1; overflow-y: auto; min-height: 0; }
+        .dash-panel-link { font-size: 0.6875rem; color: var(--accent); text-decoration: none; font-weight: 500; }
+
         /* ── Stat card ── */
         .stat-card {
             background: var(--card-bg);
@@ -620,6 +639,9 @@
             .dash-kpi-grid { grid-template-columns:repeat(2,1fr) !important; }
             .dash-main-grid { grid-template-columns:1fr !important; }
             .dash-charts-grid { grid-template-columns:1fr !important; }
+            .dash-analytics-grid { grid-template-columns:1fr !important; }
+            .dash-activity-grid { grid-template-columns:1fr !important; }
+            .dash-activity-grid > .card { height:auto !important; max-height:280px; }
         }
 
         @media (max-width: 480px) {
@@ -1071,6 +1093,16 @@
                 <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
             Barangays
+        </a>
+
+        <a href="{{ route('clusters.index') }}" class="nav-item {{ request()->routeIs('clusters.*') ? 'active' : '' }}" @click="mobileNav = false">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Barangay Clusters
         </a>
 
         {{-- ── Operations: follow steps 1 → 4 ────────────────────────────── --}}

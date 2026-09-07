@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    public function redirectRoot()
+    {
+        return session('auth_user_id')
+            ? redirect()->route('dashboard')
+            : redirect()->route('login');
+    }
+
     public function showLogin()
     {
         if (session('auth_user_id')) {

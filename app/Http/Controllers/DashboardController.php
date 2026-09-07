@@ -24,7 +24,6 @@ class DashboardController extends Controller
             $gen = WasteGenerator::selectRaw("
                 COUNT(*) AS total,
                 SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active,
-                SUM(CASE WHEN compliance_status = 'compliant' THEN 1 ELSE 0 END) AS compliant,
                 SUM(CASE WHEN compliance_status = 'non_compliant' THEN 1 ELSE 0 END) AS non_compliant,
                 SUM(CASE WHEN compliance_status = 'for_inspection' THEN 1 ELSE 0 END) AS for_inspection
             ")->first();
@@ -45,7 +44,6 @@ class DashboardController extends Controller
             return [
                 'total_generators'     => (int) $gen->total,
                 'active_generators'    => (int) $gen->active,
-                'compliant'            => (int) $gen->compliant,
                 'non_compliant'        => (int) $gen->non_compliant,
                 'for_inspection'       => (int) $gen->for_inspection,
                 'this_month_waste'     => (float) $waste->this_month,
@@ -59,7 +57,6 @@ class DashboardController extends Controller
 
         $totalGenerators     = $kpis['total_generators'];
         $activeGenerators    = $kpis['active_generators'];
-        $compliantCount      = $kpis['compliant'];
         $nonCompliantCount   = $kpis['non_compliant'];
         $forInspectionCount  = $kpis['for_inspection'];
         $thisMonthWaste      = $kpis['this_month_waste'];
@@ -176,11 +173,9 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'totalGenerators',
             'activeGenerators',
-            'compliantCount',
             'nonCompliantCount',
             'forInspectionCount',
             'thisMonthWaste',
-            'lastMonthWaste',
             'wasteTrendPct',
             'openViolations',
             'criticalViolations',

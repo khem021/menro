@@ -12,12 +12,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Redirect root
-Route::get('/', function () {
-    return session('auth_user_id')
-        ? redirect()->route('dashboard')
-        : redirect()->route('login');
-});
+// Redirect root (controller action, not a closure — keeps `route:cache` working)
+Route::get('/', [AuthController::class, 'redirectRoot']);
 
 // Guest routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -53,6 +49,7 @@ Route::middleware('auth.custom')->group(function () {
 
     // Barangay List
     Route::get('/barangays', \App\Http\Livewire\Barangays\BarangayIndex::class)->name('barangays.index');
+    Route::get('/barangays/clusters', \App\Http\Livewire\Dashboard\ClusterConfig::class)->name('clusters.index');
 
     // Collections
     Route::get('/collections', \App\Http\Livewire\Collections\CollectionIndex::class)->name('collections.index');

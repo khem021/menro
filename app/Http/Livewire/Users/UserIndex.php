@@ -52,9 +52,9 @@ class UserIndex extends Component
         $users = User::with('role:role_id,role_name')
             ->when($this->search, fn($q) =>
                 $q->where(fn($w) => $w
-                    ->where('full_name', 'LIKE', "%{$this->search}%")
-                    ->orWhere('username', 'LIKE', "%{$this->search}%")
-                    ->orWhere('email', 'LIKE', "%{$this->search}%"))
+                    ->where('full_name', 'ILIKE', "%{$this->search}%")
+                    ->orWhere('username', 'ILIKE', "%{$this->search}%")
+                    ->orWhere('email', 'ILIKE', "%{$this->search}%"))
             )
             ->when($this->role_id, fn($q) => $q->where('role_id', $this->role_id))
             ->when($this->status,  fn($q) => $q->where('status', $this->status))
