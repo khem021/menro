@@ -1,5 +1,8 @@
 * text=auto
 
+# Force LF for shell scripts so Windows git never corrupts them with CRLF
+*.sh text eol=lf
+
 *.blade.php diff=html
 *.css diff=css
 *.html diff=html

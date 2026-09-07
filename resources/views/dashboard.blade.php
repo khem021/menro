@@ -12,7 +12,13 @@
             <div>
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Generators</div>
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($totalGenerators) }}</div>
-                <div style="font-size:0.6rem;color:var(--text-muted);">{{ $activeGenerators }} active &middot; {{ $nonCompliantCount }} non-compliant</div>
+                <div style="font-size:0.6rem;color:var(--text-muted);">
+                    @if($nonCompliantCount > 0)
+                        <span style="color:#f87171;">{{ $nonCompliantCount }} non-compliant</span> &middot; {{ $forInspectionCount }} for inspection
+                    @else
+                        {{ $activeGenerators }} active &middot; all compliant
+                    @endif
+                </div>
             </div>
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(52,211,153,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="14" height="14" fill="none" stroke="#34d399" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -23,9 +29,13 @@
             <div>
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Waste This Month</div>
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($thisMonthWaste, 1) }}<span style="font-size:0.75rem;color:var(--text-muted);font-weight:500;margin-left:2px;">kg</span></div>
-                <div style="font-size:0.6rem;{{ $wasteTrendPct >= 0 ? 'color:#f87171;' : 'color:#34d399;' }}">
-                    {{ $wasteTrendPct >= 0 ? '▲' : '▼' }} {{ abs($wasteTrendPct) }}% vs last month
+                @if($thisMonthWaste > 0)
+                <div style="font-size:0.6rem;{{ $wasteTrendPct > 0 ? 'color:#f87171;' : ($wasteTrendPct < 0 ? 'color:#34d399;' : 'color:var(--text-muted);') }}">
+                    {{ $wasteTrendPct > 0 ? '▲' : ($wasteTrendPct < 0 ? '▼' : '•') }} {{ abs($wasteTrendPct) }}% vs last month
                 </div>
+                @else
+                <div style="font-size:0.6rem;color:var(--text-dim);">No entries recorded yet this month</div>
+                @endif
             </div>
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(251,146,60,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="14" height="14" fill="none" stroke="#fb923c" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
@@ -36,7 +46,7 @@
             <div>
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Open Violations</div>
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($openViolations) }}</div>
-                <div style="font-size:0.6rem;color:var(--danger);">{{ $criticalViolations }} high or critical severity</div>
+                <div style="font-size:0.6rem;{{ $criticalViolations > 0 ? 'color:var(--danger);' : 'color:var(--text-muted);' }}">{{ $criticalViolations }} high or critical severity</div>
             </div>
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(206,17,38,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="14" height="14" fill="none" stroke="#f87171" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -47,7 +57,7 @@
             <div>
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Active Incidents</div>
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($openIncidents) }}</div>
-                <div style="font-size:0.6rem;color:var(--text-muted);">{{ $pendingCollections }} pending collections</div>
+                <div style="font-size:0.6rem;color:var(--text-muted);">{{ $openIncidents > 0 ? 'Awaiting validation or investigation' : 'No active incidents' }}</div>
             </div>
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(96,165,250,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="14" height="14" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
@@ -87,83 +97,144 @@
     </div>
     @endif
 
-    {{-- ── Main Content ── --}}
-    <div class="dash-main-grid" style="display:grid;grid-template-columns:2fr 3fr;gap:0.75rem;align-items:start;">
+    {{-- ── Analytics: trend + cluster stacked | category donut ── --}}
+    <div class="dash-analytics-grid" style="display:grid;grid-template-columns:1.35fr 1fr;gap:0.75rem;">
 
-        {{-- Left: Cluster Config --}}
-        <div style="min-width:0;">
-            @livewire('dashboard.cluster-config')
-        </div>
-
-        {{-- Right: Charts + Recent Entries --}}
         <div style="display:flex;flex-direction:column;gap:0.75rem;min-width:0;">
-
-            {{-- Charts --}}
-            <div class="dash-charts-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-
-                <div class="card" style="padding:0.75rem;">
-                    <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Waste by Cluster</div>
-                    <div style="height:180px;position:relative;">
-                        <canvas id="clusterChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
-                    </div>
-                </div>
-
-                <div class="card" style="padding:0.75rem;">
-                    <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Waste by Category</div>
-                    <div style="height:180px;position:relative;">
-                        <canvas id="categoryChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- Recent Entries --}}
-            <div class="card" style="padding:0;overflow:hidden;">
-                <div style="padding:0.5rem 0.875rem;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;">
-                    <div style="font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Recent Waste Entries</div>
-                    <div style="display:flex;align-items:center;gap:0.5rem;">
-                        <a href="{{ route('entries.index') }}" style="font-size:0.6875rem;color:var(--accent);text-decoration:none;font-weight:500;">View all →</a>
-                        <a href="{{ route('entries.create') }}" style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.25rem 0.625rem;font-size:0.6875rem;font-weight:600;border-radius:0.375rem;background:linear-gradient(135deg,#b8860b,#FDB813);color:#071020;text-decoration:none;">+ Add</a>
-                    </div>
-                </div>
-                <div>
-                    <table style="width:100%;border-collapse:collapse;">
-                        <thead style="position:sticky;top:0;background:var(--card-bg);">
-                            <tr>
-                                <th class="table-header">Date</th>
-                                <th class="table-header">Generator</th>
-                                <th class="table-header">Category</th>
-                                <th class="table-header" style="text-align:right;">Qty</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($recentEntries->take(5) as $entry)
-                            <tr class="table-row">
-                                <td class="table-cell" style="white-space:nowrap;">{{ \Carbon\Carbon::parse($entry->entry_date)->format('M d') }}</td>
-                                <td class="table-cell text-main" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $entry->wasteGenerator->generator_name ?? '—' }}</td>
-                                <td class="table-cell">
-                                    @php
-                                        $cat = $entry->wasteCategory->category_name ?? '';
-                                        $bc = match(true) {
-                                            str_contains(strtolower($cat),'bio')   => 'badge-green',
-                                            str_contains(strtolower($cat),'recycl')=> 'badge-blue',
-                                            str_contains(strtolower($cat),'hazard')=> 'badge-red',
-                                            default => 'badge-gray',
-                                        };
-                                    @endphp
-                                    <span class="badge {{ $bc }}" style="font-size:0.6rem;">{{ $cat ?: '—' }}</span>
-                                </td>
-                                <td class="table-cell" style="text-align:right;font-weight:600;color:var(--text);white-space:nowrap;">{{ number_format($entry->quantity, 1) }} kg</td>
-                            </tr>
-                            @empty
-                            <tr><td colspan="4" class="table-cell" style="text-align:center;padding:1rem;">No entries yet.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+            <div class="card" style="padding:0.75rem;">
+                <div class="dash-card-title">Waste Volume — Last 12 Months</div>
+                <div style="height:150px;position:relative;">
+                    <canvas id="trendChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
                 </div>
             </div>
-
+            <div class="card" style="padding:0.75rem;">
+                <div class="dash-card-title">Waste by Cluster</div>
+                <div style="height:170px;position:relative;">
+                    <canvas id="clusterChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
+                </div>
+            </div>
         </div>
+
+        <div class="card" style="padding:0.75rem;display:flex;flex-direction:column;min-width:0;">
+            <div class="dash-card-title">Waste by Category</div>
+            <div style="flex:1;position:relative;min-height:300px;">
+                <canvas id="categoryChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- ── Activity: upcoming collections | recent entries | recent incidents ── --}}
+    <div class="dash-activity-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;">
+
+        {{-- Upcoming Collections --}}
+        <div class="card dash-panel" style="height:264px;">
+            <div class="dash-panel-head">
+                <div class="dash-card-title" style="margin:0;">Upcoming Collections</div>
+                <a href="{{ route('collections.index') }}" class="dash-panel-link">All ({{ $pendingCollections }}) →</a>
+            </div>
+            <div class="dash-panel-body">
+                @php $upcomingFlat = collect($collectionsByCluster)->flatten(1)->sortBy('collection_date')->take(8); @endphp
+                @forelse($upcomingFlat as $col)
+                <div style="padding:0.45rem 0.875rem;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+                    <div style="min-width:0;">
+                        <div style="font-size:0.75rem;color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $col->barangay_name }}</div>
+                        <div style="font-size:0.625rem;color:var(--text-dim);">Cluster {{ $col->cluster ?? '—' }} &middot; {{ ucfirst($col->waste_type) }}</div>
+                    </div>
+                    <div style="text-align:right;flex-shrink:0;">
+                        <div style="font-size:0.6875rem;color:var(--text-muted);white-space:nowrap;">{{ \Carbon\Carbon::parse($col->collection_date)->format('M d') }}</div>
+                        <div style="font-size:0.6rem;color:{{ $col->status === 'confirmed' ? '#34d399' : 'var(--text-dim)' }};">{{ ucfirst($col->status) }}</div>
+                    </div>
+                </div>
+                @empty
+                <div style="padding:1.5rem 1rem;text-align:center;font-size:0.75rem;color:var(--text-dim);">No upcoming collections scheduled.</div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- Recent Waste Entries --}}
+        <div class="card dash-panel" style="height:264px;">
+            <div class="dash-panel-head">
+                <div class="dash-card-title" style="margin:0;">Recent Waste Entries</div>
+                <a href="{{ route('entries.index') }}" class="dash-panel-link">View all →</a>
+            </div>
+            <div class="dash-panel-body">
+                <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+                    <thead style="position:sticky;top:0;background:var(--card-bg);z-index:1;">
+                        <tr>
+                            <th class="table-header" style="width:3.25rem;">Date</th>
+                            <th class="table-header">Generator</th>
+                            <th class="table-header" style="text-align:right;width:4.5rem;">Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($recentEntries->take(7) as $entry)
+                        @php
+                            $cat = $entry->wasteCategory->category_name ?? '';
+                            $dot = match(true) {
+                                str_contains(strtolower($cat),'bio')   => '#34d399',
+                                str_contains(strtolower($cat),'recycl')=> '#60a5fa',
+                                str_contains(strtolower($cat),'hazard')=> '#f87171',
+                                default => '#7b8fad',
+                            };
+                        @endphp
+                        <tr class="table-row">
+                            <td class="table-cell" style="white-space:nowrap;">{{ \Carbon\Carbon::parse($entry->entry_date)->format('M d') }}</td>
+                            <td class="table-cell text-main" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:{{ $dot }};margin-right:5px;vertical-align:middle;" title="{{ $cat }}"></span>{{ $entry->wasteGenerator->generator_name ?? '—' }}
+                            </td>
+                            <td class="table-cell" style="text-align:right;font-weight:600;color:var(--text);white-space:nowrap;">{{ number_format($entry->quantity, 1) }}</td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="3" class="table-cell" style="text-align:center;padding:1.5rem 1rem;">No entries yet.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Recent Incidents --}}
+        <div class="card dash-panel" style="height:264px;">
+            <div class="dash-panel-head">
+                <div class="dash-card-title" style="margin:0;">Recent Incidents</div>
+                <a href="{{ route('incidents.index') }}" class="dash-panel-link">View all →</a>
+            </div>
+            <div class="dash-panel-body">
+                <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+                    <thead style="position:sticky;top:0;background:var(--card-bg);z-index:1;">
+                        <tr>
+                            <th class="table-header" style="width:3.25rem;">Date</th>
+                            <th class="table-header">Barangay</th>
+                            <th class="table-header" style="text-align:right;width:6.5rem;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($recentIncidents->take(7) as $inc)
+                        <tr class="table-row">
+                            <td class="table-cell" style="white-space:nowrap;">{{ \Carbon\Carbon::parse($inc->date_reported)->format('M d') }}</td>
+                            <td class="table-cell text-main" style="overflow:hidden;white-space:nowrap;">
+                                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;">{{ $inc->barangay->barangay_name ?? '—' }}</span>
+                                <span style="font-size:0.6rem;color:var(--text-dim);">{{ ucfirst(str_replace('_', ' ', $inc->incident_type)) }}</span>
+                            </td>
+                            <td class="table-cell" style="text-align:right;">
+                                @php
+                                    $sc = match($inc->status) {
+                                        'resolved', 'closed' => 'badge-green',
+                                        'under_investigation' => 'badge-blue',
+                                        default => 'badge-gray',
+                                    };
+                                @endphp
+                                <span class="badge {{ $sc }}" style="font-size:0.6rem;">{{ ucfirst(str_replace('_', ' ', $inc->status)) }}</span>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="3" class="table-cell" style="text-align:center;padding:1.5rem 1rem;">No incidents reported.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
 </div>
@@ -176,6 +247,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const grid  = 'rgba(28,45,74,0.8)';
     const label = '#7b8fad';
 
+    // ── 12-month trend ──
+    const trendRaw = @json($monthlyWasteData);
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const trendLabels = trendRaw.map(r => monthNames[(parseInt(r.mo, 10) || 1) - 1] + " '" + String(parseInt(r.yr, 10) || 0).slice(-2));
+    const trendData   = trendRaw.map(r => parseFloat(r.total) || 0);
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: trendLabels.length ? trendLabels : ['—'],
+            datasets: [{
+                label: 'kg',
+                data: trendData.length ? trendData : [0],
+                borderColor: '#FDB813',
+                backgroundColor: 'rgba(253,184,19,0.12)',
+                fill: true,
+                tension: 0.35,
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.parsed.y.toLocaleString() + ' kg' } } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: label, font: { size: 9 } } },
+                y: { grid: { color: grid }, ticks: { color: label, font: { size: 9 }, callback: v => v >= 1000 ? (v/1000) + 'k' : v } },
+            }
+        }
+    });
+
+    // ── Waste by cluster ──
     const clusterData = @json($clusterWaste);
     new Chart(document.getElementById('clusterChart'), {
         type: 'bar',
@@ -198,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // ── Waste by category ──
     const catData   = @json($categoryWaste);
     const catColors = ['#FDB813','#60a5fa','#34d399','#f87171','#a78bfa','#fb923c'];
     if (catData.length) {
@@ -219,20 +323,20 @@ document.addEventListener('DOMContentLoaded', () => {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '68%',
-                layout: { padding: { top: 4, bottom: 4, left: 4, right: 4 } },
+                cutout: '58%',
+                layout: { padding: { top: 8, bottom: 8, left: 8, right: 8 } },
                 plugins: {
                     legend: {
-                        position: 'right',
+                        position: 'bottom',
                         align: 'center',
                         labels: {
                             color: '#e8edf5',
-                            font: { size: 8.5 },
-                            padding: 8,
-                            boxWidth: 8,
-                            boxHeight: 8,
+                            font: { size: 12.5 },
+                            padding: 14,
+                            boxWidth: 12,
+                            boxHeight: 12,
                             usePointStyle: true,
-                            pointStyleWidth: 8,
+                            pointStyleWidth: 12,
                             generateLabels(chart) {
                                 const data = chart.data;
                                 return data.labels.map((lbl, i) => {
