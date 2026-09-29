@@ -47,6 +47,13 @@ Route::middleware('auth.custom')->group(function () {
     Route::get('/violations/create', \App\Http\Livewire\Violations\ViolationForm::class)->name('violations.create');
     Route::get('/violations/{id}/edit', \App\Http\Livewire\Violations\ViolationForm::class)->name('violations.edit');
 
+    // Violation Tickets — citation tickets issued to individuals (littering, dumping,
+    // burning, no segregation). Distinct from Violations/Compliance above, which
+    // tracks generator-inspection violations tied to inspection_id.
+    Route::get('/violation-tickets', \App\Http\Livewire\ViolationTickets\ViolationTicketIndex::class)->name('violation-tickets.index');
+    Route::get('/violation-tickets/create', \App\Http\Livewire\ViolationTickets\ViolationTicketForm::class)->name('violation-tickets.create');
+    Route::get('/violation-tickets/{id}/edit', \App\Http\Livewire\ViolationTickets\ViolationTicketForm::class)->name('violation-tickets.edit');
+
     // Barangay List
     Route::get('/barangays', \App\Http\Livewire\Barangays\BarangayIndex::class)->name('barangays.index');
     Route::get('/barangays/clusters', \App\Http\Livewire\Dashboard\ClusterConfig::class)->name('clusters.index');
