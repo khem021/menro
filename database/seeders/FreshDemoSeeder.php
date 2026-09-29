@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * FreshDemoSeeder
@@ -13,11 +14,19 @@ use Illuminate\Support\Facades\DB;
  * Populates every module with realistic data for Madrid, Surigao del Sur.
  *
  *   php artisan db:seed --class=FreshDemoSeeder
+ *
+ * Idempotent: skips entirely if waste_entries already has rows, so it's safe
+ * to run on every boot alongside the other core seeders.
  */
 class FreshDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        if (DB::table('waste_entries')->count() > 0) {
+            $this->command->info('Demo data already present — skipping FreshDemoSeeder.');
+            return;
+        }
+
         $this->command->info('Seeding fresh demo data…');
 
         // ── 1. Users ─────────────────────────────────────────────────────────
@@ -61,6 +70,17 @@ class FreshDemoSeeder extends Seeder
             2 => ['Panayogon', 'Patong Patong', 'Quirino', 'San Antonio', 'San Juan'],
             3 => ['San Roque', 'San Vicente', 'Songkit', 'Union'],
         ];
+
+        if (Schema::hasTable('clusters')) {
+            foreach (array_keys($clusterMap) as $cluster) {
+                DB::table('clusters')->insertOrIgnore([
+                    'id'         => $cluster,
+                    'name'       => 'Cluster ' . $cluster,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
 
         foreach ($clusterMap as $cluster => $names) {
             foreach ($names as $name) {
