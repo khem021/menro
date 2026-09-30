@@ -18,6 +18,7 @@ class DashboardController extends Controller
     {
         $kpis = Cache::remember('dashboard:kpis', 120, function () {
             $thisMonthStart = now()->startOfMonth()->toDateString();
+            $thisMonthEnd   = now()->endOfMonth()->toDateString();
             $lastMonthStart = now()->subMonth()->startOfMonth()->toDateString();
             $lastMonthEnd   = now()->subMonth()->endOfMonth()->toDateString();
 
@@ -28,10 +29,13 @@ class DashboardController extends Controller
                 SUM(CASE WHEN compliance_status = 'for_inspection' THEN 1 ELSE 0 END) AS for_inspection
             ")->first();
 
+            // Both windows are bounded at each end: an entry dated next month
+            // is not part of this month's total, and so must not inflate the
+            // month-on-month trend shown beside it.
             $waste = WasteEntry::selectRaw("
-                SUM(CASE WHEN entry_date >= ? THEN quantity ELSE 0 END) AS this_month,
+                SUM(CASE WHEN entry_date BETWEEN ? AND ? THEN quantity ELSE 0 END) AS this_month,
                 SUM(CASE WHEN entry_date BETWEEN ? AND ? THEN quantity ELSE 0 END) AS last_month
-            ", [$thisMonthStart, $lastMonthStart, $lastMonthEnd])->first();
+            ", [$thisMonthStart, $thisMonthEnd, $lastMonthStart, $lastMonthEnd])->first();
 
             $viol = Violation::selectRaw("
                 SUM(CASE WHEN resolution_status = 'open' THEN 1 ELSE 0 END) AS open_,

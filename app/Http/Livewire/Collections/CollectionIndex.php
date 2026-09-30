@@ -32,8 +32,6 @@ class CollectionIndex extends Component
         $s = CollectionSchedule::findOrFail($id);
         logAudit('delete', 'CollectionSchedule', $id, $s->toArray());
         $s->delete();
-        Cache::forget('stats:collections');
-        Cache::forget('dashboard:upcoming_collections');
         session()->flash('success', 'Collection schedule deleted.');
     }
 
@@ -46,8 +44,6 @@ class CollectionIndex extends Component
         $s = CollectionSchedule::findOrFail($id);
         $s->update(['status' => 'completed']);
         logAudit('update', 'CollectionSchedule', $id, ['status' => $s->getOriginal('status')], ['status' => 'completed']);
-        Cache::forget('stats:collections');
-        Cache::forget('dashboard:upcoming_collections');
         session()->flash('success', 'Collection marked as completed.');
     }
 

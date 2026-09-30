@@ -32,10 +32,6 @@ class IncidentIndex extends Component
         $i = Incident::findOrFail($id);
         logAudit('delete', 'Incident', $id, $i->toArray());
         $i->delete();
-        Cache::forget('stats:incidents');
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('dashboard:kpis');
-        Cache::forget('dashboard:recent_incidents');
         session()->flash('success', 'Incident deleted.');
     }
 

@@ -60,8 +60,6 @@ class ComplianceIndex extends Component
         $r = Inspection::findOrFail($id);
         logAudit('delete', 'Inspection', $id, $r->toArray());
         $r->delete();
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('stats:inspections');
         session()->flash('success', 'Inspection deleted.');
     }
 
@@ -89,11 +87,6 @@ class ComplianceIndex extends Component
 
         logAudit('update', 'Violation (quick-advance)', $id, $old, ['resolution_status' => $next]);
 
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('stats:violations');
-        Cache::forget('nav:open_violations');
-        Cache::forget('dashboard:kpis');
-
         $label = $next === 'in_progress' ? 'In Progress' : 'Resolved';
         session()->flash('success', "Violation marked as {$label}.");
     }
@@ -107,10 +100,6 @@ class ComplianceIndex extends Component
         $r = Violation::findOrFail($id);
         logAudit('delete', 'Violation', $id, $r->toArray());
         $r->delete();
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('stats:violations');
-        Cache::forget('nav:open_violations');
-        Cache::forget('dashboard:kpis');
         session()->flash('success', 'Violation deleted.');
     }
 
@@ -123,10 +112,6 @@ class ComplianceIndex extends Component
         $r = Incident::findOrFail($id);
         logAudit('delete', 'Incident', $id, $r->toArray());
         $r->delete();
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('stats:incidents');
-        Cache::forget('dashboard:kpis');
-        Cache::forget('dashboard:recent_incidents');
         session()->flash('success', 'Incident deleted.');
     }
 

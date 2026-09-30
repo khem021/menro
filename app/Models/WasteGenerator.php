@@ -2,14 +2,22 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\InvalidatesDataCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WasteGenerator extends Model
 {
+    use InvalidatesDataCache;
+
     protected $table = 'waste_generators';
     protected $primaryKey = 'generator_id';
+
+    protected static function dataCacheGroups(): array
+    {
+        return ['generators'];
+    }
 
     protected $fillable = [
         'generator_name',

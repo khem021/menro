@@ -29,7 +29,6 @@ class ViolationTicketIndex extends Component
         $t = ViolationTicket::findOrFail($id);
         logAudit('delete', 'ViolationTicket', $id, $t->toArray());
         $t->delete();
-        Cache::forget('stats:violation_tickets');
         session()->flash('success', 'Violation ticket deleted.');
     }
 

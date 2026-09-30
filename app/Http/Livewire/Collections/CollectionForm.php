@@ -74,9 +74,6 @@ class CollectionForm extends Component
             logAudit('create', 'CollectionSchedule', $new->schedule_id, null, $data);
         }
 
-        Cache::forget('stats:collections');
-        Cache::forget('dashboard:upcoming_collections');
-
         session()->flash('success', $this->scheduleId ? 'Schedule updated.' : 'Schedule created.');
         return redirect()->route('collections.index');
     }

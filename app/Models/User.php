@@ -2,12 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\InvalidatesDataCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Model
 {
+    use InvalidatesDataCache;
+
+    protected static function dataCacheGroups(): array
+    {
+        return ['users'];
+    }
+
     protected $table = 'users';
     protected $primaryKey = 'user_id';
 

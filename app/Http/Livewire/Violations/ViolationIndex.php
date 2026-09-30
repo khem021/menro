@@ -29,10 +29,6 @@ class ViolationIndex extends Component
         $v = Violation::findOrFail($id);
         logAudit('delete', 'Violation', $id, $v->toArray());
         $v->delete();
-        Cache::forget('stats:violations');
-        Cache::forget('nav:open_violations');
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('dashboard:kpis');
         session()->flash('success', 'Violation deleted.');
     }
 

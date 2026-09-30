@@ -28,8 +28,6 @@ class InspectionIndex extends Component
         $insp = Inspection::findOrFail($id);
         logAudit('delete', 'Inspection', $id, $insp->toArray());
         $insp->delete();
-        Cache::forget('stats:inspections');
-        Cache::forget('stats:compliance_pipeline');
         session()->flash('success', 'Inspection deleted.');
     }
 

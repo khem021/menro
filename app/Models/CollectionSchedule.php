@@ -2,12 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\InvalidatesDataCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CollectionSchedule extends Model
 {
+    use InvalidatesDataCache;
+
+    protected static function dataCacheGroups(): array
+    {
+        return ['collections'];
+    }
+
     protected $table = 'collection_schedules';
     protected $primaryKey = 'schedule_id';
 

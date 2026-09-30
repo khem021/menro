@@ -39,11 +39,6 @@ class UserIndex extends Component
         $u = User::findOrFail($id);
         logAudit('delete', 'User', $id, ['username' => $u->username]);
         $u->delete();
-        Cache::forget('stats:users');
-        Cache::forget('audit:users');
-        Cache::forget('lookup:users_active');
-        Cache::forget('lookup:users_notif');
-        Cache::forget('lookup:inspectors');
         session()->flash('success', 'User deleted.');
     }
 

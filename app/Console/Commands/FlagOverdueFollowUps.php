@@ -68,6 +68,9 @@ class FlagOverdueFollowUps extends Command
             }
         }
 
+        // Kept deliberately. Elsewhere the models clear their own caches via
+        // InvalidatesDataCache, but the mass update above is a query-builder
+        // write, which fires no model events — so this has to be done by hand.
         Cache::forget('stats:inspections');
         Cache::forget('stats:generators');
         Cache::forget('stats:compliance_pipeline');

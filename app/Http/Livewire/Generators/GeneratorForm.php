@@ -85,11 +85,6 @@ class GeneratorForm extends Component
             logAudit('create', 'WasteGenerator', $new->generator_id, null, $data);
         }
 
-        Cache::forget('stats:generators');
-        Cache::forget('lookup:generators');
-        Cache::forget('lookup:generators_active');
-        Cache::forget('dashboard:kpis');
-
         session()->flash('success', $this->generatorId ? 'Generator updated.' : 'Generator created.');
         return redirect()->route('generators.index');
     }
