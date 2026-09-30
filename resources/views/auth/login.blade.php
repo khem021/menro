@@ -217,8 +217,8 @@
             .login-card { padding: 1.5rem 1.25rem; }
 
             /* Shrink logos and stack tighter */
-            .logo-row img { width: 2.75rem !important; height: 2.75rem !important; }
-            .logo-row .menro-logo { width: 3.25rem !important; height: 3.25rem !important; }
+            .logo-row img.logo-seal { width: 2.75rem !important; height: 2.75rem !important; }
+            .logo-row img.logo-word { height: 2.25rem !important; width: auto !important; }
             .logo-row { gap: 1rem !important; }
 
             /* Input touch targets */
@@ -228,8 +228,8 @@
 
         @media (max-width: 360px) {
             body { padding: 0.75rem; padding-top: 1.25rem; }
-            .logo-row img { width: 2.25rem !important; height: 2.25rem !important; }
-            .logo-row .menro-logo { width: 2.75rem !important; height: 2.75rem !important; }
+            .logo-row img.logo-seal { width: 2.25rem !important; height: 2.25rem !important; }
+            .logo-row img.logo-word { height: 1.75rem !important; width: auto !important; }
             .logo-row { gap: 0.75rem !important; }
         }
     </style>
@@ -247,16 +247,15 @@
         {{-- Logos --}}
         <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;margin-bottom:1.875rem;">
             <div class="logo-row" style="display:flex;align-items:center;justify-content:center;gap:1.5rem;">
-                <img src="{{ asset('images/bagong-pilipinas.png') }}" alt="Bagong Pilipinas"
+                <img src="{{ asset('images/bagong-pilipinas.png') }}" alt="Bagong Pilipinas" class="logo-seal"
                      style="width:3.75rem;height:3.75rem;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.5));">
-                <img class="menro-logo" src="{{ asset('images/menro-logo.png') }}" alt="MENRO Logo"
-                     style="width:4.25rem;height:4.25rem;object-fit:contain;filter:drop-shadow(0 4px 20px rgba(253,184,19,0.3));">
-                <img src="{{ asset('images/madrid-seal.png') }}" alt="Madrid Seal"
+                <img src="{{ asset('images/madrid-palamboon.png') }}" alt="Madrid Palamboon" class="logo-word"
+                     style="height:3.75rem;width:auto;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.5));">
+                <img src="{{ asset('images/madrid-seal.png') }}" alt="Madrid Seal" class="logo-seal"
                      style="width:3.75rem;height:3.75rem;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.5));">
             </div>
             <div style="text-align:center;line-height:1.5;">
-                <div style="font-size:0.6875rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#7b8fad;">Republic of the Philippines</div>
-                <div style="font-size:0.6875rem;letter-spacing:0.02em;margin-top:0.125rem;color:#3a4f6e;">Municipality of Madrid, Surigao del Sur</div>
+                <div style="font-size:0.6875rem;font-weight:700;letter-spacing:0.02em;text-transform:uppercase;color:#7b8fad;">Municipality of Madrid, Surigao del Sur</div>
             </div>
         </div>
 

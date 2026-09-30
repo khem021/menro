@@ -30,13 +30,13 @@
                 <div style="
                     width:1.75rem;height:1.75rem;border-radius:0.375rem;flex-shrink:0;
                     display:flex;align-items:center;justify-content:center;
-                    background:{{ $active ? 'rgba(253,184,19,0.15)' : '#1c2d4a' }};
-                    color:{{ $active ? '#FDB813' : 'var(--text-muted)' }};
+                    background:{{ $active ? 'rgba(253,184,19,0.15)' : 'var(--card-border)' }};
+                    color:{{ $active ? 'var(--accent-text)' : 'var(--text-muted)' }};
                 ">
                     <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">{!! $icon !!}</svg>
                 </div>
                 <div style="min-width:0;">
-                    <div style="font-size:0.78rem;font-weight:600;color:{{ $active ? '#FDB813' : 'var(--text)' }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $label }}</div>
+                    <div style="font-size:0.78rem;font-weight:600;color:{{ $active ? 'var(--accent-text)' : 'var(--text)' }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $label }}</div>
                     <div style="font-size:0.6rem;color:var(--text-muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $sub }}</div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                     <tr>
                         <td colspan="5" style="padding:3rem 1rem;text-align:center;">
                             <div style="display:flex;flex-direction:column;align-items:center;gap:0.625rem;">
-                                <div style="width:2.5rem;height:2.5rem;border-radius:50%;background:#1c2d4a;display:flex;align-items:center;justify-content:center;">
+                                <div style="width:2.5rem;height:2.5rem;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;">
                                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 </div>
                                 <div>

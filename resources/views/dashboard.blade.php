@@ -14,14 +14,14 @@
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($totalGenerators) }}</div>
                 <div style="font-size:0.6rem;color:var(--text-muted);">
                     @if($nonCompliantCount > 0)
-                        <span style="color:#f87171;">{{ $nonCompliantCount }} non-compliant</span> &middot; {{ $forInspectionCount }} for inspection
+                        <span style="color:var(--danger-text);">{{ $nonCompliantCount }} non-compliant</span> &middot; {{ $forInspectionCount }} for inspection
                     @else
                         {{ $activeGenerators }} active &middot; all compliant
                     @endif
                 </div>
             </div>
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(52,211,153,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="14" height="14" fill="none" stroke="#34d399" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <svg width="14" height="14" fill="none" stroke="var(--success-text)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             </div>
         </a>
 
@@ -30,7 +30,7 @@
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Waste This Month</div>
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($thisMonthWaste, 1) }}<span style="font-size:0.75rem;color:var(--text-muted);font-weight:500;margin-left:2px;">kg</span></div>
                 @if($thisMonthWaste > 0)
-                <div style="font-size:0.6rem;{{ $wasteTrendPct > 0 ? 'color:#f87171;' : ($wasteTrendPct < 0 ? 'color:#34d399;' : 'color:var(--text-muted);') }}">
+                <div style="font-size:0.6rem;{{ $wasteTrendPct > 0 ? 'color:var(--danger-text);' : ($wasteTrendPct < 0 ? 'color:var(--success-text);' : 'color:var(--text-muted);') }}">
                     {{ $wasteTrendPct > 0 ? '▲' : ($wasteTrendPct < 0 ? '▼' : '•') }} {{ abs($wasteTrendPct) }}% vs last month
                 </div>
                 @else
@@ -38,7 +38,7 @@
                 @endif
             </div>
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(251,146,60,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="14" height="14" fill="none" stroke="#fb923c" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                <svg width="14" height="14" fill="none" stroke="var(--orange-text)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
             </div>
         </a>
 
@@ -46,10 +46,10 @@
             <div>
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Open Violations</div>
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($openViolations) }}</div>
-                <div style="font-size:0.6rem;{{ $criticalViolations > 0 ? 'color:var(--danger);' : 'color:var(--text-muted);' }}">{{ $criticalViolations }} high or critical severity</div>
+                <div style="font-size:0.6rem;{{ $criticalViolations > 0 ? 'color:var(--danger-text);' : 'color:var(--text-muted);' }}">{{ $criticalViolations }} high or critical severity</div>
             </div>
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(206,17,38,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="14" height="14" fill="none" stroke="#f87171" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <svg width="14" height="14" fill="none" stroke="var(--danger-text)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
         </a>
 
@@ -60,7 +60,7 @@
                 <div style="font-size:0.6rem;color:var(--text-muted);">{{ $openIncidents > 0 ? 'Awaiting validation or investigation' : 'No active incidents' }}</div>
             </div>
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(96,165,250,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="14" height="14" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <svg width="14" height="14" fill="none" stroke="var(--info-text)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
         </a>
 
@@ -71,25 +71,25 @@
     @if($hasAlerts)
     <div style="display:flex;gap:0.375rem;flex-wrap:wrap;flex-shrink:0;">
         @if($alerts['critical_violations'] > 0)
-        <a href="{{ route('compliance.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3);color:#f87171;text-decoration:none;">
+        <a href="{{ route('compliance.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3);color:var(--danger-text);text-decoration:none;">
             <svg width="10" height="10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
             {{ $alerts['critical_violations'] }} critical violation{{ $alerts['critical_violations'] > 1 ? 's' : '' }} open → Review
         </a>
         @endif
         @if($alerts['overdue_followups'] > 0)
-        <a href="{{ route('compliance.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(253,184,19,0.1);border:1px solid rgba(253,184,19,0.3);color:#FDB813;text-decoration:none;">
+        <a href="{{ route('compliance.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(253,184,19,0.1);border:1px solid rgba(253,184,19,0.3);color:var(--accent-text);text-decoration:none;">
             <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ $alerts['overdue_followups'] }} overdue follow-up{{ $alerts['overdue_followups'] > 1 ? 's' : '' }} → Inspect
         </a>
         @endif
         @if($alerts['for_inspection'] > 0)
-        <a href="{{ route('generators.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);color:#60a5fa;text-decoration:none;">
+        <a href="{{ route('generators.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);color:var(--info-text);text-decoration:none;">
             <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             {{ $alerts['for_inspection'] }} generator{{ $alerts['for_inspection'] > 1 ? 's' : '' }} due for inspection
         </a>
         @endif
         @if($alerts['tomorrow_collections'] > 0)
-        <a href="{{ route('collections.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:#34d399;text-decoration:none;">
+        <a href="{{ route('collections.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:var(--success-text);text-decoration:none;">
             <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
             {{ $alerts['tomorrow_collections'] }} collection{{ $alerts['tomorrow_collections'] > 1 ? 's' : '' }} tomorrow → Prepare
         </a>
@@ -143,7 +143,7 @@
                     </div>
                     <div style="text-align:right;flex-shrink:0;">
                         <div style="font-size:0.6875rem;color:var(--text-muted);white-space:nowrap;">{{ \Carbon\Carbon::parse($col->collection_date)->format('M d') }}</div>
-                        <div style="font-size:0.6rem;color:{{ $col->status === 'confirmed' ? '#34d399' : 'var(--text-dim)' }};">{{ ucfirst($col->status) }}</div>
+                        <div style="font-size:0.6rem;color:{{ $col->status === 'confirmed' ? 'var(--success-text)' : 'var(--text-dim)' }};">{{ ucfirst($col->status) }}</div>
                     </div>
                 </div>
                 @empty
@@ -244,15 +244,24 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const grid  = 'rgba(28,45,74,0.8)';
-    const label = '#7b8fad';
+    function themeColors() {
+        const cs = getComputedStyle(document.documentElement);
+        return {
+            grid:   cs.getPropertyValue('--grid-line').trim(),
+            label:  cs.getPropertyValue('--text-muted').trim(),
+            text:   cs.getPropertyValue('--text').trim(),
+            cardBg: cs.getPropertyValue('--card-bg').trim(),
+        };
+    }
+    let grid  = themeColors().grid;
+    let label = themeColors().label;
 
     // ── 12-month trend ──
     const trendRaw = @json($monthlyWasteData);
     const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const trendLabels = trendRaw.map(r => monthNames[(parseInt(r.mo, 10) || 1) - 1] + " '" + String(parseInt(r.yr, 10) || 0).slice(-2));
     const trendData   = trendRaw.map(r => parseFloat(r.total) || 0);
-    new Chart(document.getElementById('trendChart'), {
+    const trendChart = new Chart(document.getElementById('trendChart'), {
         type: 'line',
         data: {
             labels: trendLabels.length ? trendLabels : ['—'],
@@ -280,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Waste by cluster ──
     const clusterData = @json($clusterWaste);
-    new Chart(document.getElementById('clusterChart'), {
+    const clusterChart = new Chart(document.getElementById('clusterChart'), {
         type: 'bar',
         data: {
             labels: clusterData.length ? clusterData.map(r => 'Cluster ' + r.cluster) : ['C1','C2','C3'],
@@ -304,10 +313,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Waste by category ──
     const catData   = @json($categoryWaste);
     const catColors = ['#FDB813','#60a5fa','#34d399','#f87171','#a78bfa','#fb923c'];
+    let categoryChart = null;
     if (catData.length) {
         const catTotals = catData.map(r => parseFloat(r.total)||0);
         const catSum    = catTotals.reduce((a,b) => a+b, 0);
-        new Chart(document.getElementById('categoryChart'), {
+        categoryChart = new Chart(document.getElementById('categoryChart'), {
             type: 'doughnut',
             data: {
                 labels: catData.map(r => r.category_name),
@@ -316,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     backgroundColor: catColors,
                     hoverBackgroundColor: catColors.map(c => c + 'cc'),
                     borderWidth: 2,
-                    borderColor: '#0a1628',
+                    borderColor: themeColors().cardBg,
                     hoverOffset: 6,
                 }]
             },
@@ -330,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         position: 'bottom',
                         align: 'center',
                         labels: {
-                            color: '#e8edf5',
+                            color: themeColors().text,
                             font: { size: 12.5 },
                             padding: 14,
                             boxWidth: 12,
@@ -346,7 +356,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                         text: `${lbl}  ${pct}%`,
                                         fillStyle: catColors[i],
                                         strokeStyle: catColors[i],
-                                        fontColor: '#ffffff',
                                         lineWidth: 0,
                                         hidden: false,
                                         index: i,
@@ -369,6 +378,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    document.addEventListener('menro:theme-changed', () => {
+        const c = themeColors();
+
+        trendChart.options.scales.x.ticks.color = c.label;
+        trendChart.options.scales.y.ticks.color = c.label;
+        trendChart.options.scales.y.grid.color  = c.grid;
+        trendChart.update();
+
+        clusterChart.options.scales.x.ticks.color = c.label;
+        clusterChart.options.scales.y.ticks.color = c.label;
+        clusterChart.options.scales.y.grid.color  = c.grid;
+        clusterChart.update();
+
+        if (categoryChart) {
+            categoryChart.data.datasets[0].borderColor = c.cardBg;
+            categoryChart.options.plugins.legend.labels.color = c.text;
+            categoryChart.update();
+        }
+    });
 });
 </script>
 @endpush
