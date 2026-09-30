@@ -15,29 +15,29 @@
         <div class="mob-brgy-stats" style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-shrink:0;">
             <div class="card" style="display:flex;align-items:center;gap:0.625rem;padding:0.625rem 1rem;min-width:150px;">
                 <div style="width:1.875rem;height:1.875rem;border-radius:0.5rem;background:rgba(253,184,19,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="13" height="13" style="color:var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <svg width="13" height="13" style="color:var(--accent-text)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 </div>
                 <div>
                     <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Barangays</div>
-                    <div style="font-size:1.25rem;font-weight:700;color:var(--accent);line-height:1.1;">{{ $barangays->count() }}</div>
+                    <div style="font-size:1.25rem;font-weight:700;color:var(--accent-text);line-height:1.1;">{{ $barangays->count() }}</div>
                 </div>
             </div>
             <div class="card" style="display:flex;align-items:center;gap:0.625rem;padding:0.625rem 1rem;min-width:150px;">
                 <div style="width:1.875rem;height:1.875rem;border-radius:0.5rem;background:rgba(96,165,250,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="13" height="13" style="color:#60a5fa" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                    <svg width="13" height="13" style="color:var(--info-text)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                 </div>
                 <div>
                     <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Total Sectors</div>
-                    <div style="font-size:1.25rem;font-weight:700;color:#60a5fa;line-height:1.1;">{{ $totalSectors }}</div>
+                    <div style="font-size:1.25rem;font-weight:700;color:var(--info-text);line-height:1.1;">{{ $totalSectors }}</div>
                 </div>
             </div>
             <div class="card" style="display:flex;align-items:center;gap:0.625rem;padding:0.625rem 1rem;min-width:150px;">
                 <div style="width:1.875rem;height:1.875rem;border-radius:0.5rem;background:rgba(52,211,153,0.10);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="13" height="13" style="color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    <svg width="13" height="13" style="color:var(--success-text)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 </div>
                 <div>
                     <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Municipality</div>
-                    <div style="font-size:0.8125rem;font-weight:700;color:#34d399;">Madrid, SDS</div>
+                    <div style="font-size:0.8125rem;font-weight:700;color:var(--success-text);">Madrid, SDS</div>
                 </div>
             </div>
             <div style="margin-left:auto;">
@@ -58,7 +58,7 @@
                     <div style="position:relative;">
                         <svg style="position:absolute;left:0.5rem;top:50%;transform:translateY(-50%);width:0.8125rem;height:0.8125rem;color:var(--text-dim);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input wire:model.debounce.300ms="search" type="text" placeholder="Search barangay…"
-                               style="display:block;width:100%;padding:0.375rem 0.5rem 0.375rem 1.75rem;font-size:0.75rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
+                               style="display:block;width:100%;padding:0.375rem 0.5rem 0.375rem 1.75rem;font-size:0.75rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
                                onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'" />
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                                      {{ $selectedId === $brgy->barangay_id ? 'background:var(--accent);color:#071020;' : 'background:var(--card-border);color:var(--text-muted);' }}">
                             {{ $i + 1 }}
                         </span>
-                        <span style="font-size:0.8125rem;font-weight:500;flex:1;color:{{ $selectedId === $brgy->barangay_id ? 'var(--highlight)' : 'var(--text)' }};">
+                        <span style="font-size:0.8125rem;font-weight:500;flex:1;color:{{ $selectedId === $brgy->barangay_id ? 'var(--accent-text)' : 'var(--text)' }};">
                             {{ $brgy->barangay_name }}
                         </span>
                         <span style="font-size:0.6rem;font-weight:700;padding:0.1rem 0.375rem;border-radius:999px;background:var(--card-border);color:var(--text-dim);">
@@ -95,7 +95,7 @@
                     <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1.25rem;flex-shrink:0;border-bottom:1px solid var(--card-border);">
                         <div>
                             <div style="display:flex;align-items:center;gap:0.5rem;">
-                                <svg width="14" height="14" style="color:var(--accent);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <svg width="14" height="14" style="color:var(--accent-text);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 <span style="font-size:0.9375rem;font-weight:700;color:var(--text);">Barangay {{ $selected->barangay_name }}</span>
                             </div>
                             <p style="font-size:0.6875rem;color:var(--text-muted);margin-top:2px;margin-left:1.375rem;">{{ $selected->municipality }}, {{ $selected->province }} &mdash; {{ $selected->sectors->count() }} sectors</p>
@@ -116,7 +116,16 @@
 
                     {{-- Sectors grid --}}
                     <div style="flex:1;min-height:0;overflow-y:auto;padding:1rem 1.25rem;scrollbar-width:none;-ms-overflow-style:none;">
-                        <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem;">Sectors / Puroks</div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+                            <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Sectors / Puroks</div>
+                            <button wire:click="openAddSector({{ $selected->barangay_id }})"
+                                    style="display:flex;align-items:center;gap:0.375rem;font-size:0.7rem;font-weight:600;padding:0.3rem 0.5625rem;border-radius:0.5rem;cursor:pointer;transition:all .15s;border:1px solid rgba(253,184,19,0.3);background:var(--accent-glow);color:var(--accent-text);"
+                                    onmouseover="this.style.background='rgba(253,184,19,0.2)'" onmouseout="this.style.background='var(--accent-glow)'"
+                                    title="Add another purok">
+                                <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                Add Purok
+                            </button>
+                        </div>
                         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;">
                             @foreach($selected->sectors as $sector)
                             <div style="background:var(--bg);border:1px solid var(--card-border);border-radius:0.75rem;overflow:hidden;transition:border-color .15s;"
@@ -125,7 +134,7 @@
                                 {{-- Sector card header --}}
                                 <div style="display:flex;align-items:center;justify-content:space-between;padding:0.625rem 0.75rem;border-bottom:1px solid var(--card-border);">
                                     <div style="display:flex;align-items:center;gap:0.5rem;">
-                                        <div style="width:1.875rem;height:1.875rem;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(253,184,19,0.2);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:var(--accent);flex-shrink:0;">
+                                        <div style="width:1.875rem;height:1.875rem;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(253,184,19,0.2);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:var(--accent-text);flex-shrink:0;">
                                             {{ $sector->sector_number }}
                                         </div>
                                         <div>
@@ -136,13 +145,13 @@
                                     <div style="display:flex;align-items:center;gap:0.25rem;">
                                         <button wire:click="openSectorMembers({{ $sector->sector_id }})"
                                                 style="background:none;border:none;cursor:pointer;color:var(--text-dim);padding:0.25rem;border-radius:0.375rem;display:flex;transition:all .15s;"
-                                                onmouseover="this.style.color='var(--accent)';this.style.background='var(--accent-glow)'" onmouseout="this.style.color='var(--text-dim)';this.style.background='none'"
+                                                onmouseover="this.style.color='var(--accent-text)';this.style.background='var(--accent-glow)'" onmouseout="this.style.color='var(--text-dim)';this.style.background='none'"
                                                 title="View purok members">
                                             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                         </button>
                                         <button wire:click="openEditSector({{ $sector->sector_id }})"
                                                 style="background:none;border:none;cursor:pointer;color:var(--text-dim);padding:0.25rem;border-radius:0.375rem;display:flex;transition:all .15s;"
-                                                onmouseover="this.style.color='var(--accent)';this.style.background='var(--accent-glow)'" onmouseout="this.style.color='var(--text-dim)';this.style.background='none'"
+                                                onmouseover="this.style.color='var(--accent-text)';this.style.background='var(--accent-glow)'" onmouseout="this.style.color='var(--text-dim)';this.style.background='none'"
                                                 title="Edit sector">
                                             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </button>
@@ -182,7 +191,7 @@
                                         <svg width="11" height="11" style="color:var(--text-dim);flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
                                         <span style="font-size:0.6875rem;color:var(--text-muted);flex:1;">Waste</span>
                                         @if($sector->estimated_daily_waste_kg)
-                                            <span style="font-size:0.6875rem;font-weight:600;color:#34d399;">{{ number_format($sector->estimated_daily_waste_kg, 1) }} kg</span>
+                                            <span style="font-size:0.6875rem;font-weight:600;color:var(--success-text);">{{ number_format($sector->estimated_daily_waste_kg, 1) }} kg</span>
                                             @php
                                                 $freqLabel = match($sector->waste_frequency ?? '') {
                                                     'weekly'  => '/wk',
@@ -190,7 +199,7 @@
                                                     default   => '/day',
                                                 };
                                             @endphp
-                                            <span style="font-size:0.6rem;font-weight:700;color:#34d399;opacity:0.65;">{{ $freqLabel }}</span>
+                                            <span style="font-size:0.6rem;font-weight:700;color:var(--success-text);opacity:0.65;">{{ $freqLabel }}</span>
                                         @else
                                             <span style="font-size:0.6875rem;color:var(--text-dim);">—</span>
                                         @endif
@@ -201,7 +210,7 @@
                                         <svg width="11" height="11" style="color:var(--text-dim);flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                         <span style="font-size:0.6875rem;color:var(--text-muted);flex:1;">Collection</span>
                                         @if($sector->collection_day)
-                                        <span style="font-size:0.6rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:999px;background:rgba(96,165,250,0.12);color:#60a5fa;">
+                                        <span style="font-size:0.6rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:999px;background:rgba(96,165,250,0.12);color:var(--info-text);">
                                             {{ $sector->collection_day }}
                                         </span>
                                         @else
@@ -253,7 +262,7 @@
                 </div>
                 <div style="display:flex;align-items:center;gap:0.5rem;">
                     <button wire:click="$toggle('showAddMemberForm')"
-                            style="display:flex;align-items:center;gap:0.375rem;font-size:0.75rem;font-weight:600;padding:0.375rem 0.625rem;border-radius:0.5rem;cursor:pointer;transition:all .15s;border:1px solid rgba(253,184,19,0.3);background:var(--accent-glow);color:var(--accent);"
+                            style="display:flex;align-items:center;gap:0.375rem;font-size:0.75rem;font-weight:600;padding:0.375rem 0.625rem;border-radius:0.5rem;cursor:pointer;transition:all .15s;border:1px solid rgba(253,184,19,0.3);background:var(--accent-glow);color:var(--accent-text);"
                             onmouseover="this.style.background='rgba(253,184,19,0.2)'" onmouseout="this.style.background='var(--accent-glow)'">
                         <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                         Add Member
@@ -266,8 +275,8 @@
 
             {{-- Add member form --}}
             @if($showAddMemberForm)
-            <div style="flex-shrink:0;margin-bottom:1rem;padding:0.875rem;border-radius:0.625rem;background:#0b1425;border:1px solid var(--card-border);">
-                <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:0.625rem;">New Member</p>
+            <div style="flex-shrink:0;margin-bottom:1rem;padding:0.875rem;border-radius:0.625rem;background:var(--input-bg);border:1px solid var(--card-border);">
+                <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-text);margin-bottom:0.625rem;">New Member</p>
                 <div style="display:flex;flex-direction:column;gap:0.5rem;">
                     <input wire:model.defer="member_name" type="text" placeholder="Full Name *"
                            style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.8125rem;font-family:inherit;color:var(--text);background:var(--card-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
@@ -296,13 +305,13 @@
                 @if(count($sectorMembers) === 0)
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:0.5rem;">
                     <svg width="32" height="32" style="color:var(--text-dim)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <p style="font-size:0.8125rem;color:var(--text-muted);">No members yet. Click <strong style="color:var(--accent)">Add Member</strong> to get started.</p>
+                    <p style="font-size:0.8125rem;color:var(--text-muted);">No members yet. Click <strong style="color:var(--accent-text)">Add Member</strong> to get started.</p>
                 </div>
                 @else
                 <div style="display:flex;flex-direction:column;gap:0.375rem;">
                     @foreach($sectorMembers as $m)
-                    <div style="display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.75rem;border-radius:0.5rem;background:#0b1425;border:1px solid var(--card-border);">
-                        <div style="width:2rem;height:2rem;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(253,184,19,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.6875rem;font-weight:700;color:var(--accent);">
+                    <div style="display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.75rem;border-radius:0.5rem;background:var(--input-bg);border:1px solid var(--card-border);">
+                        <div style="width:2rem;height:2rem;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(253,184,19,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.6875rem;font-weight:700;color:var(--accent-text);">
                             {{ strtoupper(substr($m['full_name'], 0, 1)) }}
                         </div>
                         <div style="flex:1;min-width:0;">
@@ -349,15 +358,15 @@
                 </button>
             </div>
             <div style="margin-bottom:1.25rem;">
-                <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#93afd4;margin-bottom:0.375rem;">Barangay Name <span style="color:var(--danger)">*</span></label>
+                <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.375rem;">Barangay Name <span style="color:var(--danger)">*</span></label>
                 <input wire:model.defer="brgy_name" type="text" placeholder="e.g. San Antonio" wire:keydown.enter="saveBrgy"
-                       style="display:block;width:100%;padding:0.5625rem 0.875rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
+                       style="display:block;width:100%;padding:0.5625rem 0.875rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
                        onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'" />
                 @error('brgy_name')<p style="margin-top:0.375rem;font-size:0.75rem;color:var(--danger)">{{ $message }}</p>@enderror
             </div>
             @if(!$editingBrgyId)
             <div style="margin-bottom:1.25rem;padding:0.625rem 0.75rem;border-radius:0.5rem;background:var(--bg);border:1px solid var(--card-border);font-size:0.75rem;color:var(--text-muted);display:flex;align-items:center;gap:0.5rem;">
-                <svg width="14" height="14" style="color:var(--accent);flex-shrink:0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                <svg width="14" height="14" style="color:var(--accent-text);flex-shrink:0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
                 6 default sectors will be created automatically.
             </div>
             @endif
@@ -387,10 +396,14 @@
             {{-- Header --}}
             <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;">
                 <div>
-                    <h3 style="font-size:0.9375rem;font-weight:700;color:var(--text);">Edit Sector</h3>
+                    <h3 style="font-size:0.9375rem;font-weight:700;color:var(--text);">{{ $editingSectorId ? 'Edit Sector' : 'Add Sector' }}</h3>
                     @if($editingSectorNumber)
                     <p style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">
                         Sector {{ $editingSectorNumber }} &mdash; Brgy. {{ $editingSectorBarangay }}
+                    </p>
+                    @else
+                    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">
+                        Brgy. {{ $editingSectorBarangay }}
                     </p>
                     @endif
                 </div>
@@ -404,11 +417,11 @@
 
                 {{-- Sector Name --}}
                 <div>
-                    <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#93afd4;margin-bottom:0.3rem;">
+                    <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">
                         Sector / Purok Name <span style="color:var(--danger)">*</span>
                     </label>
                     <input wire:model.defer="sector_name" type="text" placeholder="e.g. Purok Maligaya"
-                           style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
+                           style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
                            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'" />
                     @error('sector_name')<p style="margin-top:0.25rem;font-size:0.7rem;color:var(--danger)">{{ $message }}</p>@enderror
                 </div>
@@ -416,23 +429,23 @@
                 {{-- Row: Households + Waste (kg) + Frequency --}}
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.625rem;">
                     <div>
-                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#93afd4;margin-bottom:0.3rem;">Households</label>
+                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Households</label>
                         <input wire:model.defer="sector_household_count" type="number" min="0" max="9999" placeholder="e.g. 120"
-                               style="display:block;width:100%;padding:0.5rem 0.625rem;font-size:0.8125rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
+                               style="display:block;width:100%;padding:0.5rem 0.625rem;font-size:0.8125rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
                                onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'" />
                         @error('sector_household_count')<p style="margin-top:0.25rem;font-size:0.7rem;color:var(--danger)">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#93afd4;margin-bottom:0.3rem;">Waste (kg)</label>
+                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Waste (kg)</label>
                         <input wire:model.defer="sector_daily_waste" type="number" min="0" step="0.1" placeholder="e.g. 45.5"
-                               style="display:block;width:100%;padding:0.5rem 0.625rem;font-size:0.8125rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
+                               style="display:block;width:100%;padding:0.5rem 0.625rem;font-size:0.8125rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
                                onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'" />
                         @error('sector_daily_waste')<p style="margin-top:0.25rem;font-size:0.7rem;color:var(--danger)">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#93afd4;margin-bottom:0.3rem;">Frequency</label>
+                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Frequency</label>
                         <select wire:model.defer="sector_waste_frequency"
-                                style="display:block;width:100%;padding:0.5rem 0.625rem;font-size:0.8125rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;cursor:pointer;"
+                                style="display:block;width:100%;padding:0.5rem 0.625rem;font-size:0.8125rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;cursor:pointer;"
                                 onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'">
                             <option value="">— Not set —</option>
                             <option value="daily">Daily</option>
@@ -445,9 +458,9 @@
 
                 {{-- Purok Leader Name --}}
                 <div>
-                    <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#93afd4;margin-bottom:0.3rem;">Purok Leader Name</label>
+                    <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Purok Leader Name</label>
                     <input wire:model.defer="sector_leader_name" type="text" placeholder="e.g. Juan Dela Cruz"
-                           style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
+                           style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
                            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'" />
                     @error('sector_leader_name')<p style="margin-top:0.25rem;font-size:0.7rem;color:var(--danger)">{{ $message }}</p>@enderror
                 </div>
@@ -455,16 +468,16 @@
                 {{-- Row: Contact + Collection Day --}}
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;">
                     <div>
-                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#93afd4;margin-bottom:0.3rem;">Leader Contact #</label>
+                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Leader Contact #</label>
                         <input wire:model.defer="sector_leader_contact" type="text" placeholder="e.g. 09171234567"
-                               style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
+                               style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;"
                                onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'" />
                         @error('sector_leader_contact')<p style="margin-top:0.25rem;font-size:0.7rem;color:var(--danger)">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#93afd4;margin-bottom:0.3rem;">Collection Day</label>
+                        <label style="display:block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.3rem;">Collection Day</label>
                         <select wire:model.defer="sector_collection_day"
-                                style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:#0b1425;border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;cursor:pointer;"
+                                style="display:block;width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;font-family:inherit;color:var(--text);background:var(--input-bg);border:1px solid var(--card-border);border-radius:0.5rem;outline:none;transition:border-color .15s;cursor:pointer;"
                                 onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card-border)'">
                             <option value="">— Not set —</option>
                             @foreach($days as $day)
@@ -483,7 +496,7 @@
                 <button wire:click="saveSector" class="btn-primary" wire:loading.attr="disabled">
                     <svg wire:loading.remove width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                     <svg wire:loading width="14" height="14" style="animation:spin 1s linear infinite" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                    Save Sector
+                    {{ $editingSectorId ? 'Save Sector' : 'Add Sector' }}
                 </button>
             </div>
 

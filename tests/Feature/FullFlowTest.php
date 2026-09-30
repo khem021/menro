@@ -109,7 +109,7 @@ class FullFlowTest extends TestCase
         $original = $b->cluster;
 
         Livewire::test(\App\Http\Livewire\Dashboard\ClusterConfig::class)
-            ->set('new1', $b->barangay_name)
+            ->set('newBarangayName.1', $b->barangay_name)
             ->call('addToCluster', 1);
         $this->assertSame(1, (int) \DB::table('barangays')->where('barangay_id', $b->barangay_id)->value('cluster'));
 

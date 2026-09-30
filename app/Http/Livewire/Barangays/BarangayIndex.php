@@ -32,6 +32,7 @@ class BarangayIndex extends Component
     // ── Sector edit modal ──
     public bool   $showSectorModal           = false;
     public ?int   $editingSectorId           = null;
+    public ?int   $addingBarangayId          = null;
     public string $sector_name              = '';
     public int    $editingSectorNumber      = 0;
     public string $editingSectorBarangay    = '';
@@ -181,6 +182,23 @@ class BarangayIndex extends Component
         $this->sectorMembers = SectorMember::where('sector_id', $this->viewingSectorId)->orderBy('full_name')->get()->toArray();
     }
 
+    // ── Sector add ──
+    public function openAddSector(int $barangayId): void
+    {
+        $b = Barangay::findOrFail($barangayId);
+
+        $this->reset(
+            'editingSectorId', 'sector_name', 'sector_household_count',
+            'sector_leader_name', 'sector_leader_contact', 'sector_daily_waste',
+            'sector_waste_frequency', 'sector_collection_day'
+        );
+
+        $this->addingBarangayId      = $barangayId;
+        $this->editingSectorNumber   = 0;
+        $this->editingSectorBarangay = $b->barangay_name;
+        $this->showSectorModal       = true;
+    }
+
     // ── Sector edit ──
     public function openEditSector(int $sectorId): void
     {
@@ -215,10 +233,7 @@ class BarangayIndex extends Component
             'sector_collection_day'    => 'nullable|string|max:15',
         ]);
 
-        $s   = BarangaySector::findOrFail($this->editingSectorId);
-        $old = $s->toArray();
-
-        $s->update([
+        $details = [
             'sector_name'              => $this->sector_name,
             'household_count'          => $this->sector_household_count !== '' ? (int) $this->sector_household_count : null,
             'purok_leader_name'        => $this->sector_leader_name ?: null,
@@ -226,12 +241,25 @@ class BarangayIndex extends Component
             'estimated_daily_waste_kg' => $this->sector_daily_waste !== '' ? (float) $this->sector_daily_waste : null,
             'waste_frequency'          => $this->sector_waste_frequency ?: null,
             'collection_day'           => $this->sector_collection_day ?: null,
-        ]);
+        ];
 
-        logAudit('update', 'BarangaySector', $s->sector_id, $old, $s->fresh()->toArray());
+        if ($this->editingSectorId) {
+            $s   = BarangaySector::findOrFail($this->editingSectorId);
+            $old = $s->toArray();
+            $s->update($details);
+            logAudit('update', 'BarangaySector', $s->sector_id, $old, $s->fresh()->toArray());
+            session()->flash('success', 'Sector updated.');
+        } else {
+            $nextNumber = (int) BarangaySector::where('barangay_id', $this->addingBarangayId)->max('sector_number') + 1;
+            $s = BarangaySector::create($details + [
+                'barangay_id'   => $this->addingBarangayId,
+                'sector_number' => $nextNumber,
+            ]);
+            logAudit('create', 'BarangaySector', $s->sector_id, null, $s->toArray());
+            session()->flash('success', 'Sector added.');
+        }
 
         $this->showSectorModal = false;
-        session()->flash('success', 'Sector updated.');
     }
 
     public function render()
