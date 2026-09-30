@@ -21,8 +21,18 @@
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <env name="DB_DATABASE" value=":memory:"/> -->
+        <!--
+            Tests run against their own database so that a test run cannot read
+            or write development data. The suite uses DatabaseTransactions and
+            expects the schema and the core seed data to be present. One time
+            setup is documented in tests/README.md.
+
+            sqlite is deliberately not used here: the dashboard and analytics
+            queries are raw Postgres SQL (EXTRACT(... FROM ...)), which sqlite
+            cannot parse, so tests must run on the same engine as production.
+        -->
+        <env name="DB_CONNECTION" value="pgsql"/>
+        <env name="DB_DATABASE" value="menro_test"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
