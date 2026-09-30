@@ -63,6 +63,19 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Build frontend assets
+        # public/build is gitignored, so a fresh checkout has no Vite manifest
+        # and every page rendering @vite would fail.
+        run: |
+          npm ci
+          npm run build
+
       - name: Prepare the application
         run: |
           cp .env.example .env
