@@ -124,6 +124,10 @@ class SettingsForm extends Component
 
         $user->update(['password_hash' => bcrypt($this->new_password)]);
 
+        // Keep this session signed in, while AuthMiddleware signs out any other
+        // session still holding the old password's fingerprint.
+        session(['auth_pw' => passwordFingerprint($user->password_hash)]);
+
         logAudit('update', 'User (password)', $user->user_id, null, ['password' => '(changed)']);
 
         $this->current_password          = '';

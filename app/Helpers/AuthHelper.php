@@ -11,6 +11,17 @@ if (!function_exists('authUser')) {
     }
 }
 
+if (!function_exists('passwordFingerprint')) {
+    /**
+     * Short digest of a stored password hash, kept in the session so that
+     * changing a password invalidates every *other* session for that account.
+     * Deriving it from the hash avoids needing a column to track the change.
+     */
+    function passwordFingerprint(?string $passwordHash): string {
+        return substr(hash('sha256', (string) $passwordHash), 0, 32);
+    }
+}
+
 if (!function_exists('authRole')) {
     function authRole() { return session('auth_role'); }
 }
