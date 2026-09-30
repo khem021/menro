@@ -16,3 +16,11 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Per-machine assistant/tool settings
+/.claude/settings.local.json
+/.estorco
+
+# Thesis and evaluation documents. Kept out of the repo because git stores
+# each revision of a binary in full; the survey questionnaire alone is 3 MB.
+*.docx
