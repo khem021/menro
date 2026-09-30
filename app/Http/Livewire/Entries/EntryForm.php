@@ -70,11 +70,6 @@ class EntryForm extends Component
             logAudit('create', 'WasteEntry', $new->entry_id, null, $data);
         }
 
-        Cache::forget('stats:entries');
-        Cache::forget('dashboard:kpis');
-        Cache::forget('dashboard:recent_entries');
-        Cache::forget('dashboard:charts');
-
         session()->flash('success', $this->entryId ? 'Entry updated.' : 'Entry recorded.');
         return redirect()->route('entries.index');
     }

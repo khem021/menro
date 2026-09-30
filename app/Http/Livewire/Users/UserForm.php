@@ -69,16 +69,16 @@ class UserForm extends Component
             $old = User::find($this->userId)?->only(['full_name', 'email', 'username', 'role_id', 'status']);
             User::findOrFail($this->userId)->update($data);
             logAudit('update', 'User', $this->userId, $old, array_diff_key($data, ['password_hash' => '']));
+
+            // Resetting someone's password signs their other sessions out. When
+            // an admin resets their own, keep this session alive.
+            if (isset($data['password_hash']) && (int) $this->userId === (int) session('auth_user_id')) {
+                session(['auth_pw' => passwordFingerprint($data['password_hash'])]);
+            }
         } else {
             $new = User::create($data);
             logAudit('create', 'User', $new->user_id, null, array_diff_key($data, ['password_hash' => '']));
         }
-
-        Cache::forget('stats:users');
-        Cache::forget('audit:users');
-        Cache::forget('lookup:users_active');
-        Cache::forget('lookup:users_notif');
-        Cache::forget('lookup:inspectors');
 
         session()->flash('success', $this->userId ? 'User updated.' : 'User created.');
         return redirect()->route('users.index');

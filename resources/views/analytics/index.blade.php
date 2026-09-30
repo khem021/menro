@@ -104,12 +104,20 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const gridColor  = 'rgba(28,45,74,0.8)';
-    const labelColor = '#7b8fad';
+    function themeColors() {
+        const cs = getComputedStyle(document.documentElement);
+        return {
+            grid:   cs.getPropertyValue('--grid-line').trim(),
+            label:  cs.getPropertyValue('--text-muted').trim(),
+            cardBg: cs.getPropertyValue('--card-bg').trim(),
+        };
+    }
+    let gridColor  = themeColors().grid;
+    let labelColor = themeColors().label;
     const palette    = ['#FDB813','#60a5fa','#34d399','#f87171','#a78bfa','#fb923c','#38bdf8','#f472b6'];
 
     const catData = @json($wasteByCategory);
-    new Chart(document.getElementById('categoryChart'), {
+    const categoryChart = new Chart(document.getElementById('categoryChart'), {
         type: 'bar',
         data: {
             labels: catData.map(r => r.category_name),
@@ -132,11 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const gtData = @json($wasteByGeneratorType);
-    new Chart(document.getElementById('generatorTypeChart'), {
+    const generatorTypeChart = new Chart(document.getElementById('generatorTypeChart'), {
         type: 'doughnut',
         data: {
             labels: gtData.map(r => r.type_name),
-            datasets: [{ data: gtData.map(r => parseFloat(r.total) || 0), backgroundColor: palette, borderWidth: 2, borderColor: '#0f1d35' }]
+            datasets: [{ data: gtData.map(r => parseFloat(r.total) || 0), backgroundColor: palette, borderWidth: 2, borderColor: themeColors().cardBg }]
         },
         options: {
             responsive: true, maintainAspectRatio: false, cutout: '60%',
@@ -146,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const clData   = @json($wasteByCluster);
     const clColors = { 1: '#FDB813', 2: '#34d399', 3: '#60a5fa' };
-    new Chart(document.getElementById('clusterChart'), {
+    const clusterChart = new Chart(document.getElementById('clusterChart'), {
         type: 'bar',
         data: {
             labels: clData.map(r => 'Cluster ' + (r.cluster || '?')),
@@ -165,6 +173,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 y: { grid: { color: gridColor }, ticks: { color: labelColor, font: { size: 9 } } },
             }
         }
+    });
+
+    document.addEventListener('menro:theme-changed', () => {
+        const c = themeColors();
+        gridColor = c.grid; labelColor = c.label;
+
+        categoryChart.options.scales.x.grid.color = c.grid;
+        categoryChart.options.scales.x.ticks.color = c.label;
+        categoryChart.options.scales.y.ticks.color = c.label;
+        categoryChart.update();
+
+        generatorTypeChart.data.datasets[0].borderColor = c.cardBg;
+        generatorTypeChart.options.plugins.legend.labels.color = c.label;
+        generatorTypeChart.update();
+
+        clusterChart.options.scales.x.ticks.color = c.label;
+        clusterChart.options.scales.y.ticks.color = c.label;
+        clusterChart.options.scales.y.grid.color = c.grid;
+        clusterChart.update();
     });
 });
 </script>

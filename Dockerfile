@@ -23,6 +23,7 @@ RUN apk add --no-cache \
         gd \
         intl \
         bcmath \
+        mbstring \
     && docker-php-ext-enable opcache
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

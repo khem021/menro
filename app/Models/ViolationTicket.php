@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\InvalidatesDataCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,6 +10,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ViolationTicket extends Model
 {
     use SoftDeletes;
+    use InvalidatesDataCache;
+
+    protected static function dataCacheGroups(): array
+    {
+        return ['violation_tickets'];
+    }
 
     protected $table = 'violation_tickets';
     protected $primaryKey = 'ticket_id';

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\InvalidatesDataCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Barangay extends Model
 {
+    use InvalidatesDataCache;
+
     protected $table = 'barangays';
     protected $primaryKey = 'barangay_id';
 
@@ -16,6 +19,11 @@ class Barangay extends Model
         'municipality',
         'province',
     ];
+
+    protected static function dataCacheGroups(): array
+    {
+        return ['barangays'];
+    }
 
     public function sectors(): HasMany
     {

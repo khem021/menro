@@ -82,11 +82,6 @@ class IncidentForm extends Component
             logAudit('create', 'Incident', $new->incident_id, null, $data);
         }
 
-        Cache::forget('stats:incidents');
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('dashboard:kpis');
-        Cache::forget('dashboard:recent_incidents');
-
         session()->flash('success', $this->incidentId ? 'Incident updated.' : 'Incident reported.');
         return redirect()->route('incidents.index');
     }

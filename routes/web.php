@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ArchiveController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -71,17 +72,29 @@ Route::middleware('auth.custom')->group(function () {
     // Notifications
     Route::get('/notifications', \App\Http\Livewire\Notifications\NotificationIndex::class)->name('notifications.index');
 
-    // Users (admin only)
-    Route::get('/users', \App\Http\Livewire\Users\UserIndex::class)->name('users.index');
-    Route::get('/users/create', \App\Http\Livewire\Users\UserForm::class)->name('users.create');
-    Route::get('/users/{id}/edit', \App\Http\Livewire\Users\UserForm::class)->name('users.edit');
-
-    // Analytics, Reports, Audit
+    // Analytics, Reports
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     Route::get('/reports', \App\Http\Livewire\Reports\ReportIndex::class)->name('reports.index');
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports/print',  [ReportController::class, 'printView'])->name('reports.print');
-    Route::get('/audit', \App\Http\Livewire\Audit\AuditIndex::class)->name('audit.index');
+
+    // Admin-only. Each of these components also re-checks with isAdmin() in
+    // mount(); the middleware makes the restriction part of the route itself
+    // rather than something a future component has to remember.
+    Route::middleware('role:System Administrator')->group(function () {
+        // Users
+        Route::get('/users', \App\Http\Livewire\Users\UserIndex::class)->name('users.index');
+        Route::get('/users/create', \App\Http\Livewire\Users\UserForm::class)->name('users.create');
+        Route::get('/users/{id}/edit', \App\Http\Livewire\Users\UserForm::class)->name('users.edit');
+
+        // Audit trail
+        Route::get('/audit', \App\Http\Livewire\Audit\AuditIndex::class)->name('audit.index');
+
+        // Archive — automatically archived waste-collection reports
+        Route::get('/archive', \App\Http\Livewire\Archive\ArchiveIndex::class)->name('archive.index');
+        Route::get('/archive/{report}/download/{format}', [ArchiveController::class, 'download'])
+            ->name('archive.download')->where('format', 'xlsx|pdf');
+    });
 
     // Settings
     Route::get('/settings', \App\Http\Livewire\Settings\SettingsForm::class)->name('settings');

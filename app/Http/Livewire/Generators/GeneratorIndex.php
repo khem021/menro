@@ -29,10 +29,6 @@ class GeneratorIndex extends Component
         $generator = WasteGenerator::findOrFail($id);
         logAudit('delete', 'WasteGenerator', $id, $generator->toArray());
         $generator->delete();
-        Cache::forget('stats:generators');
-        Cache::forget('lookup:generators');
-        Cache::forget('lookup:generators_active');
-        Cache::forget('dashboard:kpis');
         session()->flash('success', 'Generator deleted successfully.');
     }
 

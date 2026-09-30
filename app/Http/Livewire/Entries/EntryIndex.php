@@ -31,10 +31,6 @@ class EntryIndex extends Component
         $entry = WasteEntry::findOrFail($id);
         logAudit('delete', 'WasteEntry', $id, $entry->toArray());
         $entry->delete();
-        Cache::forget('stats:entries');
-        Cache::forget('dashboard:kpis');
-        Cache::forget('dashboard:recent_entries');
-        Cache::forget('dashboard:charts');
         session()->flash('success', 'Entry deleted.');
     }
 

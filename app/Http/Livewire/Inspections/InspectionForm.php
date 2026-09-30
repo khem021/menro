@@ -91,11 +91,6 @@ class InspectionForm extends Component
         WasteGenerator::where('generator_id', $this->generator_id)
             ->update(['compliance_status' => $generatorCompliance]);
 
-        Cache::forget('stats:inspections');
-        Cache::forget('stats:generators');
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('dashboard:kpis');
-
         $savedId = $this->inspectionId ?? ($new->inspection_id ?? null);
 
         if ($this->compliance_status === 'violation' && $savedId) {

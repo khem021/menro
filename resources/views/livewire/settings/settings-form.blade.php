@@ -151,7 +151,7 @@
                           d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 <p class="text-sm" style="color:var(--text-muted)">
-                    <span class="font-semibold" style="color:var(--accent)">Click to upload</span> or drag and drop
+                    <span class="font-semibold" style="color:var(--accent-text)">Click to upload</span> or drag and drop
                 </p>
                 <p class="text-xs mt-1" style="color:var(--text-dim)">JPG, PNG, WebP — Max 2 MB</p>
                 <div wire:loading wire:target="photo" class="mt-3 flex justify-center">

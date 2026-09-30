@@ -5,7 +5,6 @@ namespace App\Http\Livewire\ViolationTickets;
 use App\Models\ViolationTicket;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class ViolationTicketForm extends Component
@@ -101,8 +100,6 @@ class ViolationTicketForm extends Component
             logAudit('create', 'ViolationTicket', $new->ticket_id, null, $data);
             $message = "Violation ticket {$data['ticket_number']} issued.";
         }
-
-        Cache::forget('stats:violation_tickets');
 
         session()->flash('success', $message);
         return redirect()->route('violation-tickets.index');

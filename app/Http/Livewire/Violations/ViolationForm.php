@@ -75,11 +75,6 @@ class ViolationForm extends Component
             logAudit('create', 'Violation', $new->violation_id, null, $data);
         }
 
-        Cache::forget('stats:violations');
-        Cache::forget('nav:open_violations');
-        Cache::forget('stats:compliance_pipeline');
-        Cache::forget('dashboard:kpis');
-
         session()->flash('success', $this->violationId ? 'Violation updated.' : 'Violation recorded.');
         return redirect()->route('violations.index');
     }
