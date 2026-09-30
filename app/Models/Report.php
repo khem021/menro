@@ -12,10 +12,20 @@ class Report extends Model
 
     protected $fillable = [
         'report_type',
+        'period',
+        'period_start',
+        'period_end',
         'generated_by',
         'generated_at',
         'file_path',
+        'pdf_path',
         'remarks',
+    ];
+
+    protected $casts = [
+        'period_start' => 'date',
+        'period_end'   => 'date',
+        'generated_at' => 'datetime',
     ];
 
     public function generatedBy(): BelongsTo

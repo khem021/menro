@@ -44,6 +44,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('menro:generate-report monthly')
             ->monthlyOn(1, '09:00')
             ->withoutOverlapping();
+
+        // Auto-log yearly report records and notify staff at 9:30 AM on Jan 1 (covers last year)
+        $schedule->command('menro:generate-report yearly')
+            ->yearlyOn(1, 1, '09:30')
+            ->withoutOverlapping();
     }
 
     /**
