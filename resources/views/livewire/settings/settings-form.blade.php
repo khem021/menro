@@ -18,10 +18,15 @@
         <div class="form-section flex items-center gap-4 mb-6">
             <div class="relative flex-shrink-0 group">
                 @if($user->avatar)
+                    {{-- Falls back to the initials if the stored file is missing. --}}
                     <img src="{{ asset('storage/avatars/' . $user->avatar) }}"
                          alt="{{ $user->full_name }}"
+                         onerror="var f=this.nextElementSibling; if(f){f.hidden=false;} this.remove();"
                          class="w-16 h-16 rounded-full object-cover shadow"
                          style="ring:2px solid var(--card-border)"/>
+                    <div class="avatar-bg w-16 h-16 rounded-full flex items-center justify-center shadow" hidden>
+                        <span class="text-2xl font-bold text-white">{{ strtoupper(substr($user->full_name, 0, 1)) }}</span>
+                    </div>
                 @else
                     <div class="avatar-bg w-16 h-16 rounded-full flex items-center justify-center shadow">
                         <span class="text-2xl font-bold text-white">{{ strtoupper(substr($user->full_name, 0, 1)) }}</span>
@@ -116,8 +121,12 @@
                     </div>
                 @elseif($user->avatar)
                     <img src="{{ asset('storage/avatars/' . $user->avatar) }}" alt="{{ $user->full_name }}"
+                         onerror="var f=this.nextElementSibling; if(f){f.hidden=false;} this.remove();"
                          class="w-24 h-24 rounded-full object-cover shadow-md"
                          style="outline:2px solid var(--card-border)"/>
+                    <div class="avatar-bg w-24 h-24 rounded-full flex items-center justify-center shadow-md" hidden>
+                        <span class="text-4xl font-bold text-white">{{ strtoupper(substr($user->full_name, 0, 1)) }}</span>
+                    </div>
                     <div>
                         <p class="text-sm font-medium" style="color:var(--text)">Current profile picture</p>
                         <button wire:click="removeAvatar"

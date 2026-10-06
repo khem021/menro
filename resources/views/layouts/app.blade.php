@@ -1344,8 +1344,12 @@
         <div class="user-row">
             @php $u = authUser(); @endphp
             @if($u && $u->avatar)
+                {{-- If the stored file is missing, fall back to the initials rather
+                     than leaving a broken image in the sidebar on every page. --}}
                 <img src="{{ asset('storage/avatars/' . $u->avatar) }}" alt="{{ $u->full_name }}"
+                     onerror="var f=this.nextElementSibling; if(f){f.hidden=false;} this.remove();"
                      style="width:2rem;height:2rem;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid var(--card-border);">
+                <div class="avatar" hidden>{{ strtoupper(substr($u->full_name ?? 'U', 0, 1)) }}</div>
             @else
                 <div class="avatar">{{ strtoupper(substr($u->full_name ?? 'U', 0, 1)) }}</div>
             @endif
