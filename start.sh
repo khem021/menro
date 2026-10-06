@@ -52,6 +52,26 @@ fi
 #    DATABASE_URL / APP_KEY / APP_URL at runtime only, and config:cache freezes
 #    whatever env() sees at the moment it runs.
 # ---------------------------------------------------------------------------
+
+# APP_URL is normally set to https://${{RAILWAY_PUBLIC_DOMAIN}}, but that
+# reference resolves to an empty string until a domain actually exists — which
+# would freeze APP_URL as a bare "https://" into the config cache and 404 every
+# avatar, because config/filesystems.php builds the public disk URL from it.
+# Recover the value from the runtime variable so deploy order stops mattering.
+if [ -n "${RAILWAY_PUBLIC_DOMAIN:-}" ]; then
+    case "${APP_URL:-}" in
+        "" | "https://" | "http://")
+            export APP_URL="https://${RAILWAY_PUBLIC_DOMAIN}"
+            echo "[start] APP_URL was empty, recovered as ${APP_URL}"
+            ;;
+    esac
+fi
+
+if [ -z "${APP_URL:-}" ] || [ "${APP_URL}" = "https://" ]; then
+    echo "[start] WARNING: APP_URL is not set and no Railway domain exists yet."
+    echo "[start]          Generate a domain, then redeploy, or avatars will 404."
+fi
+
 echo "[start] caching config, routes and views"
 php artisan config:cache
 php artisan route:cache
