@@ -60,6 +60,10 @@ class GeneratorForm extends Component
 
     public function save()
     {
+        // mount() does not re-run on Livewire action requests, and route
+        // middleware never sees them, so the check has to live here too.
+        requireRole(...ROLES_MANAGE());
+
         $this->validate();
 
         $data = [

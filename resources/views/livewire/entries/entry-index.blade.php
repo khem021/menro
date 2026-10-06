@@ -55,7 +55,7 @@
                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>Clear
             </button>
             @endif
-            <a href="{{ route('entries.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add Entry</a>
+            @if(canAccess(...ROLES_ENCODE()))<a href="{{ route('entries.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add Entry</a>@endif
         </div>
     </div>
 
@@ -106,7 +106,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="padding:3rem 1rem;text-align:center;"><div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;"><div style="width:2.5rem;height:2.5rem;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg></div><div style="font-size:0.875rem;font-weight:600;color:var(--text);">No entries found</div><div style="font-size:0.75rem;color:var(--text-muted);">Adjust filters or record a new waste entry.</div><a href="{{ route('entries.create') }}" class="btn-primary" style="font-size:0.75rem;margin-top:0.25rem;">Add Entry</a></div></td></tr>
+                    <tr><td colspan="6" style="padding:3rem 1rem;text-align:center;"><div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;"><div style="width:2.5rem;height:2.5rem;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg></div><div style="font-size:0.875rem;font-weight:600;color:var(--text);">No entries found</div><div style="font-size:0.75rem;color:var(--text-muted);">Adjust filters or record a new waste entry.</div>@if(canAccess(...ROLES_ENCODE()))<a href="{{ route('entries.create') }}" class="btn-primary" style="font-size:0.75rem;margin-top:0.25rem;">Add Entry</a>@endif</div></td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -34,6 +34,45 @@ if (!function_exists('canAccess')) {
     function canAccess(string ...$roles): bool { return in_array(authRole(), $roles); }
 }
 
+if (!function_exists('requireRole')) {
+    /**
+     * Stops the request unless the current role is one of $roles.
+     *
+     * Livewire actions need this in the method itself: a component's mount()
+     * runs only on the first render, so a guard there does not cover the
+     * action requests that follow, and route middleware never sees them at all.
+     */
+    function requireRole(string ...$roles): void
+    {
+        if (!canAccess(...$roles)) {
+            abort(403, 'Access denied.');
+        }
+    }
+}
+
+if (!function_exists('ROLES_MANAGE')) {
+    /** Roles allowed to manage reference data and collections. */
+    function ROLES_MANAGE(): array { return ['System Administrator', 'MENRO Officer']; }
+}
+
+if (!function_exists('ROLES_ENCODE')) {
+    /** Roles allowed to encode waste entries. */
+    function ROLES_ENCODE(): array { return ['System Administrator', 'MENRO Officer', 'Data Encoder']; }
+}
+
+if (!function_exists('ROLES_FIELD')) {
+    /** Roles allowed to record inspections, violations and tickets. */
+    function ROLES_FIELD(): array { return ['System Administrator', 'MENRO Officer', 'Field Inspector']; }
+}
+
+if (!function_exists('ROLES_CONTRIBUTE')) {
+    /** Everyone except Report Viewer, which is read-only by definition. */
+    function ROLES_CONTRIBUTE(): array
+    {
+        return ['System Administrator', 'MENRO Officer', 'Data Encoder', 'Field Inspector', 'Barangay User'];
+    }
+}
+
 if (!function_exists('logAudit')) {
     function logAudit(string $action, string $module, $recordId = null, $old = null, $new = null): void
     {

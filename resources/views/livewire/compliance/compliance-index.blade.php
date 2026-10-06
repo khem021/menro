@@ -128,7 +128,7 @@
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Barangay</span>
                 <select wire:model="inc_barangay_id" class="form-select" style="width:11rem;"><option value="">All Barangays</option>@foreach($barangays as $b)<option value="{{ $b->barangay_id }}">{{ $b->barangay_name }}</option>@endforeach</select>
             </div>
-            <a href="{{ route('incidents.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Report Incident</a>
+            @if(canAccess(...ROLES_CONTRIBUTE()))<a href="{{ route('incidents.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Report Incident</a>@endif
             @endif
 
         </div>
@@ -304,7 +304,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="7" style="padding:3rem 1rem;text-align:center;"><div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;"><div style="width:2.5rem;height:2.5rem;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" fill="none" stroke="var(--accent-text)" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div style="font-size:0.875rem;font-weight:600;color:var(--text);">No incidents found</div><div style="font-size:0.75rem;color:var(--text-muted);">Adjust filters or report a new incident.</div><a href="{{ route('incidents.create') }}" class="btn-primary" style="font-size:0.75rem;margin-top:0.25rem;">Report Incident</a></div></td></tr>
+                    <tr><td colspan="7" style="padding:3rem 1rem;text-align:center;"><div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;"><div style="width:2.5rem;height:2.5rem;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" fill="none" stroke="var(--accent-text)" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div style="font-size:0.875rem;font-weight:600;color:var(--text);">No incidents found</div><div style="font-size:0.75rem;color:var(--text-muted);">Adjust filters or report a new incident.</div>@if(canAccess(...ROLES_CONTRIBUTE()))<a href="{{ route('incidents.create') }}" class="btn-primary" style="font-size:0.75rem;margin-top:0.25rem;">Report Incident</a>@endif</div></td></tr>
                     @endforelse
                 </tbody>
             </table>

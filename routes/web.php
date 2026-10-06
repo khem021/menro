@@ -28,8 +28,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 $managers   = 'role:System Administrator,MENRO Officer';
 $fieldStaff = 'role:System Administrator,MENRO Officer,Field Inspector';
 
+// Data Encoder is "responsible for encoding waste data", so it joins the
+// managers for waste entries.
+$encoders   = 'role:System Administrator,MENRO Officer,Data Encoder';
+
+// Anyone but Report Viewer, which is read-only by definition. Used for the
+// forms that any working role may legitimately submit.
+$contributors = 'role:System Administrator,MENRO Officer,Data Encoder,Field Inspector,Barangay User';
+
 // Authenticated routes
-Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff) {
+Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff, $encoders, $contributors) {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Generators
@@ -39,8 +47,10 @@ Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff)
 
     // Waste Entries
     Route::get('/entries', \App\Http\Livewire\Entries\EntryIndex::class)->name('entries.index');
-    Route::get('/entries/create', \App\Http\Livewire\Entries\EntryForm::class)->name('entries.create');
-    Route::get('/entries/{id}/edit', \App\Http\Livewire\Entries\EntryForm::class)->name('entries.edit');
+    Route::middleware($encoders)->group(function () {
+        Route::get('/entries/create', \App\Http\Livewire\Entries\EntryForm::class)->name('entries.create');
+        Route::get('/entries/{id}/edit', \App\Http\Livewire\Entries\EntryForm::class)->name('entries.edit');
+    });
 
     Route::middleware($fieldStaff)->group(function () {
         // Compliance (combined Inspections + Violations + Incidents)
@@ -82,8 +92,10 @@ Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff)
 
     // Incidents
     Route::get('/incidents', \App\Http\Livewire\Incidents\IncidentIndex::class)->name('incidents.index');
-    Route::get('/incidents/create', \App\Http\Livewire\Incidents\IncidentForm::class)->name('incidents.create');
-    Route::get('/incidents/{id}/edit', \App\Http\Livewire\Incidents\IncidentForm::class)->name('incidents.edit');
+    Route::middleware($contributors)->group(function () {
+        Route::get('/incidents/create', \App\Http\Livewire\Incidents\IncidentForm::class)->name('incidents.create');
+        Route::get('/incidents/{id}/edit', \App\Http\Livewire\Incidents\IncidentForm::class)->name('incidents.edit');
+    });
 
     // Notifications
     Route::get('/notifications', \App\Http\Livewire\Notifications\NotificationIndex::class)->name('notifications.index');

@@ -33,6 +33,10 @@ class UserIndex extends Component
 
     public function delete($id)
     {
+        // mount() does not re-run on Livewire action requests, and route
+        // middleware never sees them, so the check has to live here too.
+        requireRole('System Administrator');
+
         if ($id === session('auth_user_id')) {
             session()->flash('error', 'You cannot delete your own account.');
             return;
