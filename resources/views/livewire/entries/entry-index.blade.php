@@ -96,8 +96,12 @@
                         <td class="table-cell" style="color:var(--text-muted);font-size:0.8125rem;">{{ $entry->encodedBy->full_name ?? '—' }}</td>
                         <td class="table-cell" style="text-align:right;">
                             <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.25rem;">
-                                <a href="{{ route('entries.edit', $entry->entry_id) }}" class="btn-icon btn-icon-edit" title="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
-                                <button wire:click="delete({{ $entry->entry_id }})" wire:confirm="Delete this entry?" class="btn-icon btn-icon-del" title="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @if(isAdmin() || $entry->encoded_by === session('auth_user_id'))
+                                <a href="{{ route('entries.edit', $entry->entry_id) }}" class="btn-icon btn-icon-edit" title="Edit" aria-label="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
+                                @endif
+                                @if(isAdmin() || $entry->encoded_by === session('auth_user_id'))
+                                <button wire:click="delete({{ $entry->entry_id }})" data-confirm="Delete the {{ number_format($entry->quantity, 2) }} {{ $entry->unit }} entry for {{ $entry->wasteGenerator->generator_name ?? 'this generator' }} on {{ \Carbon\Carbon::parse($entry->entry_date)->format('M d, Y') }}?" class="btn-icon btn-icon-del" title="Delete" aria-label="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @endif
                             </div>
                         </td>
                     </tr>

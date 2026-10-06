@@ -39,6 +39,9 @@
                 <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);">Barangay</span>
                 <select wire:model="barangay_id" class="form-select"><option value="">All Barangays</option>@foreach($barangays as $b)<option value="{{ $b->barangay_id }}">{{ $b->barangay_name }}</option>@endforeach</select>
             </div>
+            @if($incident_type || $status || $barangay_id)
+            <button type="button" wire:click="$set('incident_type','');$set('status','');$set('barangay_id','')" class="btn-ghost" style="font-size:0.75rem;"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>Clear filters</button>
+            @endif
             <a href="{{ route('incidents.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Report Incident</a>
         </div>
     </div>
@@ -79,8 +82,12 @@
                         <td class="table-cell" style="color:var(--text-muted);font-size:0.8125rem;">{{ $inc->assignee->full_name ?? '—' }}</td>
                         <td class="table-cell" style="text-align:right;">
                             <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.25rem;">
-                                <a href="{{ route('incidents.edit', $inc->incident_id) }}" class="btn-icon btn-icon-edit" title="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
-                                <button wire:click="delete({{ $inc->incident_id }})" wire:confirm="Delete this incident report?" class="btn-icon btn-icon-del" title="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @if(canAccess('System Administrator', 'MENRO Officer', 'Field Inspector'))
+                                <a href="{{ route('incidents.edit', $inc->incident_id) }}" class="btn-icon btn-icon-edit" title="Edit" aria-label="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
+                                @endif
+                                @if(canAccess('System Administrator', 'MENRO Officer'))
+                                <button wire:click="delete({{ $inc->incident_id }})" data-confirm="Delete the {{ str_replace('_',' ',$inc->incident_type) }} incident reported in {{ $inc->barangay->barangay_name ?? 'this barangay' }} on {{ \Carbon\Carbon::parse($inc->date_reported)->format('M d, Y') }}?" class="btn-icon btn-icon-del" title="Delete" aria-label="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @endif
                             </div>
                         </td>
                     </tr>

@@ -76,7 +76,7 @@ class ViolationTicketForm extends Component
             logAudit('update', 'ViolationTicket', $this->ticketId, $old, $data);
             $message = 'Violation ticket updated.';
         } else {
-            $priorCount = ViolationTicket::where('violator_name', 'ILIKE', trim($this->violator_name))->count();
+            $priorCount = ViolationTicket::whereRaw('LOWER(violator_name) = ?', [mb_strtolower(trim($this->violator_name))])->count();
             $offenseNumber = min($priorCount + 1, 3);
 
             $data['offense_number'] = $offenseNumber;
@@ -91,7 +91,12 @@ class ViolationTicketForm extends Component
                     $new = ViolationTicket::create($data);
                     break;
                 } catch (QueryException $e) {
-                    if (++$attempts >= 5) {
+                    // Only a clash on the ticket number is worth retrying (two
+                    // people issuing at once). Anything else is a real error.
+                    $isDuplicate = in_array($e->getCode(), ['23505', '23000'], true)
+                        && str_contains($e->getMessage(), 'ticket_number');
+
+                    if (!$isDuplicate || ++$attempts >= 5) {
                         throw $e;
                     }
                 }

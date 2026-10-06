@@ -12,7 +12,10 @@
 
             @if($ticketId)
             <div class="form-section">
-                <h3 class="form-section-title">Ticket Information (auto-generated)</h3>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--card-border);">
+                    <h3 class="form-section-title" style="margin:0;padding:0;border:none;">Ticket Information (auto-generated)</h3>
+                    <a href="{{ route('violation-tickets.receipt', $ticketId) }}" target="_blank" class="btn-secondary"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print Receipt</a>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div>
                         <label class="form-label">Ticket Number</label>

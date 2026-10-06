@@ -176,8 +176,10 @@
                         </td>
                         <td class="table-cell" style="text-align:right;">
                             <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.25rem;">
-                                <a href="{{ route('inspections.edit', $insp->inspection_id) }}" class="btn-icon btn-icon-edit" title="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
-                                <button wire:click="deleteInspection({{ $insp->inspection_id }})" wire:confirm="Delete this inspection?" class="btn-icon btn-icon-del"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                <a href="{{ route('inspections.edit', $insp->inspection_id) }}" class="btn-icon btn-icon-edit" title="Edit" aria-label="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
+                                @if(canAccess('System Administrator', 'MENRO Officer'))
+                                <button wire:click="deleteInspection({{ $insp->inspection_id }})" data-confirm="Delete the inspection of {{ $insp->wasteGenerator->generator_name ?? 'this generator' }} on {{ \Carbon\Carbon::parse($insp->inspection_date)->format('M d, Y') }}?" class="btn-icon btn-icon-del" aria-label="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -239,8 +241,10 @@
                                     {{ $nextLabel }}
                                 </button>
                                 @endif
-                                <a href="{{ route('violations.edit', $v->violation_id) }}" class="btn-icon btn-icon-edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
-                                <button wire:click="deleteViolation({{ $v->violation_id }})" wire:confirm="Delete this violation?" class="btn-icon btn-icon-del"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                <a href="{{ route('violations.edit', $v->violation_id) }}" class="btn-icon btn-icon-edit" aria-label="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
+                                @if(canAccess('System Administrator', 'MENRO Officer'))
+                                <button wire:click="deleteViolation({{ $v->violation_id }})" data-confirm="Delete the {{ str_replace('_',' ',$v->violation_type) }} violation for {{ $v->inspection->wasteGenerator->generator_name ?? 'this generator' }}?" class="btn-icon btn-icon-del" aria-label="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -292,8 +296,10 @@
                         <td class="table-cell" style="color:var(--text-muted);font-size:0.8125rem;">{{ $inc->assignee->full_name ?? '—' }}</td>
                         <td class="table-cell" style="text-align:right;">
                             <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.25rem;">
-                                <a href="{{ route('incidents.edit', $inc->incident_id) }}" class="btn-icon btn-icon-edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
-                                <button wire:click="deleteIncident({{ $inc->incident_id }})" wire:confirm="Delete this incident?" class="btn-icon btn-icon-del"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                <a href="{{ route('incidents.edit', $inc->incident_id) }}" class="btn-icon btn-icon-edit" aria-label="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
+                                @if(canAccess('System Administrator', 'MENRO Officer'))
+                                <button wire:click="deleteIncident({{ $inc->incident_id }})" data-confirm="Delete the {{ str_replace('_',' ',$inc->incident_type) }} incident reported in {{ $inc->barangay->barangay_name ?? 'this barangay' }} on {{ \Carbon\Carbon::parse($inc->date_reported)->format('M d, Y') }}?" class="btn-icon btn-icon-del" aria-label="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @endif
                             </div>
                         </td>
                     </tr>

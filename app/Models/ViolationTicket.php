@@ -76,10 +76,15 @@ class ViolationTicket extends Model
      */
     public static function nextTicketNumber(string $year): string
     {
-        $maxSeq = (int) static::withTrashed()
+        // Longest number first so "2026-10000" outranks "2026-9999"; LENGTH()
+        // is portable across PostgreSQL and MySQL, unlike string-splitting functions.
+        $last = static::withTrashed()
             ->where('ticket_number', 'like', $year . '-%')
-            ->selectRaw("MAX(CAST(SPLIT_PART(ticket_number, '-', 2) AS INTEGER)) AS max_seq")
-            ->value('max_seq');
+            ->orderByRaw('LENGTH(ticket_number) DESC')
+            ->orderByDesc('ticket_number')
+            ->value('ticket_number');
+
+        $maxSeq = $last ? (int) substr($last, strlen($year) + 1) : 0;
 
         return $year . '-' . str_pad((string) ($maxSeq + 1), 4, '0', STR_PAD_LEFT);
     }

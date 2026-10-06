@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Generators;
 
 use App\Models\WasteGenerator;
+use App\Support\Like;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -26,6 +27,10 @@ class GeneratorIndex extends Component
 
     public function delete($id)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $generator = WasteGenerator::findOrFail($id);
         logAudit('delete', 'WasteGenerator', $id, $generator->toArray());
         $generator->delete();
@@ -37,8 +42,8 @@ class GeneratorIndex extends Component
         $generators = WasteGenerator::with(['barangay:barangay_id,barangay_name', 'generatorType:generator_type_id,type_name'])
             ->when($this->search, fn($q) =>
                 $q->where(fn($w) => $w
-                    ->where('generator_name', 'ILIKE', "%{$this->search}%")
-                    ->orWhere('contact_person', 'ILIKE', "%{$this->search}%"))
+                    ->whereRaw('LOWER(generator_name) LIKE ?', [Like::contains($this->search)])
+                    ->orWhereRaw('LOWER(contact_person) LIKE ?', [Like::contains($this->search)]))
             )
             ->when($this->status, fn($q) => $q->where('status', $this->status))
             ->when($this->compliance_status, fn($q) => $q->where('compliance_status', $this->compliance_status))

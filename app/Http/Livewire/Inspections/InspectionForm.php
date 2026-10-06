@@ -23,13 +23,13 @@ class InspectionForm extends Component
 
     protected $rules = [
         'generator_id'      => 'required|integer|exists:waste_generators,generator_id',
-        'inspection_date'   => 'required|date',
+        'inspection_date'   => 'required|date|after_or_equal:2000-01-01|before_or_equal:tomorrow',
         'inspector_id'      => 'required|integer|exists:users,user_id',
         'compliance_status' => 'required|in:compliant,warning,for_follow_up,violation',
         'segregation_score' => 'nullable|integer|min:0|max:100',
         'remarks'           => 'nullable|string|max:2000',
         'recommendation'    => 'nullable|string|max:2000',
-        'next_follow_up'    => 'nullable|date',
+        'next_follow_up'    => 'nullable|date|after_or_equal:inspection_date',
     ];
 
     public function mount($id = null)
@@ -64,7 +64,7 @@ class InspectionForm extends Component
             'inspection_date'   => $this->inspection_date,
             'inspector_id'      => $this->inspector_id,
             'compliance_status' => $this->compliance_status,
-            'segregation_score' => $this->segregation_score === '' ? 0 : (int) $this->segregation_score,
+            'segregation_score' => $this->segregation_score === '' ? null : (int) $this->segregation_score,
             'remarks'           => $this->remarks ?: null,
             'recommendation'    => $this->recommendation ?: null,
             'next_follow_up'    => $this->next_follow_up ?: null,
@@ -80,18 +80,26 @@ class InspectionForm extends Component
             logAudit('create', 'Inspection', $new->inspection_id, null, $data);
         }
 
-        // Update generator compliance status
-        $generatorCompliance = match($this->compliance_status) {
-            'compliant'    => 'compliant',
-            'warning',
-            'for_follow_up'=> 'for_inspection',
-            'violation'    => 'non_compliant',
-            default        => 'for_inspection',
-        };
-        WasteGenerator::where('generator_id', $this->generator_id)
-            ->update(['compliance_status' => $generatorCompliance]);
-
         $savedId = $this->inspectionId ?? ($new->inspection_id ?? null);
+
+        // The generator's status follows its most recent inspection only, so
+        // correcting an old record does not overwrite where it stands today.
+        $latestId = Inspection::where('generator_id', $this->generator_id)
+            ->orderByDesc('inspection_date')
+            ->orderByDesc('inspection_id')
+            ->value('inspection_id');
+
+        if ($latestId === $savedId) {
+            $generatorCompliance = match($this->compliance_status) {
+                'compliant'    => 'compliant',
+                'warning',
+                'for_follow_up'=> 'for_inspection',
+                'violation'    => 'non_compliant',
+                default        => 'for_inspection',
+            };
+            WasteGenerator::where('generator_id', $this->generator_id)
+                ->update(['compliance_status' => $generatorCompliance]);
+        }
 
         if ($this->compliance_status === 'violation' && $savedId) {
             session()->flash('success', $this->inspectionId ? 'Inspection updated with violation status.' : 'Inspection recorded with violation status.');

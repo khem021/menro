@@ -121,7 +121,7 @@
                     <div>
                         <p class="text-sm font-medium" style="color:var(--text)">Current profile picture</p>
                         <button wire:click="removeAvatar"
-                                wire:confirm="Remove your profile picture?"
+                                data-confirm="Remove your profile picture?" data-confirm-label="Remove"
                                 class="mt-2 text-xs font-medium hover:underline" style="color:var(--danger)">
                             Remove picture
                         </button>

@@ -22,9 +22,9 @@ class EntryForm extends Component
     protected $rules = [
         'generator_id' => 'required|integer|exists:waste_generators,generator_id',
         'category_id'  => 'required|integer|exists:waste_categories,category_id',
-        'quantity'     => 'required|numeric|min:0.01',
+        'quantity'     => 'required|numeric|min:0.01|max:99999999.99',
         'unit'         => 'required|in:kg,ton,liter,cubic_meter',
-        'entry_date'   => 'required|date',
+        'entry_date'   => 'required|date|after_or_equal:2000-01-01|before_or_equal:tomorrow',
         'remarks'      => 'nullable|string|max:1000',
     ];
 
@@ -34,6 +34,12 @@ class EntryForm extends Component
         if ($id) {
             $this->entryId = (int) $id;
             $e = WasteEntry::findOrFail($id);
+
+            // Same rule save() enforces: an entry belongs to whoever encoded it.
+            if (!isAdmin() && $e->encoded_by !== session('auth_user_id')) {
+                abort(403, 'You can only edit your own entries.');
+            }
+
             $this->generator_id = (string) $e->generator_id;
             $this->category_id  = (string) $e->category_id;
             $this->quantity     = (string) $e->quantity;

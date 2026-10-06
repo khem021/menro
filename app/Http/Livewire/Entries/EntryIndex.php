@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Entries;
 use App\Models\WasteEntry;
 use App\Models\WasteGenerator;
 use App\Models\WasteCategory;
+use App\Support\Like;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -29,6 +30,12 @@ class EntryIndex extends Component
     public function delete($id)
     {
         $entry = WasteEntry::findOrFail($id);
+
+        // Same rule as editing: an entry belongs to whoever encoded it.
+        if (!isAdmin() && $entry->encoded_by !== session('auth_user_id')) {
+            abort(403, 'You can only delete your own entries.');
+        }
+
         logAudit('delete', 'WasteEntry', $id, $entry->toArray());
         $entry->delete();
         session()->flash('success', 'Entry deleted.');
@@ -43,7 +50,7 @@ class EntryIndex extends Component
             ])
             ->when($this->search, fn($q) =>
                 $q->whereHas('wasteGenerator', fn($q2) =>
-                    $q2->where('generator_name', 'ILIKE', '%' . $this->search . '%')
+                    $q2->whereRaw('LOWER(generator_name) LIKE ?', [Like::contains($this->search)])
                 )
             )
             ->when($this->generator_id, fn($q) => $q->where('generator_id', $this->generator_id))

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\ViolationTickets;
 
 use App\Models\ViolationTicket;
+use App\Support\Like;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -37,8 +38,8 @@ class ViolationTicketIndex extends Component
         $tickets = ViolationTicket::with('issuedBy:user_id,full_name')
             ->when($this->search, fn($q) =>
                 $q->where(function ($q2) {
-                    $q2->where('violator_name', 'ILIKE', '%' . $this->search . '%')
-                       ->orWhere('ticket_number', 'ILIKE', '%' . $this->search . '%');
+                    $q2->whereRaw('LOWER(violator_name) LIKE ?', [Like::contains($this->search)])
+                       ->orWhereRaw('LOWER(ticket_number) LIKE ?', [Like::contains($this->search)]);
                 })
             )
             ->when($this->violation_type, fn($q) => $q->where('violation_type', $this->violation_type))

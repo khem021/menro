@@ -42,7 +42,8 @@
             </div>
         </a>
 
-        <a href="{{ route('compliance.index') }}" class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#f87171'" onmouseout="this.style.borderColor=''">
+        @php $violationsTag = canAccess('System Administrator', 'MENRO Officer', 'Field Inspector') ? 'a' : 'div'; @endphp
+        <{{ $violationsTag }} @if($violationsTag === 'a') href="{{ route('compliance.index') }}" @endif class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#f87171'" onmouseout="this.style.borderColor=''">
             <div>
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Open Violations</div>
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($openViolations) }}</div>
@@ -51,9 +52,9 @@
             <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(206,17,38,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <svg width="14" height="14" fill="none" stroke="var(--danger-text)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
-        </a>
+        </{{ $violationsTag }}>
 
-        <a href="{{ route('compliance.index') }}" class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#60a5fa'" onmouseout="this.style.borderColor=''">
+        <a href="{{ route('incidents.index') }}" class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#60a5fa'" onmouseout="this.style.borderColor=''">
             <div>
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Active Incidents</div>
                 <div style="font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1;margin:0.2rem 0;">{{ number_format($openIncidents) }}</div>
@@ -71,16 +72,20 @@
     @if($hasAlerts)
     <div style="display:flex;gap:0.375rem;flex-wrap:wrap;flex-shrink:0;">
         @if($alerts['critical_violations'] > 0)
+        @if(canAccess('System Administrator', 'MENRO Officer', 'Field Inspector'))
         <a href="{{ route('compliance.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3);color:var(--danger-text);text-decoration:none;">
             <svg width="10" height="10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
             {{ $alerts['critical_violations'] }} critical violation{{ $alerts['critical_violations'] > 1 ? 's' : '' }} open → Review
         </a>
         @endif
+        @endif
         @if($alerts['overdue_followups'] > 0)
+        @if(canAccess('System Administrator', 'MENRO Officer', 'Field Inspector'))
         <a href="{{ route('compliance.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(253,184,19,0.1);border:1px solid rgba(253,184,19,0.3);color:var(--accent-text);text-decoration:none;">
             <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ $alerts['overdue_followups'] }} overdue follow-up{{ $alerts['overdue_followups'] > 1 ? 's' : '' }} → Inspect
         </a>
+        @endif
         @endif
         @if($alerts['for_inspection'] > 0)
         <a href="{{ route('generators.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);color:var(--info-text);text-decoration:none;">
@@ -89,10 +94,12 @@
         </a>
         @endif
         @if($alerts['tomorrow_collections'] > 0)
+        @if(canAccess('System Administrator', 'MENRO Officer'))
         <a href="{{ route('collections.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:var(--success-text);text-decoration:none;">
             <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
             {{ $alerts['tomorrow_collections'] }} collection{{ $alerts['tomorrow_collections'] > 1 ? 's' : '' }} tomorrow → Prepare
         </a>
+        @endif
         @endif
     </div>
     @endif
@@ -115,11 +122,33 @@
             </div>
         </div>
 
+        <style>
+            .cat-chart { position: relative; height: 210px; margin: 0.25rem 0 0.5rem; }
+            .cat-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 1px solid var(--card-border); }
+            .cat-legend-item {
+                display: flex; align-items: center; gap: 0.625rem; min-width: 0;
+                padding: 0.4375rem 0.375rem; border-bottom: 1px solid var(--card-border);
+                font-size: 0.8125rem; color: var(--text);
+                transition: background .15s;
+            }
+            .cat-legend-item:last-child { border-bottom: 0; }
+            .cat-legend-item:hover { background: var(--input-bg); }
+            .cat-dot { width: 0.625rem; height: 0.625rem; border-radius: 50%; flex: 0 0 0.625rem; }
+            .cat-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .cat-kg { flex: 0 0 auto; color: var(--text-muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+            .cat-pct { flex: 0 0 3.25rem; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+            .cat-empty { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 12rem; color: var(--text-muted); font-size: 0.8125rem; text-align: center; }
+        </style>
         <div class="card" style="padding:0.75rem;display:flex;flex-direction:column;min-width:0;">
             <div class="dash-card-title">Waste by Category</div>
-            <div style="flex:1;position:relative;min-height:300px;">
-                <canvas id="categoryChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
+            @if(count($categoryWaste))
+            <div class="cat-chart">
+                <canvas id="categoryChart" role="img" aria-label="Doughnut chart of waste by category, last 12 months; the same figures are listed below"></canvas>
             </div>
+            <ul class="cat-legend" id="categoryLegend" aria-label="Waste by category, last 12 months"></ul>
+            @else
+            <div class="cat-empty">No waste recorded in the last 12 months.</div>
+            @endif
         </div>
 
     </div>
@@ -131,7 +160,9 @@
         <div class="card dash-panel" style="height:264px;">
             <div class="dash-panel-head">
                 <div class="dash-card-title" style="margin:0;">Upcoming Collections</div>
+                @if(canAccess('System Administrator', 'MENRO Officer'))
                 <a href="{{ route('collections.index') }}" class="dash-panel-link">All ({{ $pendingCollections }}) →</a>
+                @endif
             </div>
             <div class="dash-panel-body">
                 @php $upcomingFlat = collect($collectionsByCluster)->flatten(1)->sortBy('collection_date')->take(8); @endphp
@@ -241,7 +272,6 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     function themeColors() {
@@ -317,6 +347,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (catData.length) {
         const catTotals = catData.map(r => parseFloat(r.total)||0);
         const catSum    = catTotals.reduce((a,b) => a+b, 0);
+        const pctOf     = v => catSum > 0 ? ((v / catSum) * 100).toFixed(1) : '0.0';
+        const fmtKg     = v => Math.round(v).toLocaleString();
+
+        // Total in the middle of the ring
+        const centreTotal = {
+            id: 'centreTotal',
+            afterDraw(chart) {
+                const { ctx, chartArea: a } = chart;
+                if (!a) return;
+                const cx = (a.left + a.right) / 2, cy = (a.top + a.bottom) / 2;
+                const r = Math.min(a.right - a.left, a.bottom - a.top) / 2;
+                const c = themeColors();
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = c.text;
+                ctx.font = '700 ' + Math.max(14, Math.round(r * 0.26)) + 'px ui-sans-serif, system-ui, sans-serif';
+                ctx.fillText(fmtKg(catSum), cx, cy - r * 0.06);
+                ctx.fillStyle = c.label;
+                ctx.font = '500 ' + Math.max(10, Math.round(r * 0.14)) + 'px ui-sans-serif, system-ui, sans-serif';
+                ctx.fillText('kg total', cx, cy + r * 0.2);
+                ctx.restore();
+            }
+        };
+
         categoryChart = new Chart(document.getElementById('categoryChart'), {
             type: 'doughnut',
             data: {
@@ -324,58 +379,66 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     data: catTotals,
                     backgroundColor: catColors,
-                    hoverBackgroundColor: catColors.map(c => c + 'cc'),
+                    hoverBackgroundColor: catColors,
                     borderWidth: 2,
                     borderColor: themeColors().cardBg,
                     hoverOffset: 6,
                 }]
             },
+            plugins: [centreTotal],
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '58%',
-                layout: { padding: { top: 8, bottom: 8, left: 8, right: 8 } },
+                cutout: '66%',
+                layout: { padding: 8 },
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        align: 'center',
-                        labels: {
-                            color: themeColors().text,
-                            font: { size: 12.5 },
-                            padding: 14,
-                            boxWidth: 12,
-                            boxHeight: 12,
-                            usePointStyle: true,
-                            pointStyleWidth: 12,
-                            generateLabels(chart) {
-                                const data = chart.data;
-                                return data.labels.map((lbl, i) => {
-                                    const val = data.datasets[0].data[i];
-                                    const pct = catSum > 0 ? ((val / catSum) * 100).toFixed(1) : 0;
-                                    return {
-                                        text: `${lbl}  ${pct}%`,
-                                        fillStyle: catColors[i],
-                                        strokeStyle: catColors[i],
-                                        lineWidth: 0,
-                                        hidden: false,
-                                        index: i,
-                                        pointStyle: 'circle',
-                                    };
-                                });
-                            }
-                        }
-                    },
+                    legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label(ctx) {
-                                const val = ctx.parsed;
-                                const pct = catSum > 0 ? ((val / catSum) * 100).toFixed(1) : 0;
-                                return ` ${ctx.label}: ${val.toLocaleString()} kg (${pct}%)`;
+                                return ` ${ctx.label}: ${ctx.parsed.toLocaleString()} kg (${pctOf(ctx.parsed)}%)`;
                             }
                         }
                     }
                 }
             }
+        });
+
+        // Legend as HTML: always round dots, readable at any width, follows the theme
+        const legend = document.getElementById('categoryLegend');
+        catData.forEach((row, i) => {
+            const li = document.createElement('li');
+            li.className = 'cat-legend-item';
+            li.title = row.category_name + ': ' + fmtKg(catTotals[i]) + ' kg';
+
+            const dot = document.createElement('span');
+            dot.className = 'cat-dot';
+            dot.style.background = catColors[i % catColors.length];
+
+            const name = document.createElement('span');
+            name.className = 'cat-name';
+            name.textContent = row.category_name;
+
+            const kg = document.createElement('span');
+            kg.className = 'cat-kg';
+            kg.textContent = fmtKg(catTotals[i]) + ' kg';
+
+            const pct = document.createElement('span');
+            pct.className = 'cat-pct';
+            pct.textContent = pctOf(catTotals[i]) + '%';
+
+            li.append(dot, name, kg, pct);
+
+            // Hovering a row highlights its slice
+            li.addEventListener('mouseenter', () => {
+                categoryChart.setActiveElements([{ datasetIndex: 0, index: i }]);
+                categoryChart.update();
+            });
+            li.addEventListener('mouseleave', () => {
+                categoryChart.setActiveElements([]);
+                categoryChart.update();
+            });
+            legend.appendChild(li);
         });
     }
 
@@ -394,7 +457,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (categoryChart) {
             categoryChart.data.datasets[0].borderColor = c.cardBg;
-            categoryChart.options.plugins.legend.labels.color = c.text;
             categoryChart.update();
         }
     });

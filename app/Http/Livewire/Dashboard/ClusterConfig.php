@@ -38,6 +38,16 @@ class ClusterConfig extends Component
         }
 
         $this->chartPeriod = $period;
+        $this->refreshChart();
+    }
+
+    /**
+     * Push fresh bars to the chart. Needed after anything that changes which
+     * clusters exist or which barangays feed them — the canvas lives behind
+     * wire:ignore, so it never picks those changes up from the re-render.
+     */
+    private function refreshChart(): void
+    {
         $this->emit('cluster-chart-updated', $this->chartPayload());
     }
 
@@ -53,6 +63,7 @@ class ClusterConfig extends Component
         logAudit('create', 'Cluster', $cluster->id, null, $cluster->toArray());
 
         $this->activeCluster = (string) $cluster->id;
+        $this->refreshChart();
         session()->flash('success', 'Cluster added.');
     }
 
@@ -76,6 +87,7 @@ class ClusterConfig extends Component
         }
 
         $this->newBarangayName[$clusterId] = '';
+        $this->refreshChart();
     }
 
     public function startRename(int $clusterId): void
@@ -121,6 +133,7 @@ class ClusterConfig extends Component
         if ($old !== $name) {
             $cluster->update(['name' => $name]);
             logAudit('update', 'Cluster', $cluster->id, ['name' => $old], ['name' => $name]);
+            $this->refreshChart();
         }
 
         $this->cancelRename();
@@ -148,6 +161,8 @@ class ClusterConfig extends Component
             $this->activeCluster = 'all';
         }
 
+        $this->refreshChart();
+
         session()->flash('success', 'Cluster deleted.');
     }
 
@@ -163,6 +178,8 @@ class ClusterConfig extends Component
             $b->update(['cluster' => null]);
             logAudit('update', 'Barangay', $barangayId, ['cluster' => $old], ['cluster' => null]);
         }
+
+        $this->refreshChart();
     }
 
     public function render()

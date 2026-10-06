@@ -16,8 +16,8 @@
         })();
     </script>
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+    {{-- Instrument Sans is bundled through Vite (resources/css/app.css), not fetched
+         from a CDN, so it still loads behind a captive portal or content filter. --}}
 
     @livewireStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -100,6 +100,7 @@
         .sidebar {
             width: var(--sidebar-w);
             height: 100vh;
+            height: 100dvh;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--card-border);
             display: flex;
@@ -116,6 +117,7 @@
             padding: 0 1.25rem;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.625rem;
             text-decoration: none;
             flex-shrink: 0;
@@ -147,8 +149,31 @@
 
         .sidebar-nav {
             flex: 1;
+            min-height: 0;
             padding: 0.5rem 0.625rem;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: var(--card-border) transparent;
+        }
+        .sidebar-nav::-webkit-scrollbar { width: 6px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 999px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+
+        /* Short viewports (laptops that aren't full screen): tighten the sidebar so every link fits */
+        @media (min-width: 769px) and (max-height: 900px) {
+            .sidebar-brand { height: 56px; }
+            .sidebar-nav { padding: 0.25rem 0.625rem; }
+            .nav-section { padding: 0.3rem 0.625rem 0.125rem; }
+            .nav-item { padding: 0.25rem 0.75rem; font-size: 0.78rem; }
+            .sidebar-footer { padding: 0.5rem 0.625rem; }
+            .sidebar-footer .user-row { padding: 0.25rem 0.75rem; }
+        }
+        @media (min-width: 769px) and (max-height: 760px) {
+            .sidebar-brand { height: 48px; }
+            .nav-section { padding-top: 0.2rem; padding-bottom: 0.1rem; }
+            .nav-item { padding: 0.1875rem 0.75rem; }
+            .nav-item svg { width: 16px; height: 16px; }
         }
 
         .nav-section {
@@ -276,6 +301,9 @@
         .main {
             margin-left: var(--sidebar-w);
             flex: 1;
+            /* Without this a wide table stretches the whole page instead of
+               scrolling inside its card (the flex default is min-width:auto). */
+            min-width: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -830,6 +858,22 @@
             to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
         }
 
+        /* Skip link: invisible until a keyboard user tabs to it */
+        .skip-link {
+            position: absolute; left: 0.75rem; top: -3rem; z-index: 100000;
+            background: var(--accent); color: #071020; font-weight: 700; font-size: 0.8125rem;
+            padding: 0.5rem 0.875rem; border-radius: 0.5rem; text-decoration: none;
+            transition: top .15s;
+        }
+        .skip-link:focus { top: 0.75rem; }
+        #main-content:focus { outline: none; }
+
+        /* Visible focus for keyboard users on everything interactive */
+        a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
+        input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--accent); outline-offset: 2px;
+        }
+
         /* Focus ring consistency */
         .btn-primary:focus-visible, .btn-secondary:focus-visible, .btn-danger:focus-visible {
             outline: 2px solid var(--accent); outline-offset: 2px;
@@ -1088,6 +1132,7 @@
     @stack('styles')
 </head>
 <body x-data="{ mobileNav: false }">
+<a href="#main-content" class="skip-link">Skip to content</a>
 {{-- Livewire request progress bar --}}
 <div id="lw-bar" style="position:fixed;top:0;left:0;z-index:99999;height:2px;width:0;background:var(--accent);opacity:0;transition:width .35s ease,opacity .2s;pointer-events:none;box-shadow:0 0 12px var(--accent-glow);"></div>
 
@@ -1108,15 +1153,12 @@
      ============================================================ --}}
 <aside class="sidebar" :class="{ 'sidebar-open': mobileNav }">
     <a href="{{ route('dashboard') }}" class="sidebar-brand" @click="mobileNav = false">
-        <img src="{{ asset('images/menro-logo.png') }}" alt="MENRO Logo"
-             style="width:3.25rem;height:3.25rem;object-fit:contain;flex-shrink:0;">
         <div>
-            <div class="brand-name">MENRO</div>
-            <div class="brand-tag">Republic of the Philippines</div>
+            <div class="brand-name">MENRO MADRID</div>
         </div>
     </a>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" aria-label="Main">
         <div class="nav-section">Workspace</div>
 
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" @click="mobileNav = false">
@@ -1157,6 +1199,7 @@
             Barangays
         </a>
 
+        @if(canAccess('System Administrator', 'MENRO Officer'))
         <a href="{{ route('clusters.index') }}" class="nav-item {{ request()->routeIs('clusters.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <rect x="3" y="3" width="7" height="7"/>
@@ -1166,6 +1209,7 @@
             </svg>
             Barangay Clusters
         </a>
+        @endif
 
         {{-- ── Operations: follow steps 1 → 4 ────────────────────────────── --}}
         <div class="nav-section" style="margin-top:.375rem;">Operations</div>
@@ -1188,6 +1232,7 @@
             <span class="nav-step">2</span>
         </a>
 
+        @if(canAccess('System Administrator', 'MENRO Officer'))
         <a href="{{ route('collections.index') }}" class="nav-item {{ request()->routeIs('collections.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <rect x="1" y="3" width="15" height="13"/>
@@ -1199,7 +1244,9 @@
             <span style="flex:1"></span>
             <span class="nav-step">3</span>
         </a>
+        @endif
 
+        @if(canAccess('System Administrator', 'MENRO Officer', 'Field Inspector'))
         <a href="{{ route('compliance.index') }}" class="nav-item {{ request()->routeIs('compliance.*') || request()->routeIs('inspections.*') || request()->routeIs('violations.*') || request()->routeIs('incidents.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
@@ -1209,15 +1256,27 @@
             @if($openVio > 0)<span class="nav-badge danger" style="margin-right:.375rem">{{ $openVio }}</span>@endif
             <span class="nav-step">4</span>
         </a>
+        @endif
 
+        <a href="{{ route('incidents.index') }}" class="nav-item {{ request()->routeIs('incidents.*') ? 'active' : '' }}" @click="mobileNav = false">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Incidents
+        </a>
+
+        @if(canAccess('System Administrator', 'MENRO Officer', 'Field Inspector'))
         <a href="{{ route('violation-tickets.index') }}" class="nav-item {{ request()->routeIs('violation-tickets.*') ? 'active' : '' }}" @click="mobileNav = false">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
             Violation
         </a>
+        @endif
 
         {{-- ── Insights ────────────────────────────────────────────────────── --}}
+        @if(canAccess('System Administrator', 'MENRO Officer'))
         <div class="nav-section" style="margin-top:.375rem;">Insights</div>
 
         <a href="{{ route('analytics.index') }}" class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}" @click="mobileNav = false">
@@ -1240,6 +1299,8 @@
         </a>
 
         {{-- ── Admin (System Administrator only) ──────────────────────────── --}}
+        @endif
+
         @if(isAdmin())
         <div class="nav-section" style="margin-top:.375rem;">Admin</div>
 
@@ -1321,7 +1382,7 @@
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
         </button>
-        <div class="topbar-title">
+        <div class="topbar-title" role="heading" aria-level="1">
             @yield('page-title', 'Dashboard')
             @hasSection('page-subtitle')
             <div class="topbar-breadcrumb">@yield('page-subtitle')</div>
@@ -1340,7 +1401,8 @@
             </button>
             <a href="{{ route('notifications.index') }}"
                class="topbar-icon {{ request()->routeIs('notifications.*') ? 'active-icon' : '' }}"
-               style="position:relative;">
+               style="position:relative;"
+               aria-label="Notifications{{ $unread > 0 ? ' (' . $unread . ' unread)' : '' }}" title="Notifications">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                 </svg>
@@ -1354,20 +1416,20 @@
         </div>
     </header>
 
-    <div class="page-content">
+    <main class="page-content" id="main-content" tabindex="-1">
         @yield('content')
-    </div>
+    </main>
 </div>
 
 {{-- ============================================================
      TOAST NOTIFICATIONS (floating, auto-dismiss)
      ============================================================ --}}
-<div class="toast-area">
+<div class="toast-area" aria-live="polite">
     @if(session('success'))
     <div x-data="{v:true}" x-show="v" x-init="setTimeout(()=>v=false,4500)"
          x-transition:leave="transition ease-in duration-300"
          x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-2"
-         class="toast toast-success">
+         class="toast toast-success" role="status">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
         <div style="flex:1;">
             <div>{{ session('success') }}</div>
@@ -1378,17 +1440,17 @@
             </a>
             @endif
         </div>
-        <button @click="v=false" class="toast-close">×</button>
+        <button type="button" @click="v=false" class="toast-close" aria-label="Dismiss message">×</button>
     </div>
     @endif
     @if(session('error'))
     <div x-data="{v:true}" x-show="v" x-init="setTimeout(()=>v=false,6000)"
          x-transition:leave="transition ease-in duration-300"
          x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-2"
-         class="toast toast-error">
+         class="toast toast-error" role="alert">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         <div style="flex:1;">{{ session('error') }}</div>
-        <button @click="v=false" class="toast-close">×</button>
+        <button type="button" @click="v=false" class="toast-close" aria-label="Dismiss message">×</button>
     </div>
     @endif
 </div>
@@ -1396,7 +1458,7 @@
 {{-- ============================================================
      MOBILE BOTTOM NAVIGATION (hidden on desktop via CSS)
      ============================================================ --}}
-<nav class="mob-bottom-nav">
+<nav class="mob-bottom-nav" aria-label="Quick links">
 
     {{-- Home --}}
     <a href="{{ route('dashboard') }}"
@@ -1418,6 +1480,7 @@
     </a>
 
     {{-- Collections --}}
+    @if(canAccess('System Administrator', 'MENRO Officer'))
     <a href="{{ route('collections.index') }}"
        class="mob-nav-item {{ request()->routeIs('collections.*') ? 'mob-nav-active' : '' }}">
         <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -1428,8 +1491,10 @@
         </svg>
         <span>Collect</span>
     </a>
+    @endif
 
     {{-- Compliance (with open violations badge) --}}
+    @if(canAccess('System Administrator', 'MENRO Officer', 'Field Inspector'))
     <a href="{{ route('compliance.index') }}"
        class="mob-nav-item {{ request()->routeIs('compliance.*') || request()->routeIs('inspections.*') || request()->routeIs('violations.*') || request()->routeIs('incidents.*') ? 'mob-nav-active' : '' }}">
         @if(isset($openVio) && $openVio > 0)
@@ -1440,6 +1505,7 @@
         </svg>
         <span>Comply</span>
     </a>
+    @endif
 
     {{-- Menu (opens full sidebar; shows badge if unread notifications) --}}
     <button class="mob-nav-item {{ !request()->routeIs('dashboard') && !request()->routeIs('entries.*') && !request()->routeIs('collections.*') && !request()->routeIs('compliance.*') && !request()->routeIs('inspections.*') && !request()->routeIs('violations.*') && !request()->routeIs('incidents.*') ? 'mob-nav-active' : '' }}"
@@ -1458,7 +1524,77 @@
 </nav>
 
 @livewireScripts
+
+{{-- Shared confirmation dialog. Any element with data-confirm="..." asks first;
+     data-confirm-label sets the confirm button text, data-confirm-tone="neutral"
+     uses the primary style instead of the danger style. --}}
+<dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message" style="max-width:26rem;">
+    <h2 id="confirm-title" class="modal-title" style="margin-bottom:0.75rem;">Please confirm</h2>
+    <p id="confirm-message" style="color:var(--text-muted);font-size:0.875rem;line-height:1.55;margin-bottom:1.5rem;overflow-wrap:anywhere;"></p>
+    <div style="display:flex;justify-content:flex-end;gap:0.5rem;flex-wrap:wrap;">
+        <button type="button" id="confirm-cancel" class="btn-secondary" autofocus>Cancel</button>
+        <button type="button" id="confirm-ok" class="btn-danger">Delete</button>
+    </div>
+</dialog>
 <script>
+(function () {
+    var dlg = document.getElementById('confirm-dialog');
+    if (!dlg) return;
+    var msg = document.getElementById('confirm-message');
+    var ok = document.getElementById('confirm-ok');
+    var cancel = document.getElementById('confirm-cancel');
+    var pending = null;
+
+    function proceed() {
+        var el = pending; pending = null;
+        if (!el) return;
+        el.setAttribute('data-confirmed', '');
+        el.click();
+        el.removeAttribute('data-confirmed');
+    }
+
+    // Capture phase, so this runs before Livewire's own click handler.
+    document.addEventListener('click', function (e) {
+        var el = e.target.closest ? e.target.closest('[data-confirm]') : null;
+        if (!el || el.hasAttribute('data-confirmed')) return;
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+        pending = el;
+        msg.textContent = el.getAttribute('data-confirm');
+        ok.textContent = el.getAttribute('data-confirm-label') || 'Delete';
+        ok.className = el.getAttribute('data-confirm-tone') === 'neutral' ? 'btn-primary' : 'btn-danger';
+        if (typeof dlg.showModal === 'function') { dlg.showModal(); }
+        else if (window.confirm(msg.textContent)) { proceed(); }
+    }, true);
+
+    ok.addEventListener('click', function () { dlg.close(); proceed(); });
+    cancel.addEventListener('click', function () { pending = null; dlg.close(); });
+    dlg.addEventListener('cancel', function () { pending = null; });          // Esc
+    dlg.addEventListener('click', function (e) { if (e.target === dlg) { pending = null; dlg.close(); } }); // backdrop
+})();
+</script>
+<script>
+// Toasts raised by Livewire actions (see AppServiceProvider): "Entry deleted." etc.
+window.addEventListener('toast', function (e) {
+    var d = e.detail || {};
+    var area = document.querySelector('.toast-area');
+    if (!area || !d.message) return;
+    var isError = d.type === 'error';
+    var el = document.createElement('div');
+    el.className = 'toast ' + (isError ? 'toast-error' : 'toast-success');
+    el.setAttribute('role', isError ? 'alert' : 'status');
+    var text = document.createElement('div');
+    text.style.flex = '1';
+    text.textContent = d.message;
+    var close = document.createElement('button');
+    close.type = 'button'; close.className = 'toast-close'; close.textContent = '×';
+    close.setAttribute('aria-label', 'Dismiss message');
+    function remove() { if (el.parentNode) el.parentNode.removeChild(el); }
+    close.addEventListener('click', remove);
+    el.appendChild(text); el.appendChild(close);
+    area.appendChild(el);
+    setTimeout(remove, isError ? 6000 : 4500);
+});
+
 function menroApplyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     var sun = document.getElementById('themeIconSun');

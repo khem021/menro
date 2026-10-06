@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Users;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Support\Like;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -47,9 +48,9 @@ class UserIndex extends Component
         $users = User::with('role:role_id,role_name')
             ->when($this->search, fn($q) =>
                 $q->where(fn($w) => $w
-                    ->where('full_name', 'ILIKE', "%{$this->search}%")
-                    ->orWhere('username', 'ILIKE', "%{$this->search}%")
-                    ->orWhere('email', 'ILIKE', "%{$this->search}%"))
+                    ->whereRaw('LOWER(full_name) LIKE ?', [Like::contains($this->search)])
+                    ->orWhereRaw('LOWER(username) LIKE ?', [Like::contains($this->search)])
+                    ->orWhereRaw('LOWER(email) LIKE ?', [Like::contains($this->search)]))
             )
             ->when($this->role_id, fn($q) => $q->where('role_id', $this->role_id))
             ->when($this->status,  fn($q) => $q->where('status', $this->status))

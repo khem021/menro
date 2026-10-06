@@ -25,6 +25,10 @@ class InspectionIndex extends Component
 
     public function delete($id)
     {
+        if (!canAccess('System Administrator', 'MENRO Officer')) {
+            abort(403, 'Access denied.');
+        }
+
         $insp = Inspection::findOrFail($id);
         logAudit('delete', 'Inspection', $id, $insp->toArray());
         $insp->delete();
