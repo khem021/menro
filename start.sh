@@ -24,7 +24,23 @@ mkdir -p \
 # public/storage lives on the container filesystem, not the volume, so the
 # symlink has to be recreated every boot. Its target must already exist (above)
 # or /storage/avatars/* serves 404.
-php artisan storage:link --force 2>/dev/null || true
+#
+# Errors are NOT swallowed here. Hiding them once already cost a day: every
+# uploaded avatar 404'd with nothing in the log to say why.
+if [ -e public/storage ] && [ ! -L public/storage ]; then
+    echo "[start] public/storage exists but is not a symlink — replacing it"
+    rm -rf public/storage || echo "[start] WARNING: could not remove public/storage"
+fi
+
+php artisan storage:link --force || echo "[start] WARNING: storage:link exited non-zero"
+
+if [ -L public/storage ]; then
+    echo "[start] storage link ok: public/storage -> $(readlink -f public/storage)"
+else
+    echo "[start] WARNING: public/storage is not a symlink. Uploaded files will 404."
+    echo "[start]          A Railway volume mounted at /app/public/storage would cause"
+    echo "[start]          exactly this — it belongs at /app/storage/app instead."
+fi
 
 # ---------------------------------------------------------------------------
 # 2. Schema and data.
