@@ -204,23 +204,42 @@ class FreshDemoSeeder extends Seeder
         // Rice mill → category 6 (construction debris / processing residue) extra entries
         $riceMillId = DB::table('waste_generators')->where('generator_name', 'Magsaysay Rice Mill')->value('generator_id');
 
+        // Runs to the END of the current month, not the end of the previous one:
+        // stopping a month short left the dashboard's "Waste This Month" and the
+        // cluster chart's Daily/Weekly/Monthly views empty on a fresh install.
+        // DemoRecentActivitySeeder then fills the current month up to today.
+        $today = Carbon::now();
+
+        /** A day inside $month, never later than today. */
+        $dayIn = function (Carbon $month) use ($today) {
+            $last = min(26, $month->copy()->endOfMonth()->day - 1);
+            if ($month->isSameMonth($today)) {
+                $last = min($last, $today->day - 1);
+            }
+            return $month->copy()->addDays($last > 0 ? rand(0, $last) : 0);
+        };
+
         foreach ($genIds as $gid) {
             $perMonth = rand(3, 6);
-            for ($m = 0; $m < 12; $m++) {
+            for ($m = 0; $m <= 12; $m++) {
                 $md = $startDate->copy()->addMonths($m);
+                if ($md->greaterThan($today)) {
+                    break;
+                }
                 for ($e = 0; $e < $perMonth; $e++) {
                     $catId = rand(1, 3); // mostly biodegradable/recyclable/residual
                     if ($gid == $hospitalId) $catId = 4;
+                    $day = $dayIn($md);
                     $entries[] = [
                         'generator_id' => $gid,
                         'category_id'  => $catId,
                         'quantity'     => round(rand(40, 480) + (rand(0, 99) / 100), 2),
                         'unit'         => 'kg',
-                        'entry_date'   => $md->copy()->addDays(rand(0, 26))->toDateString(),
+                        'entry_date'   => $day->toDateString(),
                         'remarks'      => null,
                         'encoded_by'   => $encoderId,
-                        'created_at'   => $md->copy()->addDays(rand(0, 26))->setHour(rand(8, 17)),
-                        'updated_at'   => $md->copy()->addDays(rand(0, 26))->setHour(rand(8, 17)),
+                        'created_at'   => $day->copy()->setHour(rand(8, 17)),
+                        'updated_at'   => $day->copy()->setHour(rand(8, 17)),
                     ];
                 }
             }
@@ -228,18 +247,22 @@ class FreshDemoSeeder extends Seeder
 
         // Special processing waste for rice mill (category 6)
         if ($riceMillId) {
-            for ($m = 0; $m < 12; $m++) {
+            for ($m = 0; $m <= 12; $m++) {
                 $md = $startDate->copy()->addMonths($m);
+                if ($md->greaterThan($today)) {
+                    break;
+                }
+                $day = $dayIn($md);
                 $entries[] = [
                     'generator_id' => $riceMillId,
                     'category_id'  => 6,
                     'quantity'     => round(rand(250, 650) + (rand(0, 99) / 100), 2),
                     'unit'         => 'kg',
-                    'entry_date'   => $md->copy()->addDays(rand(1, 26))->toDateString(),
+                    'entry_date'   => $day->toDateString(),
                     'remarks'      => 'Rice hull and processing residue — monthly collection',
                     'encoded_by'   => $encoderId,
-                    'created_at'   => $md->copy()->addDays(rand(1, 26))->setHour(9),
-                    'updated_at'   => $md->copy()->addDays(rand(1, 26))->setHour(9),
+                    'created_at'   => $day->copy()->setHour(9),
+                    'updated_at'   => $day->copy()->setHour(9),
                 ];
             }
         }

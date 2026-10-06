@@ -43,6 +43,11 @@ if [ "${SEED_ON_BOOT:-true}" = "true" ]; then
     php artisan db:seed --force --class=WasteCategorySeeder
     php artisan db:seed --force --class=UserSeeder
     php artisan db:seed --force --class=FreshDemoSeeder
+    # FreshDemoSeeder only ever runs once, so its newest entry drifts into the
+    # past as real time moves on. This tops the data up to today, keeping the
+    # dashboard's "this month" figures and the cluster chart's Daily/Weekly/
+    # Monthly views populated on every deploy.
+    php artisan db:seed --force --class=DemoRecentActivitySeeder
 else
     echo "[start] SEED_ON_BOOT=false — skipping seeders"
 fi
