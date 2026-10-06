@@ -80,6 +80,19 @@ class FreshDemoSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
             }
+
+            // Writing explicit ids leaves Postgres's identity sequence untouched,
+            // so without this the next Cluster::create() reuses id 1 and dies on a
+            // duplicate key. Keep in step with the resync migration.
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement(<<<'SQL'
+                    SELECT setval(
+                        pg_get_serial_sequence('clusters', 'id'),
+                        GREATEST(COALESCE((SELECT MAX(id) FROM clusters), 0), 1),
+                        (SELECT COUNT(*) FROM clusters) > 0
+                    )
+                SQL);
+            }
         }
 
         foreach ($clusterMap as $cluster => $names) {
