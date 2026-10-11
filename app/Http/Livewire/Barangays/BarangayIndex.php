@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Barangays;
 use App\Models\Barangay;
 use App\Models\BarangaySector;
 use App\Models\SectorMember;
+use App\Support\Like;
 use Livewire\Component;
 
 class BarangayIndex extends Component
@@ -265,7 +266,7 @@ class BarangayIndex extends Component
     public function render()
     {
         $barangays = Barangay::with('sectors')
-            ->when($this->search, fn($q) => $q->where('barangay_name', 'ILIKE', '%' . $this->search . '%'))
+            ->when($this->search, fn($q) => $q->whereRaw('LOWER(barangay_name) LIKE ?', [Like::contains($this->search)]))
             ->orderBy('barangay_name')
             ->get();
 

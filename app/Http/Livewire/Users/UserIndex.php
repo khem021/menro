@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Users;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Support\Like;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -32,12 +33,30 @@ class UserIndex extends Component
 
     public function delete($id)
     {
+        // mount() does not re-run on Livewire action requests, and route
+        // middleware never sees them, so the check has to live here too.
+        requireRole('System Administrator');
+
         if ($id === session('auth_user_id')) {
             session()->flash('error', 'You cannot delete your own account.');
             return;
         }
         $u = User::findOrFail($id);
-        logAudit('delete', 'User', $id, ['username' => $u->username]);
+
+        // Self-deletion is already refused above, but an inactive administrator
+        // could still delete the only active one and strand the role.
+        $adminRoleId = (int) Role::where('role_name', 'System Administrator')->value('role_id');
+
+        if ((int) $u->role_id === $adminRoleId && $u->status === 'active'
+            && User::where('role_id', $adminRoleId)->where('status', 'active')
+                ->where('user_id', '!=', $id)->doesntExist()) {
+            session()->flash('error', 'That is the only active administrator. Promote someone else first.');
+            return;
+        }
+
+        // The full row, as every other delete site records it. User::$hidden
+        // holds password_hash, and toArray() respects it, so no hash is stored.
+        logAudit('delete', 'User', $id, $u->toArray());
         $u->delete();
         session()->flash('success', 'User deleted.');
     }
@@ -47,9 +66,9 @@ class UserIndex extends Component
         $users = User::with('role:role_id,role_name')
             ->when($this->search, fn($q) =>
                 $q->where(fn($w) => $w
-                    ->where('full_name', 'ILIKE', "%{$this->search}%")
-                    ->orWhere('username', 'ILIKE', "%{$this->search}%")
-                    ->orWhere('email', 'ILIKE', "%{$this->search}%"))
+                    ->whereRaw('LOWER(full_name) LIKE ?', [Like::contains($this->search)])
+                    ->orWhereRaw('LOWER(username) LIKE ?', [Like::contains($this->search)])
+                    ->orWhereRaw('LOWER(email) LIKE ?', [Like::contains($this->search)]))
             )
             ->when($this->role_id, fn($q) => $q->where('role_id', $this->role_id))
             ->when($this->status,  fn($q) => $q->where('status', $this->status))

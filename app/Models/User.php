@@ -4,12 +4,14 @@ namespace App\Models;
 
 use App\Models\Concerns\InvalidatesDataCache;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Model
 {
     use InvalidatesDataCache;
+    use SoftDeletes;
 
     protected static function dataCacheGroups(): array
     {

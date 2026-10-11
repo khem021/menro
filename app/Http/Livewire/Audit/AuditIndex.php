@@ -50,7 +50,10 @@ class AuditIndex extends Component
             AuditLog::query()->distinct()->orderBy('action')->pluck('action')
         );
         $users   = Cache::remember('audit:users', 300, fn() =>
-            User::orderBy('full_name')->get(['user_id', 'full_name'])
+            // withTrashed(): archiving an account must not make its history
+            // unfilterable. The audit trail is the one place that has to keep
+            // naming people who are gone.
+            User::withTrashed()->orderBy('full_name')->get(['user_id', 'full_name'])
         );
 
         return view('livewire.audit.audit-index', compact('logs', 'modules', 'actions', 'users'))
