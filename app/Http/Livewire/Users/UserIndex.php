@@ -42,7 +42,21 @@ class UserIndex extends Component
             return;
         }
         $u = User::findOrFail($id);
-        logAudit('delete', 'User', $id, ['username' => $u->username]);
+
+        // Self-deletion is already refused above, but an inactive administrator
+        // could still delete the only active one and strand the role.
+        $adminRoleId = (int) Role::where('role_name', 'System Administrator')->value('role_id');
+
+        if ((int) $u->role_id === $adminRoleId && $u->status === 'active'
+            && User::where('role_id', $adminRoleId)->where('status', 'active')
+                ->where('user_id', '!=', $id)->doesntExist()) {
+            session()->flash('error', 'That is the only active administrator. Promote someone else first.');
+            return;
+        }
+
+        // The full row, as every other delete site records it. User::$hidden
+        // holds password_hash, and toArray() respects it, so no hash is stored.
+        logAudit('delete', 'User', $id, $u->toArray());
         $u->delete();
         session()->flash('success', 'User deleted.');
     }

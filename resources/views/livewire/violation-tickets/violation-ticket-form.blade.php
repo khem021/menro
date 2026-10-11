@@ -10,35 +10,52 @@
     <div class="max-w-2xl mx-auto">
         <form wire:submit.prevent="save">
 
-            @if($ticketId)
             <div class="form-section">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--card-border);">
-                    <h3 class="form-section-title" style="margin:0;padding:0;border:none;">Ticket Information (auto-generated)</h3>
+                    <h3 class="form-section-title" style="margin:0;padding:0;border:none;">{{ $ticketId ? 'Ticket Information' : 'Ticket Information (preview)' }}</h3>
+                    @if($ticketId)
                     <a href="{{ route('violation-tickets.receipt', $ticketId) }}" target="_blank" class="btn-secondary"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print Receipt</a>
+                    @endif
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div>
-                        <label class="form-label">Ticket Number</label>
-                        <div class="form-input" style="background:var(--card-border);cursor:not-allowed;">{{ $ticket_number }}</div>
+                        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+                            <span>Ticket Number @if(!$auto_ticket_number)<span class="text-red-500">*</span>@endif</span>
+                            @if(!$ticketId)
+                            <span style="font-weight:400;font-size:0.6875rem;color:var(--text-muted);display:inline-flex;align-items:center;gap:0.25rem;">
+                                <input type="checkbox" id="auto_ticket_number" wire:model="auto_ticket_number" style="margin:0;">
+                                <label for="auto_ticket_number" style="margin:0;cursor:pointer;">Auto</label>
+                            </span>
+                            @endif
+                        </label>
+                        @if($auto_ticket_number && !$ticketId)
+                            <div class="form-input" style="background:var(--card-border);cursor:not-allowed;">{{ $ticket_number }}</div>
+                            <p class="form-hint" style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.25rem;">Assigned when you save. If another ticket is issued first, the next free number is used.</p>
+                        @else
+                            <input type="text" wire:model.defer="ticket_number" class="form-input" placeholder="2026-0001" />
+                            <p class="form-hint" style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.25rem;">Format YYYY-NNNN.</p>
+                        @endif
+                        @error('ticket_number') <p class="form-error">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="form-label">Offense</label>
-                        <div class="form-input" style="background:var(--card-border);cursor:not-allowed;">{{ \App\Models\ViolationTicket::offenseLabel($offense_number) }}</div>
+                        <div class="form-input" style="background:var(--card-border);cursor:not-allowed;">
+                            <span class="badge {{ \App\Models\ViolationTicket::offenseBadge($offense_number ?? 1) }}">{{ \App\Models\ViolationTicket::offenseLabel($offense_number ?? 1) }}</span>
+                        </div>
                     </div>
                     <div>
                         <label class="form-label">Penalty</label>
-                        <div class="form-input" style="background:var(--card-border);cursor:not-allowed;">₱{{ number_format($penalty_amount, 2) }}</div>
+                        <div class="form-input" style="background:var(--card-border);cursor:not-allowed;">₱{{ number_format($penalty_amount ?? 0, 2) }}</div>
                     </div>
                 </div>
             </div>
-            @endif
 
             <div class="form-section">
                 <h3 class="form-section-title">Violator Details</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div class="md:col-span-2">
                         <label class="form-label">Name of Violator <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model.defer="violator_name" class="form-input" placeholder="LastName, FirstName M." />
+                        <input type="text" wire:model.debounce.500ms="violator_name" class="form-input" placeholder="LastName, FirstName M." />
                         @error('violator_name') <p class="form-error">{{ $message }}</p> @enderror
                     </div>
                     <div class="md:col-span-2">
@@ -56,11 +73,9 @@
                         <label class="form-label">Type of Violation <span class="text-red-500">*</span></label>
                         <select wire:model="violation_type" class="form-select">
                             <option value="">Select type…</option>
-                            <option value="littering">Littering</option>
-                            <option value="dumping">Throwing/Dumping of Waste in Public</option>
-                            <option value="burning">Burning of Solid Waste</option>
-                            <option value="no_segregation">No Segregation of Waste</option>
-                            <option value="other">Other Violations</option>
+                            @foreach(\App\Models\ViolationTicket::VIOLATION_TYPES as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
                         </select>
                         @error('violation_type') <p class="form-error">{{ $message }}</p> @enderror
                     </div>

@@ -30,14 +30,26 @@ class FreshDemoSeeder extends Seeder
         $this->command->info('Seeding fresh demo data…');
 
         // ── 1. Users ─────────────────────────────────────────────────────────
-        $roles = DB::table('roles')->pluck('role_id', 'role_name');
+        // Resolved once, up front: users.role_id is NOT NULL, so looking the role
+        // up per user would turn a missing row into an opaque constraint violation
+        // halfway through the insert loop.
+        $staffRoleId = DB::table('roles')->where('role_name', 'MENRO Staff')->value('role_id');
 
+        if (! $staffRoleId) {
+            $this->command->error('MENRO Staff role is missing - run RoleSeeder first.');
+
+            return;
+        }
+
+        // All five are MENRO Staff. They stay distinct accounts because the rules
+        // that survived the role consolidation are per-user, not per-role: a staff
+        // member may only edit the waste entries they encoded themselves.
         $newUsers = [
-            ['username' => 'menro',     'full_name' => 'Ma. Lourdes Dela Cruz',   'email' => 'menro@madrid.gov.ph',      'role' => 'MENRO Officer'],
-            ['username' => 'encoder',   'full_name' => 'Roberto Santillan Jr.',   'email' => 'encoder@madrid.gov.ph',    'role' => 'Data Encoder'],
-            ['username' => 'inspector', 'full_name' => 'Felix T. Navarro',         'email' => 'inspector@madrid.gov.ph',  'role' => 'Field Inspector'],
-            ['username' => 'brgy_user', 'full_name' => 'Natividad Reyes',          'email' => 'barangay@madrid.gov.ph',   'role' => 'Barangay User'],
-            ['username' => 'viewer',    'full_name' => 'Cristina M. Aquino',       'email' => 'viewer@madrid.gov.ph',     'role' => 'Report Viewer'],
+            ['username' => 'menro',     'full_name' => 'Ma. Lourdes Dela Cruz',   'email' => 'menro@madrid.gov.ph'],
+            ['username' => 'encoder',   'full_name' => 'Roberto Santillan Jr.',   'email' => 'encoder@madrid.gov.ph'],
+            ['username' => 'inspector', 'full_name' => 'Felix T. Navarro',         'email' => 'inspector@madrid.gov.ph'],
+            ['username' => 'brgy_user', 'full_name' => 'Natividad Reyes',          'email' => 'barangay@madrid.gov.ph'],
+            ['username' => 'viewer',    'full_name' => 'Cristina M. Aquino',       'email' => 'viewer@madrid.gov.ph'],
         ];
 
         foreach ($newUsers as $u) {
@@ -47,7 +59,7 @@ class FreshDemoSeeder extends Seeder
                     'full_name'     => $u['full_name'],
                     'email'         => $u['email'],
                     'password_hash' => bcrypt('admin123'),
-                    'role_id'       => $roles[$u['role']],
+                    'role_id'       => $staffRoleId,
                     'status'        => 'active',
                     'created_at'    => now()->subDays(rand(90, 180)),
                     'updated_at'    => now(),
@@ -559,7 +571,7 @@ class FreshDemoSeeder extends Seeder
             ['title' => 'Collection Completed — Cluster 1','msg' => 'All Cluster 1 collection routes were completed successfully this week.',                                          'type' => 'success', 'days' => 3],
             ['title' => 'Incident Reported — Linibonan',   'msg' => 'An illegal dumping incident has been reported along the Linibonan creek road. Investigation underway.',           'type' => 'warning', 'days' => 3],
             ['title' => 'Compliance Rate Update',          'msg' => 'Monthly compliance rate is at 71% — 10 generators still flagged for inspection.',                                 'type' => 'info',    'days' => 2],
-            ['title' => 'New User Account Created',        'msg' => 'A new Data Encoder account has been activated.',                                                                  'type' => 'info',    'days' => 14],
+            ['title' => 'New User Account Created',        'msg' => 'A new MENRO Staff account has been activated.',                                                                  'type' => 'info',    'days' => 14],
             ['title' => 'Violation Resolved',              'msg' => 'The drainage clogging violation has been marked as resolved after a satisfactory site visit.',                    'type' => 'success', 'days' => 18],
             ['title' => 'Monthly Waste Volume Report',     'msg' => 'Total waste volume recorded this month: approx 12,450 kg. See Reports for the full breakdown.',                  'type' => 'info',    'days' => 1],
             ['title' => 'Open Burning Incident — Panayogon','msg' => 'Open burning reported near the sitio boundary. Field inspector dispatched.',                                    'type' => 'danger',  'days' => 1],

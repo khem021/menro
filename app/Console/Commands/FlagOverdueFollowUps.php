@@ -39,7 +39,7 @@ class FlagOverdueFollowUps extends Command
             ->update(['compliance_status' => 'non_compliant']);
 
         $recipientIds = User::whereHas('role', fn($q) =>
-            $q->whereIn('role_name', ['System Administrator', 'MENRO Officer'])
+            $q->whereIn('role_name', ROLES_STAFF())
         )->where('status', 'active')->pluck('user_id');
 
         if ($recipientIds->isNotEmpty()) {

@@ -92,22 +92,39 @@ class BugfixPassTest extends TestCase
 
     /* ---------- B1: delete authorization ---------- */
 
-    /** @dataProvider nonManagers */
-    public function test_b1_generators_cannot_be_deleted_by(string $who): void
+    /**
+     * Both surviving roles may delete generators and inspections, so the old
+     * "these four roles may not" cases went with the roles they named. What
+     * still has to hold is that an unrecognised role string fails closed:
+     * AuthMiddleware stores 'Unknown' when a user's role relation is missing,
+     * and a session minted before the role consolidation carries a name that no
+     * longer exists.
+     */
+    public function test_b1_a_session_with_an_unrecognised_role_cannot_delete(): void
     {
         $g = $this->newGenerator();
-        $this->as($who);
+        $u = User::where('username', 'menro')->firstOrFail();
 
-        $this->assertSame(403, $this->actionStatus(GeneratorIndex::class, 'delete', [$g->generator_id]));
-        $this->assertTrue(WasteGenerator::whereKey($g->generator_id)->exists());
+        foreach (['Unknown', 'Data Encoder'] as $role) {
+            $this->flushSession();
+            $state = [
+                'auth_user_id' => $u->user_id,
+                'auth_role'    => $role,
+                'auth_pw'      => passwordFingerprint($u->password_hash),
+            ];
+            session($state);
+            $this->withSession($state);
+
+            $this->assertSame(403, $this->actionStatus(GeneratorIndex::class, 'delete', [$g->generator_id]), $role);
+            $this->assertTrue(WasteGenerator::whereKey($g->generator_id)->exists(), $role);
+
+            $id = Inspection::firstOrFail()->inspection_id;
+            $this->assertSame(403, $this->actionStatus(InspectionIndex::class, 'delete', [$id]), $role);
+            $this->assertTrue(Inspection::whereKey($id)->exists(), $role);
+        }
     }
 
-    public static function nonManagers(): array
-    {
-        return ['encoder' => ['encoder'], 'inspector' => ['inspector'], 'barangay' => ['barangay'], 'viewer' => ['viewer']];
-    }
-
-    public function test_b1_officer_and_admin_can_delete_a_generator(): void
+    public function test_b1_staff_and_admin_can_delete_a_generator(): void
     {
         foreach (['menro', 'admin'] as $who) {
             $g = $this->newGenerator();
@@ -131,16 +148,6 @@ class BugfixPassTest extends TestCase
 
         $this->as('admin');
         $this->assertNull($this->actionStatus(EntryIndex::class, 'delete', [$theirs->entry_id]));
-    }
-
-    /** @dataProvider nonManagers */
-    public function test_b1_inspections_cannot_be_deleted_by(string $who): void
-    {
-        $id = Inspection::firstOrFail()->inspection_id;
-        $this->as($who);
-
-        $this->assertSame(403, $this->actionStatus(InspectionIndex::class, 'delete', [$id]));
-        $this->assertTrue(Inspection::whereKey($id)->exists());
     }
 
     /* ---------- B2: confirmations must be real on Livewire 2 ---------- */
@@ -197,7 +204,10 @@ class BugfixPassTest extends TestCase
 
         $t = $this->issueTicket('  juan DELA cruz ');
         $this->assertSame(2, $t->offense_number);
-        $this->assertEquals(1000.00, (float) $t->penalty_amount);
+        // Second offense under the municipal schedule: a first is a reprimand
+        // carrying no fine, a second is 500.
+        $this->assertEquals(500.00, (float) $t->penalty_amount);
+        $this->assertSame('2nd Offense', ViolationTicket::offenseLabel($t->offense_number));
     }
 
     /* ---------- B4: queries must not be PostgreSQL-only ---------- */
@@ -226,8 +236,15 @@ class BugfixPassTest extends TestCase
 
     /* ---------- B5: who may open ticket / inspection lists ---------- */
 
-    /** @dataProvider listAccess */
-    public function test_b5_list_pages_follow_the_module_roles(string $path, array $allowed): void
+    /**
+     * Every module list is open to both roles. Four of these usernames held a
+     * retired role before the consolidation reassigned them, so this is the
+     * direct proof that the reassignment granted access rather than leaving
+     * them silently 403ing.
+     *
+     * @dataProvider listAccess
+     */
+    public function test_b5_module_list_pages_are_open_to_both_roles(string $path): void
     {
         $t = ViolationTicket::create(['ticket_number' => '2093-0001', 'violator_name' => 'Pat', 'violation_type' => 'littering',
             'address' => 'x', 'offense_number' => 1, 'penalty_amount' => 500, 'issued_date' => '2026-01-01']);
@@ -235,23 +252,46 @@ class BugfixPassTest extends TestCase
 
         foreach (['admin', 'menro', 'encoder', 'inspector', 'barangay', 'viewer'] as $who) {
             $this->as($who);
-            $status = $this->get($path)->getStatusCode();
-            $this->assertSame(in_array($who, $allowed, true) ? 200 : 403, $status, "$who on $path");
+            $this->assertSame(200, $this->get($path)->getStatusCode(), "$who on $path");
         }
     }
 
     public static function listAccess(): array
     {
-        $three = ['admin', 'menro', 'inspector'];
-
         return [
-            'tickets' => ['/violation-tickets', $three],
-            'receipt' => ['/violation-tickets/{ticket}/receipt', $three],
-            'violations' => ['/violations', $three],
-            'inspections' => ['/inspections', $three],
-            'compliance' => ['/compliance', $three],
-            'collections' => ['/collections', ['admin', 'menro']],
+            'tickets'     => ['/violation-tickets'],
+            'receipt'     => ['/violation-tickets/{ticket}/receipt'],
+            'violations'  => ['/violations'],
+            'inspections' => ['/inspections'],
+            'compliance'  => ['/compliance'],
+            'collections' => ['/collections'],
         ];
+    }
+
+    /**
+     * The archive is a reports artefact, not an admin tool, so both roles reach
+     * it. Users and the audit trail stay administrator-only above.
+     */
+    public function test_b5_the_archive_is_open_to_both_roles(): void
+    {
+        foreach (['admin', 'menro', 'encoder', 'inspector', 'barangay', 'viewer'] as $who) {
+            $this->as($who);
+            $this->assertSame(200, $this->get('/archive')->getStatusCode(), "$who on /archive");
+        }
+    }
+
+    /** The admin pages are the only boundary the two roles still have. */
+    public function test_b5_admin_pages_stay_closed_to_staff(): void
+    {
+        foreach (['/users', '/users/create', '/audit'] as $path) {
+            foreach (['menro', 'encoder', 'inspector', 'barangay', 'viewer'] as $who) {
+                $this->as($who);
+                $this->assertSame(403, $this->get($path)->getStatusCode(), "$who on $path");
+            }
+
+            $this->as('admin');
+            $this->assertSame(200, $this->get($path)->getStatusCode(), "admin on $path");
+        }
     }
 
     public function test_b5_a_missing_ticket_receipt_is_a_404_for_allowed_roles(): void

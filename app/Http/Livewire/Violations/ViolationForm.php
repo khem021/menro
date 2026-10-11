@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Violations;
 use App\Models\Inspection;
 use App\Models\Violation;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class ViolationForm extends Component
@@ -19,19 +20,28 @@ class ViolationForm extends Component
     public string $resolution_status = 'open';
     public string $resolved_date     = '';
 
-    protected $rules = [
-        'inspection_id'     => 'required|integer|exists:inspections,inspection_id',
-        'violation_type'    => 'required|string|max:255',
-        'description'       => 'nullable|string|max:2000',
-        'severity'          => 'required|in:low,medium,high,critical',
-        'penalty_status'    => 'required|in:none,warning_issued,penalty_pending,penalty_applied',
-        'resolution_status' => 'required|in:open,in_progress,resolved,dismissed',
-        'resolved_date'     => 'nullable|date',
-    ];
+    // exists: and unique: go through Laravel's presence verifier, which
+    // queries the table directly and so ignores the soft-delete scope. Without
+    // withoutTrashed() a crafted request could attach a record to an archived
+    // parent.
+    /** A method, not a property: Rule::exists() cannot appear in a
+     *  constant expression. */
+    protected function rules(): array
+    {
+        return [
+            'inspection_id'     => ['required', 'integer', Rule::exists('inspections', 'inspection_id')->withoutTrashed()],
+            'violation_type'    => 'required|string|max:255',
+            'description'       => 'nullable|string|max:2000',
+            'severity'          => 'required|in:low,medium,high,critical',
+            'penalty_status'    => 'required|in:none,warning_issued,penalty_pending,penalty_applied',
+            'resolution_status' => 'required|in:open,in_progress,resolved,dismissed',
+            'resolved_date'     => 'nullable|date',
+            ];
+    }
 
     public function mount($id = null)
     {
-        if (!canAccess('System Administrator', 'MENRO Officer', 'Field Inspector')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -56,7 +66,7 @@ class ViolationForm extends Component
     {
         // mount() does not re-run on Livewire action requests, and route
         // middleware never sees them, so the check has to live here too.
-        requireRole(...ROLES_FIELD());
+        requireRole(...ROLES_STAFF());
 
         $this->validate();
 

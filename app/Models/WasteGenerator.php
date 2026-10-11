@@ -2,17 +2,31 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\CascadesSoftDeletes;
 use App\Models\Concerns\InvalidatesDataCache;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WasteGenerator extends Model
 {
+    use CascadesSoftDeletes;
     use InvalidatesDataCache;
+    use SoftDeletes;
 
     protected $table = 'waste_generators';
     protected $primaryKey = 'generator_id';
+
+    /** @return list<string> */
+    protected static function cascadeSoftDeletes(): array
+    {
+        // A generator's entries and inspections used to be removed by the
+        // database's ON DELETE CASCADE; soft deleting has to carry them along
+        // itself or they outlive the generator they describe.
+        return ['wasteEntries', 'inspections'];
+    }
 
     protected static function dataCacheGroups(): array
     {
@@ -45,7 +59,12 @@ class WasteGenerator extends Model
 
     public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by', 'user_id');
+        // Who did this is history. Archiving someone's account must not blank
+        // their name out of the records they touched, so this relation ignores
+        // the soft-delete scope. (BelongsTo::withTrashed() does not exist in
+        // Laravel 9; withoutGlobalScope is the supported equivalent.)
+        return $this->belongsTo(User::class, 'created_by', 'user_id')
+                    ->withoutGlobalScope(SoftDeletingScope::class);
     }
 
     public function wasteEntries(): HasMany

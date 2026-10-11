@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Livewire\Entries\EntryForm;
 use App\Http\Livewire\Incidents\IncidentForm;
+use App\Http\Livewire\Users\UserForm;
 use App\Http\Livewire\Users\UserIndex;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -13,14 +14,17 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 /**
- * Report Viewer is "read-only access to reports and dashboards", but the create
- * routes carried no role middleware and the forms only checked authorization
- * when editing — so any signed-in role could encode waste entries and report
- * incidents.
+ * What the two roles may do.
  *
- * The action-level tests matter most: a component's mount() runs only on the
- * first render, and Livewire's action requests never pass through the route
- * middleware, so a guard in either place alone leaves the action open.
+ * The 2026-10 consolidation left System Administrator and MENRO Staff, so the
+ * only role boundary still in the app is user management and the audit trail.
+ * The tests that used to assert "a Report Viewer cannot encode" or
+ * "a Barangay User cannot delete" were removed with the roles they named.
+ *
+ * The action-level tests matter most, and that has not changed: a component's
+ * mount() runs only on the first render, and Livewire's action requests never
+ * pass through the route middleware, so a guard in either place alone leaves the
+ * action open.
  */
 class RoleGatingTest extends TestCase
 {
@@ -62,60 +66,71 @@ class RoleGatingTest extends TestCase
         return null;
     }
 
-    // ── Pages ────────────────────────────────────────────────────────────────
+    // -- Pages ---------------------------------------------------------------
 
-    public function test_a_report_viewer_cannot_open_the_entry_form(): void
+    public function test_menro_staff_can_open_the_entry_form(): void
     {
-        $this->as('viewer');
-        $this->get('/entries/create')->assertForbidden();
-    }
-
-    public function test_a_report_viewer_cannot_open_the_incident_form(): void
-    {
-        $this->as('viewer');
-        $this->get('/incidents/create')->assertForbidden();
-    }
-
-    public function test_an_encoder_can_still_open_the_entry_form(): void
-    {
-        $this->as('encoder');
+        $this->as('menro');
         $this->get('/entries/create')->assertOk();
     }
 
-    public function test_a_barangay_user_can_still_report_an_incident(): void
+    public function test_menro_staff_can_report_an_incident(): void
     {
-        $this->as('barangay');
+        $this->as('menro');
         $this->get('/incidents/create')->assertOk();
     }
 
-    public function test_a_barangay_user_cannot_encode_waste_entries(): void
+    public function test_menro_staff_can_read_the_dashboard_and_entries(): void
     {
-        $this->as('barangay');
-        $this->get('/entries/create')->assertForbidden();
-    }
-
-    public function test_a_report_viewer_can_still_read_the_dashboard(): void
-    {
-        $this->as('viewer');
+        $this->as('menro');
         $this->get('/dashboard')->assertOk();
         $this->get('/entries')->assertOk();
     }
 
-    // ── Actions (these bypass route middleware entirely) ─────────────────────
+    // -- Actions (these bypass route middleware entirely) ---------------------
 
-    public function test_the_save_action_rejects_a_report_viewer_even_without_the_route(): void
+    /**
+     * The admin pages are the only role boundary left, so this is where the
+     * "a Livewire action must guard itself" rule now has to be proven.
+     */
+    public function test_the_user_save_action_rejects_staff_even_without_the_route(): void
     {
-        $this->as('viewer');
+        $this->as('menro');
+
+        // Called on the component directly, not through Livewire's harness: a
+        // non-admin cannot mount UserForm at all, so the harness never builds a
+        // payload to call an action with. This asserts the guard inside save()
+        // itself, which is the layer that matters if a payload ever leaked.
+        $status = null;
+        try {
+            DB::transaction(fn () => (new UserForm())->save());
+        } catch (HttpException $e) {
+            $status = $e->getStatusCode();
+        }
+
+        $this->assertSame(403, $status, 'MENRO Staff must not be able to save a user.');
+    }
+
+    /**
+     * A session minted before the consolidation still carries a role name that
+     * no longer exists. AuthMiddleware refreshes it on a full page request, but
+     * a Livewire action must refuse it rather than fall open.
+     */
+    public function test_a_session_holding_a_retired_role_name_cannot_write(): void
+    {
+        $u = User::where('username', 'menro')->firstOrFail();
+
+        $this->flushSession();
+        $state = [
+            'auth_user_id' => $u->user_id,
+            'auth_role'    => 'Data Encoder',
+            'auth_pw'      => passwordFingerprint($u->password_hash),
+        ];
+        session($state);
+        $this->withSession($state);
 
         $this->assertSame(403, $this->actionStatus(EntryForm::class, 'save'));
         $this->assertSame(403, $this->actionStatus(IncidentForm::class, 'save'));
-    }
-
-    public function test_a_barangay_user_cannot_reach_the_entry_save_action(): void
-    {
-        $this->as('barangay');
-
-        $this->assertSame(403, $this->actionStatus(EntryForm::class, 'save'));
     }
 
     /**
@@ -138,7 +153,7 @@ class RoleGatingTest extends TestCase
             $status = $e->getStatusCode();
         }
 
-        $this->assertSame(403, $status, 'A MENRO Officer must not be able to delete a user.');
+        $this->assertSame(403, $status, 'A MENRO Staff must not be able to delete a user.');
         $this->assertDatabaseHas('users', ['user_id' => $victim->user_id]);
     }
 

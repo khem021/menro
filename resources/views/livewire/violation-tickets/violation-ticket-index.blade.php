@@ -19,7 +19,18 @@
             <div style="width:1.875rem;height:1.875rem;border-radius:0.5rem;background:rgba(96,165,250,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="13" height="13" fill="none" stroke="var(--info-text)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
         </div>
         <div class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
-            <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Total Penalties Assessed</div><div style="font-size:1.375rem;font-weight:700;color:var(--danger-text);line-height:1.1;margin:0.2rem 0;">₱{{ number_format($stats['total_penalties'], 2) }}</div></div>
+            <div>
+                <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:center;gap:0.3rem;">
+                    Total Penalties Assessed
+                    @if($stats['penalties_scope'])
+                        <span class="badge badge-blue" style="font-size:0.55rem;padding:0.05rem 0.3rem;letter-spacing:0;text-transform:none;">filtered</span>
+                    @endif
+                </div>
+                <div style="font-size:1.375rem;font-weight:700;color:var(--danger-text);line-height:1.1;margin:0.2rem 0;" title="{{ $stats['penalties_scope'] ?? 'Every ticket on record' }}">₱{{ number_format($stats['total_penalties'], 2) }}</div>
+                @if($stats['penalties_scope'])
+                    <div style="font-size:0.625rem;color:var(--text-muted);line-height:1.2;">{{ $stats['penalties_scope'] }}</div>
+                @endif
+            </div>
             <div style="width:1.875rem;height:1.875rem;border-radius:0.5rem;background:rgba(248,113,113,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="13" height="13" fill="none" stroke="var(--danger-text)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .672-3 1.5S10.343 11 12 11s3 .672 3 1.5-1.343 1.5-3 1.5m0-6c1.11 0 2.08.402 2.599 1M12 8V6m0 8v2m0-10a9 9 0 100 18 9 9 0 000-18z"/></svg></div>
         </div>
     </div>
@@ -59,8 +70,8 @@
                     <tr>
                         <th class="table-header">Ticket #</th>
                         <th class="table-header">Name of Violator</th>
-                        <th class="table-header">Type of Violation</th>
                         <th class="table-header">Address</th>
+                        <th class="table-header">Type of Violation</th>
                         <th class="table-header">Penalty</th>
                         <th class="table-header">Issued</th>
                         <th class="table-header" style="text-align:right;">Actions</th>
@@ -71,6 +82,7 @@
                     <tr class="table-row">
                         <td class="table-cell" style="font-weight:600;color:var(--text);font-size:0.8125rem;white-space:nowrap;">{{ $t->ticket_number }}</td>
                         <td class="table-cell" style="color:var(--text);font-size:0.8125rem;">{{ $t->violator_name }}</td>
+                        <td class="table-cell" style="color:var(--text-muted);font-size:0.8125rem;">{{ $t->address }}</td>
                         <td class="table-cell">
                             @php $tc = match($t->violation_type) {'littering'=>'badge-yellow','dumping'=>'badge-red','burning'=>'badge-orange','no_segregation'=>'badge-blue',default=>'badge-gray'}; @endphp
                             <span class="badge {{ $tc }}">{{ \App\Models\ViolationTicket::VIOLATION_TYPES[$t->violation_type] ?? $t->violation_type }}</span>
@@ -78,10 +90,8 @@
                                 <div style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.15rem;">{{ $t->other_violation_description }}</div>
                             @endif
                         </td>
-                        <td class="table-cell" style="color:var(--text-muted);font-size:0.8125rem;">{{ $t->address }}</td>
                         <td class="table-cell">
-                            @php $oc = match($t->offense_number) {1=>'badge-blue',2=>'badge-yellow',default=>'badge-red'}; @endphp
-                            <span class="badge {{ $oc }}">{{ \App\Models\ViolationTicket::offenseLabel($t->offense_number) }}</span>
+                            <span class="badge {{ \App\Models\ViolationTicket::offenseBadge($t->offense_number) }}">{{ \App\Models\ViolationTicket::offenseLabel($t->offense_number) }}</span>
                             <div style="font-size:0.75rem;color:var(--text);font-weight:600;margin-top:0.15rem;">₱{{ number_format($t->penalty_amount, 2) }}</div>
                         </td>
                         <td class="table-cell" style="white-space:nowrap;">
@@ -92,7 +102,7 @@
                             <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.25rem;">
                                 <a href="{{ route('violation-tickets.receipt', $t->ticket_id) }}" target="_blank" class="btn-icon btn-icon-view" title="Print Receipt" aria-label="Print Receipt"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg></a>
                                 <a href="{{ route('violation-tickets.edit', $t->ticket_id) }}" class="btn-icon btn-icon-edit" title="Edit" aria-label="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
-                                @if(canAccess('System Administrator', 'MENRO Officer'))
+                                @if(canAccess(...ROLES_STAFF()))
                                 <button wire:click="delete({{ $t->ticket_id }})" data-confirm="Delete violation ticket {{ $t->ticket_number }} issued to {{ $t->violator_name }}?" class="btn-icon btn-icon-del" title="Delete" aria-label="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                                 @endif
                             </div>

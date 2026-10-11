@@ -208,7 +208,7 @@ class FullFlowTest extends TestCase
         // delete
         Livewire::test(\App\Http\Livewire\Generators\GeneratorIndex::class)
             ->call('delete', $id);
-        $this->assertDatabaseMissing('waste_generators', ['generator_id' => $id]);
+        $this->assertSoftDeleted('waste_generators', ['generator_id' => $id]);
     }
 
     /* ---------- Waste entries CRUD ---------- */
@@ -235,7 +235,7 @@ class FullFlowTest extends TestCase
         Livewire::test(\App\Http\Livewire\Entries\EntryForm::class, ['id' => $id])->assertOk();
 
         Livewire::test(\App\Http\Livewire\Entries\EntryIndex::class)->call('delete', $id);
-        $this->assertDatabaseMissing('waste_entries', ['entry_id' => $id]);
+        $this->assertSoftDeleted('waste_entries', ['entry_id' => $id]);
     }
 
     /* ---------- Inspections CRUD ---------- */
@@ -337,7 +337,7 @@ class FullFlowTest extends TestCase
         Livewire::test(\App\Http\Livewire\Collections\CollectionForm::class, ['id' => $id])->assertOk();
 
         Livewire::test(\App\Http\Livewire\Collections\CollectionIndex::class)->call('delete', $id);
-        $this->assertDatabaseMissing('collection_schedules', ['schedule_id' => $id]);
+        $this->assertSoftDeleted('collection_schedules', ['schedule_id' => $id]);
     }
 
     /* ---------- Users CRUD ---------- */

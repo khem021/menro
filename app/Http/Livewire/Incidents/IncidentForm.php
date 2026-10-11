@@ -6,6 +6,7 @@ use App\Models\Barangay;
 use App\Models\Incident;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class IncidentForm extends Component
@@ -21,23 +22,32 @@ class IncidentForm extends Component
     public string $assigned_to       = '';
     public string $resolution_notes  = '';
 
-    protected $rules = [
-        'barangay_id'      => 'required|integer|exists:barangays,barangay_id',
-        'incident_type'    => 'required|in:illegal_dumping,open_burning,improper_disposal,other',
-        'description'      => 'required|string|max:2000',
-        'location_details' => 'nullable|string|max:1000',
-        'date_reported'    => 'required|date',
-        'status'           => 'required|in:reported,for_validation,under_investigation,resolved,closed',
-        'assigned_to'      => 'nullable|integer|exists:users,user_id',
-        'resolution_notes' => 'nullable|string|max:2000',
-    ];
+    // exists: and unique: go through Laravel's presence verifier, which
+    // queries the table directly and so ignores the soft-delete scope. Without
+    // withoutTrashed() a crafted request could attach a record to an archived
+    // parent.
+    /** A method, not a property: Rule::exists() cannot appear in a
+     *  constant expression. */
+    protected function rules(): array
+    {
+        return [
+            'barangay_id'      => ['required', 'integer', Rule::exists('barangays', 'barangay_id')->withoutTrashed()],
+            'incident_type'    => 'required|in:illegal_dumping,open_burning,improper_disposal,other',
+            'description'      => 'required|string|max:2000',
+            'location_details' => 'nullable|string|max:1000',
+            'date_reported'    => 'required|date',
+            'status'           => 'required|in:reported,for_validation,under_investigation,resolved,closed',
+            'assigned_to'      => ['nullable', 'integer', Rule::exists('users', 'user_id')->withoutTrashed()],
+            'resolution_notes' => 'nullable|string|max:2000',
+            ];
+    }
 
     public function mount($id = null)
     {
         $this->date_reported = now()->format('Y-m-d');
 
         if ($id) {
-            if (!canAccess('System Administrator', 'MENRO Officer', 'Field Inspector')) {
+            if (!canAccess(...ROLES_STAFF())) {
                 abort(403, 'Access denied.');
             }
             $this->incidentId = (int) $id;
@@ -57,7 +67,7 @@ class IncidentForm extends Component
     {
         // mount() does not re-run on Livewire action requests, and route
         // middleware never sees them, so the check has to live here too.
-        requireRole(...ROLES_CONTRIBUTE());
+        requireRole(...ROLES_STAFF());
 
         $this->validate();
 

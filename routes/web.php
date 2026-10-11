@@ -22,22 +22,16 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Roles that may work with each module. The components re-check these in their
-// own mount()/actions; having them here as well means the route table shows
+// Both roles may work with every module below. The components re-check this in
+// their own mount()/actions; having it here as well means the route table shows
 // who can reach what.
-$managers   = 'role:System Administrator,MENRO Officer';
-$fieldStaff = 'role:System Administrator,MENRO Officer,Field Inspector';
-
-// Data Encoder is "responsible for encoding waste data", so it joins the
-// managers for waste entries.
-$encoders   = 'role:System Administrator,MENRO Officer,Data Encoder';
-
-// Anyone but Report Viewer, which is read-only by definition. Used for the
-// forms that any working role may legitimately submit.
-$contributors = 'role:System Administrator,MENRO Officer,Data Encoder,Field Inspector,Barangay User';
+//
+// This is not the same as "anyone signed in": AuthMiddleware stores 'Unknown'
+// when a user's role relation is missing, and this guard refuses that.
+$staff = 'role:System Administrator,MENRO Staff';
 
 // Authenticated routes
-Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff, $encoders, $contributors) {
+Route::middleware('auth.custom')->group(function () use ($staff) {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Generators
@@ -47,12 +41,12 @@ Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff,
 
     // Waste Entries
     Route::get('/entries', \App\Http\Livewire\Entries\EntryIndex::class)->name('entries.index');
-    Route::middleware($encoders)->group(function () {
+    Route::middleware($staff)->group(function () {
         Route::get('/entries/create', \App\Http\Livewire\Entries\EntryForm::class)->name('entries.create');
         Route::get('/entries/{id}/edit', \App\Http\Livewire\Entries\EntryForm::class)->name('entries.edit');
     });
 
-    Route::middleware($fieldStaff)->group(function () {
+    Route::middleware($staff)->group(function () {
         // Compliance (combined Inspections + Violations + Incidents)
         Route::get('/compliance', \App\Http\Livewire\Compliance\ComplianceIndex::class)->name('compliance.index');
 
@@ -72,7 +66,7 @@ Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff,
     // tracks generator-inspection violations tied to inspection_id.
     // These list private individuals' names and addresses, so they are limited
     // to the staff who issue and manage them.
-    Route::middleware($fieldStaff)->group(function () {
+    Route::middleware($staff)->group(function () {
         Route::get('/violation-tickets', \App\Http\Livewire\ViolationTickets\ViolationTicketIndex::class)->name('violation-tickets.index');
         Route::get('/violation-tickets/create', \App\Http\Livewire\ViolationTickets\ViolationTicketForm::class)->name('violation-tickets.create');
         Route::get('/violation-tickets/{id}/edit', \App\Http\Livewire\ViolationTickets\ViolationTicketForm::class)->name('violation-tickets.edit');
@@ -84,7 +78,7 @@ Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff,
     Route::get('/barangays/clusters', \App\Http\Livewire\Dashboard\ClusterConfig::class)->name('clusters.index');
 
     // Collections
-    Route::middleware($managers)->group(function () {
+    Route::middleware($staff)->group(function () {
         Route::get('/collections', \App\Http\Livewire\Collections\CollectionIndex::class)->name('collections.index');
         Route::get('/collections/create', \App\Http\Livewire\Collections\CollectionForm::class)->name('collections.create');
         Route::get('/collections/{id}/edit', \App\Http\Livewire\Collections\CollectionForm::class)->name('collections.edit');
@@ -92,7 +86,7 @@ Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff,
 
     // Incidents
     Route::get('/incidents', \App\Http\Livewire\Incidents\IncidentIndex::class)->name('incidents.index');
-    Route::middleware($contributors)->group(function () {
+    Route::middleware($staff)->group(function () {
         Route::get('/incidents/create', \App\Http\Livewire\Incidents\IncidentForm::class)->name('incidents.create');
         Route::get('/incidents/{id}/edit', \App\Http\Livewire\Incidents\IncidentForm::class)->name('incidents.edit');
     });
@@ -106,6 +100,16 @@ Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff,
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports/print',  [ReportController::class, 'printView'])->name('reports.print');
 
+    // Archive — archived waste-collection reports and deleted records. A
+    // reports artefact rather than an admin tool, so it sits with the staff
+    // routes; Users and the audit trail stay administrator-only below.
+    Route::middleware($staff)->group(function () {
+        Route::get('/archive', \App\Http\Livewire\Archive\ArchiveIndex::class)->name('archive.index');
+        Route::get('/archive/print', [ArchiveController::class, 'printDeleted'])->name('archive.print');
+        Route::get('/archive/{report}/download/{format}', [ArchiveController::class, 'download'])
+            ->name('archive.download')->where('format', 'xlsx|pdf');
+    });
+
     // Admin-only. Each of these components also re-checks with isAdmin() in
     // mount(); the middleware makes the restriction part of the route itself
     // rather than something a future component has to remember.
@@ -117,11 +121,6 @@ Route::middleware('auth.custom')->group(function () use ($managers, $fieldStaff,
 
         // Audit trail
         Route::get('/audit', \App\Http\Livewire\Audit\AuditIndex::class)->name('audit.index');
-
-        // Archive — automatically archived waste-collection reports
-        Route::get('/archive', \App\Http\Livewire\Archive\ArchiveIndex::class)->name('archive.index');
-        Route::get('/archive/{report}/download/{format}', [ArchiveController::class, 'download'])
-            ->name('archive.download')->where('format', 'xlsx|pdf');
     });
 
     // Settings

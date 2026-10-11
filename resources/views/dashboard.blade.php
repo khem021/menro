@@ -42,7 +42,7 @@
             </div>
         </a>
 
-        @php $violationsTag = canAccess('System Administrator', 'MENRO Officer', 'Field Inspector') ? 'a' : 'div'; @endphp
+        @php $violationsTag = canAccess(...ROLES_STAFF()) ? 'a' : 'div'; @endphp
         <{{ $violationsTag }} @if($violationsTag === 'a') href="{{ route('compliance.index') }}" @endif class="card" style="padding:0.625rem 0.875rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#f87171'" onmouseout="this.style.borderColor=''">
             <div>
                 <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Open Violations</div>
@@ -72,7 +72,7 @@
     @if($hasAlerts)
     <div style="display:flex;gap:0.375rem;flex-wrap:wrap;flex-shrink:0;">
         @if($alerts['critical_violations'] > 0)
-        @if(canAccess('System Administrator', 'MENRO Officer', 'Field Inspector'))
+        @if(canAccess(...ROLES_STAFF()))
         <a href="{{ route('compliance.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3);color:var(--danger-text);text-decoration:none;">
             <svg width="10" height="10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
             {{ $alerts['critical_violations'] }} critical violation{{ $alerts['critical_violations'] > 1 ? 's' : '' }} open → Review
@@ -80,7 +80,7 @@
         @endif
         @endif
         @if($alerts['overdue_followups'] > 0)
-        @if(canAccess('System Administrator', 'MENRO Officer', 'Field Inspector'))
+        @if(canAccess(...ROLES_STAFF()))
         <a href="{{ route('compliance.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(253,184,19,0.1);border:1px solid rgba(253,184,19,0.3);color:var(--accent-text);text-decoration:none;">
             <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ $alerts['overdue_followups'] }} overdue follow-up{{ $alerts['overdue_followups'] > 1 ? 's' : '' }} → Inspect
@@ -94,7 +94,7 @@
         </a>
         @endif
         @if($alerts['tomorrow_collections'] > 0)
-        @if(canAccess('System Administrator', 'MENRO Officer'))
+        @if(canAccess(...ROLES_STAFF()))
         <a href="{{ route('collections.index') }}" style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.3rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:var(--success-text);text-decoration:none;">
             <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
             {{ $alerts['tomorrow_collections'] }} collection{{ $alerts['tomorrow_collections'] > 1 ? 's' : '' }} tomorrow → Prepare
@@ -160,7 +160,7 @@
         <div class="card dash-panel" style="height:264px;">
             <div class="dash-panel-head">
                 <div class="dash-card-title" style="margin:0;">Upcoming Collections</div>
-                @if(canAccess('System Administrator', 'MENRO Officer'))
+                @if(canAccess(...ROLES_STAFF()))
                 <a href="{{ route('collections.index') }}" class="dash-panel-link">All ({{ $pendingCollections }}) →</a>
                 @endif
             </div>

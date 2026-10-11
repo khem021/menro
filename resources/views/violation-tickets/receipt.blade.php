@@ -141,6 +141,13 @@
         <div class="rcpt-subtitle">Issued under R.A. 9003 — Ecological Solid Waste Management Act of 2000</div>
     </div>
 
+    @if($ticket->trashed())
+    {{-- A printed archived ticket must never be mistaken for a live one. --}}
+    <div style="background:#b71c1c;color:#fff;padding:0.5rem 1rem;text-align:center;font-weight:700;letter-spacing:0.08em;font-size:0.8rem;text-transform:uppercase;">
+        Archived &mdash; deleted {{ $ticket->deleted_at->format('M d, Y') }}
+    </div>
+    @endif
+
     <div class="rcpt-number-band">
         <span>Ticket Number</span>
         {{ $ticket->ticket_number }}
@@ -181,7 +188,7 @@
         <div class="rcpt-offense-row">
             <div>
                 <div class="rcpt-label" style="margin-bottom:0.3rem;">Offense</div>
-                @php $oc = match((int) $ticket->offense_number) {1=>'o1',2=>'o2',default=>'o3'}; @endphp
+                @php $oc = match(\App\Models\ViolationTicket::offenseTier((int) $ticket->offense_number)) {1=>'o1',2=>'o2',default=>'o3'}; @endphp
                 <span class="rcpt-offense-badge {{ $oc }}">{{ \App\Models\ViolationTicket::offenseLabel($ticket->offense_number) }}</span>
             </div>
             <div style="text-align:right;">

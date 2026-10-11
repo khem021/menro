@@ -27,15 +27,19 @@ class UiPassTest extends TestCase
         $this->withSession($state);
     }
 
-    public function test_the_sidebar_only_lists_pages_the_role_can_open(): void
+    public function test_the_sidebar_hides_the_admin_section_from_staff(): void
     {
-        $this->as('barangay');
+        $this->as('menro');
         $html = $this->get('/dashboard')->assertOk()->getContent();
 
-        foreach (['/violation-tickets', '/compliance', '/collections', '/analytics', '/reports', '/users', '/audit'] as $hidden) {
-            $this->assertStringNotContainsString('href="' . url($hidden) . '"', $html, "$hidden should be hidden from Barangay User");
+        // User management and the audit trail are the only sections
+        // the two roles still differ on.
+        foreach (['/users', '/audit'] as $hidden) {
+            $this->assertStringNotContainsString('href="' . url($hidden) . '"', $html, "$hidden should be hidden from MENRO Staff");
         }
-        foreach (['/dashboard', '/entries', '/generators', '/incidents', '/notifications'] as $shown) {
+        foreach (['/dashboard', '/entries', '/generators', '/incidents', '/notifications',
+                  '/compliance', '/collections', '/analytics', '/reports', '/violation-tickets',
+                  '/archive'] as $shown) {
             $this->assertStringContainsString('href="' . url($shown) . '"', $html, "$shown should be shown");
         }
     }
@@ -50,26 +54,7 @@ class UiPassTest extends TestCase
         }
     }
 
-    public function test_a_field_inspector_sees_compliance_and_tickets_but_not_collections(): void
-    {
-        $this->as('inspector');
-        $html = $this->get('/dashboard')->assertOk()->getContent();
-
-        $this->assertStringContainsString('href="' . url('/compliance') . '"', $html);
-        $this->assertStringContainsString('href="' . url('/violation-tickets') . '"', $html);
-        $this->assertStringNotContainsString('href="' . url('/collections') . '"', $html);
-    }
-
-    public function test_delete_buttons_are_not_shown_to_roles_that_cannot_use_them(): void
-    {
-        $this->as('barangay');
-        $this->get('/generators')->assertOk()->assertDontSee('wire:click="delete(', false)->assertDontSee('Add Generator', false);
-
-        $this->as('admin');
-        $this->get('/generators')->assertOk()->assertSee('wire:click="delete(', false);
-    }
-
-    public function test_an_encoder_only_gets_edit_and_delete_on_their_own_entries(): void
+    public function test_a_staff_user_only_gets_edit_and_delete_on_their_own_entries(): void
     {
         $this->as('encoder');
         $mine = User::where('username', 'encoder')->value('user_id');

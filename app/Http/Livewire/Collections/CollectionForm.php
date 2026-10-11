@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Collections;
 use App\Models\Barangay;
 use App\Models\CollectionSchedule;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class CollectionForm extends Component
@@ -19,19 +20,28 @@ class CollectionForm extends Component
     public string $status           = 'pending';
     public string $notes            = '';
 
-    protected $rules = [
-        'barangay_id'      => 'required|integer|exists:barangays,barangay_id',
-        'collection_date'  => 'required|date',
-        'waste_type'       => 'required|string|max:100',
-        'assigned_team'    => 'nullable|string|max:255',
-        'assigned_vehicle' => 'nullable|string|max:255',
-        'status'           => 'required|in:pending,confirmed,completed,missed,cancelled',
-        'notes'            => 'nullable|string|max:1000',
-    ];
+    // exists: and unique: go through Laravel's presence verifier, which
+    // queries the table directly and so ignores the soft-delete scope. Without
+    // withoutTrashed() a crafted request could attach a record to an archived
+    // parent.
+    /** A method, not a property: Rule::exists() cannot appear in a
+     *  constant expression. */
+    protected function rules(): array
+    {
+        return [
+            'barangay_id'      => ['required', 'integer', Rule::exists('barangays', 'barangay_id')->withoutTrashed()],
+            'collection_date'  => 'required|date',
+            'waste_type'       => 'required|string|max:100',
+            'assigned_team'    => 'nullable|string|max:255',
+            'assigned_vehicle' => 'nullable|string|max:255',
+            'status'           => 'required|in:pending,confirmed,completed,missed,cancelled',
+            'notes'            => 'nullable|string|max:1000',
+            ];
+    }
 
     public function mount($id = null)
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -54,7 +64,7 @@ class CollectionForm extends Component
     {
         // mount() does not re-run on Livewire action requests, and route
         // middleware never sees them, so the check has to live here too.
-        requireRole(...ROLES_MANAGE());
+        requireRole(...ROLES_STAFF());
 
         $this->validate();
 

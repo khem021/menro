@@ -98,14 +98,13 @@ class AuthSecurityTest extends TestCase
         return [
             'users' => ['/users'],
             'audit' => ['/audit'],
-            'archive' => ['/archive'],
         ];
     }
 
     /**
      * The admin guard must not have narrowed anything else. Note that /reports
      * is deliberately excluded: ReportIndex restricts itself to System
-     * Administrator and MENRO Officer, which predates the route middleware.
+     * Administrator and MENRO Staff, which predates the route middleware.
      */
     public function test_a_non_admin_still_reaches_shared_pages(): void
     {
@@ -152,6 +151,26 @@ class AuthSecurityTest extends TestCase
         $this->get('/dashboard')->assertRedirect(route('login'));
     }
 
+    /**
+     * The role consolidation renamed MENRO Officer in place rather than moving
+     * users to a new row, so AuthMiddleware refreshes a live session's role name
+     * from the database instead of signing the user out.
+     */
+    public function test_a_session_holding_a_retired_role_name_is_refreshed_not_dropped(): void
+    {
+        $user = User::where('username', 'barangay')->firstOrFail();
+
+        $this->flushSession();
+        $this->withSession([
+            'auth_user_id' => $user->user_id,
+            'auth_role'    => 'Barangay User',
+            'auth_pw'      => passwordFingerprint($user->password_hash),
+        ]);
+
+        $this->get('/dashboard')->assertOk();
+        $this->assertSame('MENRO Staff', session('auth_role'));
+    }
+
     public function test_a_session_predating_the_check_is_adopted_not_dropped(): void
     {
         $user = User::where('username', 'barangay')->firstOrFail();
@@ -160,7 +179,7 @@ class AuthSecurityTest extends TestCase
         $this->flushSession();
         $this->withSession([
             'auth_user_id' => $user->user_id,
-            'auth_role'    => 'Barangay User',
+            'auth_role'    => 'MENRO Staff',
         ]);
 
         $this->get('/dashboard')->assertOk();

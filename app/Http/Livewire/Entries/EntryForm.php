@@ -6,6 +6,7 @@ use App\Models\WasteEntry;
 use App\Models\WasteGenerator;
 use App\Models\WasteCategory;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class EntryForm extends Component
@@ -19,14 +20,23 @@ class EntryForm extends Component
     public string $entry_date   = '';
     public string $remarks      = '';
 
-    protected $rules = [
-        'generator_id' => 'required|integer|exists:waste_generators,generator_id',
-        'category_id'  => 'required|integer|exists:waste_categories,category_id',
-        'quantity'     => 'required|numeric|min:0.01|max:99999999.99',
-        'unit'         => 'required|in:kg,ton,liter,cubic_meter',
-        'entry_date'   => 'required|date|after_or_equal:2000-01-01|before_or_equal:tomorrow',
-        'remarks'      => 'nullable|string|max:1000',
-    ];
+    // exists: and unique: go through Laravel's presence verifier, which
+    // queries the table directly and so ignores the soft-delete scope. Without
+    // withoutTrashed() a crafted request could attach a record to an archived
+    // parent.
+    /** A method, not a property: Rule::exists() cannot appear in a
+     *  constant expression. */
+    protected function rules(): array
+    {
+        return [
+            'generator_id' => ['required', 'integer', Rule::exists('waste_generators', 'generator_id')->withoutTrashed()],
+            'category_id'  => 'required|integer|exists:waste_categories,category_id',
+            'quantity'     => 'required|numeric|min:0.01|max:99999999.99',
+            'unit'         => 'required|in:kg,ton,liter,cubic_meter',
+            'entry_date'   => 'required|date|after_or_equal:2000-01-01|before_or_equal:tomorrow',
+            'remarks'      => 'nullable|string|max:1000',
+            ];
+    }
 
     public function mount($id = null)
     {
@@ -53,7 +63,7 @@ class EntryForm extends Component
     {
         // mount() does not re-run on Livewire action requests, and route
         // middleware never sees them, so the check has to live here too.
-        requireRole(...ROLES_ENCODE());
+        requireRole(...ROLES_STAFF());
 
         $this->validate();
 

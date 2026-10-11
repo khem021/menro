@@ -21,7 +21,7 @@ class ClusterConfig extends Component
 
     public function mount(): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
     }
@@ -53,7 +53,7 @@ class ClusterConfig extends Component
 
     public function addCluster(): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -69,7 +69,7 @@ class ClusterConfig extends Component
 
     public function addToCluster(int $clusterId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -92,7 +92,7 @@ class ClusterConfig extends Component
 
     public function startRename(int $clusterId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -113,7 +113,7 @@ class ClusterConfig extends Component
 
     public function saveRename(int $clusterId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -141,7 +141,7 @@ class ClusterConfig extends Component
 
     public function deleteCluster(int $clusterId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -150,7 +150,7 @@ class ClusterConfig extends Component
             return;
         }
 
-        Barangay::where('cluster', $clusterId)->update(['cluster' => null]);
+        Barangay::withTrashed()->where('cluster', $clusterId)->update(['cluster' => null]);
 
         $old = $cluster->toArray();
         $cluster->delete();
@@ -168,7 +168,7 @@ class ClusterConfig extends Component
 
     public function removeFromCluster(int $barangayId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -230,6 +230,9 @@ class ClusterConfig extends Component
         $totals = DB::table('waste_entries as we')
             ->join('waste_generators as wg', 'we.generator_id', '=', 'wg.generator_id')
             ->join('barangays as b', 'wg.barangay_id', '=', 'b.barangay_id')
+            ->whereNull('we.deleted_at')
+            ->whereNull('wg.deleted_at')
+            ->whereNull('b.deleted_at')
             ->whereNotNull('b.cluster')
             ->whereBetween('we.entry_date', [$start, $end])
             ->groupBy('b.cluster')

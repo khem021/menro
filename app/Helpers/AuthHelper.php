@@ -50,27 +50,20 @@ if (!function_exists('requireRole')) {
     }
 }
 
-if (!function_exists('ROLES_MANAGE')) {
-    /** Roles allowed to manage reference data and collections. */
-    function ROLES_MANAGE(): array { return ['System Administrator', 'MENRO Officer']; }
-}
-
-if (!function_exists('ROLES_ENCODE')) {
-    /** Roles allowed to encode waste entries. */
-    function ROLES_ENCODE(): array { return ['System Administrator', 'MENRO Officer', 'Data Encoder']; }
-}
-
-if (!function_exists('ROLES_FIELD')) {
-    /** Roles allowed to record inspections, violations and tickets. */
-    function ROLES_FIELD(): array { return ['System Administrator', 'MENRO Officer', 'Field Inspector']; }
-}
-
-if (!function_exists('ROLES_CONTRIBUTE')) {
-    /** Everyone except Report Viewer, which is read-only by definition. */
-    function ROLES_CONTRIBUTE(): array
-    {
-        return ['System Administrator', 'MENRO Officer', 'Data Encoder', 'Field Inspector', 'Barangay User'];
-    }
+if (!function_exists('ROLES_STAFF')) {
+    /**
+     * Every role that may change data: both of them.
+     *
+     * This used to be four sets (ROLES_MANAGE / ENCODE / FIELD / CONTRIBUTE)
+     * carving up six roles. The 2026-10 consolidation left two, which made all
+     * four the same list, so they were collapsed into this one rather than kept
+     * as aliases that would drift apart the first time someone "fixed" one.
+     *
+     * Deliberately not "anyone signed in": AuthMiddleware stores 'Unknown' when a
+     * user's role relation is missing, so naming the two real roles keeps that
+     * case failing closed.
+     */
+    function ROLES_STAFF(): array { return ['System Administrator', 'MENRO Staff']; }
 }
 
 if (!function_exists('logAudit')) {
