@@ -32,16 +32,18 @@
                             <div class="form-input" style="background:var(--card-border);cursor:not-allowed;">{{ $ticket_number }}</div>
                             <p class="form-hint" style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.25rem;">Assigned when you save. If another ticket is issued first, the next free number is used.</p>
                         @else
-                            <input type="text" wire:model.defer="ticket_number" class="form-input" placeholder="2026-0001" />
-                            <p class="form-hint" style="font-size:0.6875rem;color:var(--text-muted);margin-top:0.25rem;">Format YYYY-NNNN.</p>
+                            <input type="text" wire:model.defer="ticket_number" class="form-input" placeholder="Enter ticket number" maxlength="20" />
                         @endif
                         @error('ticket_number') <p class="form-error">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="form-label">Offense</label>
-                        <div class="form-input" style="background:var(--card-border);cursor:not-allowed;">
-                            <span class="badge {{ \App\Models\ViolationTicket::offenseBadge($offense_number ?? 1) }}">{{ \App\Models\ViolationTicket::offenseLabel($offense_number ?? 1) }}</span>
-                        </div>
+                        <label class="form-label">Offense <span class="text-red-500">*</span></label>
+                        <select wire:model="offense_number" class="form-select">
+                            @foreach(\App\Models\ViolationTicket::OFFENSE_LABELS as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('offense_number') <p class="form-error">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="form-label">Penalty</label>

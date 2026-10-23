@@ -207,7 +207,7 @@ class BugfixPassTest extends TestCase
         // Second offense under the municipal schedule: a first is a reprimand
         // carrying no fine, a second is 500.
         $this->assertEquals(500.00, (float) $t->penalty_amount);
-        $this->assertSame('2nd Offense', ViolationTicket::offenseLabel($t->offense_number));
+        $this->assertSame('1st Offense', ViolationTicket::offenseLabel($t->offense_number));
     }
 
     /* ---------- B4: queries must not be PostgreSQL-only ---------- */

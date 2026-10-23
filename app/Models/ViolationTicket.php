@@ -74,28 +74,22 @@ class ViolationTicket extends Model
     }
 
     /**
-     * The money caps at the third tier but the count does not: an officer
-     * serving a sixth ticket on the same person should read "6th Offense", not
-     * "3rd". Only the amount is capped, by fineForOffense() above.
+     * The three choices the officer picks from on the form, keyed by tier. A
+     * reprimand comes first, so the first fined offense is tier 2.
+     */
+    public const OFFENSE_LABELS = [
+        1 => 'Reprimand',
+        2 => '1st Offense',
+        3 => '2nd Offense',
+    ];
+
+    /**
+     * Tier-based, like the fine, so a legacy row counted past three still reads
+     * as one of the three choices the form offers.
      */
     public static function offenseLabel(int $offenseNumber): string
     {
-        $n = max($offenseNumber, 1);
-
-        if ($n === 1) {
-            return 'Reprimand';
-        }
-
-        // 11th, 12th and 13th are the cases a bare modulo-10 lookup gets wrong.
-        $suffix = match (true) {
-            in_array($n % 100, [11, 12, 13], true) => 'th',
-            $n % 10 === 1 => 'st',
-            $n % 10 === 2 => 'nd',
-            $n % 10 === 3 => 'rd',
-            default       => 'th',
-        };
-
-        return $n . $suffix . ' Offense';
+        return self::OFFENSE_LABELS[self::offenseTier($offenseNumber)];
     }
 
     /** Badge class for the shared `badge-*` vocabulary (index list and form). */
@@ -115,15 +109,14 @@ class ViolationTicket extends Model
      */
     public static function nextTicketNumber(string $year): string
     {
-        // Longest number first so "2026-10000" outranks "2026-9999"; LENGTH()
-        // is portable across PostgreSQL and MySQL, unlike string-splitting functions.
-        $last = static::withTrashed()
+        // Manual numbers are free text, so "2026-AB" or "2026-12-B" can sit
+        // under the same prefix. Only a pure digit sequence counts; filtering
+        // in PHP keeps this portable across PostgreSQL and MySQL regex syntax.
+        $maxSeq = static::withTrashed()
             ->where('ticket_number', 'like', $year . '-%')
-            ->orderByRaw('LENGTH(ticket_number) DESC')
-            ->orderByDesc('ticket_number')
-            ->value('ticket_number');
-
-        $maxSeq = $last ? (int) substr($last, strlen($year) + 1) : 0;
+            ->pluck('ticket_number')
+            ->map(fn ($n) => preg_match('/^' . preg_quote($year, '/') . '-(\d+)$/', $n, $m) ? (int) $m[1] : 0)
+            ->max() ?? 0;
 
         return $year . '-' . str_pad((string) ($maxSeq + 1), 4, '0', STR_PAD_LEFT);
     }

@@ -64,15 +64,12 @@ class ViolationTicketPassTest extends TestCase
     public static function scheduleProvider(): array
     {
         return [
-            '1st is a reprimand with no fine' => [1, 'Reprimand', 0.00],
-            '2nd'                             => [2, '2nd Offense', 500.00],
-            '3rd'                             => [3, '3rd Offense', 1000.00],
-            // The money caps at the third tier; the count does not.
-            '4th still costs the 3rd fine'    => [4, '4th Offense', 1000.00],
-            '7th'                             => [7, '7th Offense', 1000.00],
-            '11th is not 11st'                => [11, '11th Offense', 1000.00],
-            '21st is not 21th'                => [21, '21st Offense', 1000.00],
-            '99th'                            => [99, '99th Offense', 1000.00],
+            'tier 1 is a reprimand with no fine' => [1, 'Reprimand', 0.00],
+            'tier 2'                             => [2, '1st Offense', 500.00],
+            'tier 3'                             => [3, '2nd Offense', 1000.00],
+            // A legacy count past three reads and costs as the top tier.
+            'legacy 4'                           => [4, '2nd Offense', 1000.00],
+            'legacy 99'                          => [99, '2nd Offense', 1000.00],
         ];
     }
 
@@ -81,7 +78,7 @@ class ViolationTicketPassTest extends TestCase
         $this->as('menro');
         $name = 'Escalante, Teodoro ' . uniqid();
 
-        foreach ([[1, 0.00], [2, 500.00], [3, 1000.00], [4, 1000.00]] as [$offense, $fine]) {
+        foreach ([[1, 0.00], [2, 500.00], [3, 1000.00], [3, 1000.00]] as [$offense, $fine]) {
             $this->issue(['violator_name' => $name]);
 
             $t = ViolationTicket::where('violator_name', $name)->orderByDesc('ticket_id')->first();
@@ -166,28 +163,105 @@ class ViolationTicketPassTest extends TestCase
         ])->assertHasErrors('ticket_number');
     }
 
-    /** @dataProvider malformedNumbers */
-    public function test_a_malformed_manual_number_is_refused(string $number): void
+    /** @dataProvider freeFormNumbers */
+    public function test_a_manual_number_in_any_format_is_accepted(string $number): void
     {
         $this->as('menro');
 
         $this->issue([
-            'violator_name'      => 'Bad, Boris',
+            'violator_name'      => 'Free, Fiona ' . uniqid(),
             'auto_ticket_number' => false,
             'ticket_number'      => $number,
-        ])->assertHasErrors('ticket_number');
+        ])->assertHasNoErrors();
+
+        $this->assertDatabaseHas('violation_tickets', ['ticket_number' => $number]);
     }
 
-    public static function malformedNumbers(): array
+    public static function freeFormNumbers(): array
     {
-        // Free text inside the year prefix would break nextTicketNumber()'s
-        // (int) substr() parse and make the auto sequence reissue numbers.
         return [
-            'not a number'   => ['banana'],
-            'letters in seq' => ['2026-ab'],
-            'too short'      => ['2026-1'],
-            'no year'        => ['0042'],
+            'digits only'    => ['00917'],
+            'letters in seq' => ['2091-ab'],
+            'short seq'      => ['2091-1'],
+            'booklet style'  => ['A-12345'],
         ];
+    }
+
+    public function test_a_blank_manual_number_is_refused(): void
+    {
+        $this->as('menro');
+
+        $this->issue([
+            'violator_name'      => 'Blank, Bea',
+            'auto_ticket_number' => false,
+            'ticket_number'      => '',
+        ])->assertHasErrors(['ticket_number' => 'required']);
+    }
+
+    /** Free text under a year prefix must not throw the auto sequence off. */
+    public function test_auto_numbering_skips_free_text_numbers(): void
+    {
+        foreach (['2092-0005', '2092-ABCDEFGHIJ', '2092-7-B', '2092-0002'] as $n) {
+            ViolationTicket::create(['ticket_number' => $n, 'violator_name' => 'N' . $n, 'violation_type' => 'littering',
+                'address' => 'x', 'offense_number' => 1, 'penalty_amount' => 0, 'issued_date' => '2092-01-01']);
+        }
+
+        $this->assertSame('2092-0006', ViolationTicket::nextTicketNumber('2092'));
+    }
+
+    // ── The offense dropdown ────────────────────────────────────────────────
+
+    public function test_the_officer_can_pick_the_offense_and_the_fine_follows(): void
+    {
+        $this->as('menro');
+        $name = 'Picked, Pedro ' . uniqid();
+
+        // A first-time violator would default to a reprimand; the pick wins.
+        $this->issue(['violator_name' => $name, 'offense_number' => 3])->assertHasNoErrors();
+
+        $t = ViolationTicket::where('violator_name', $name)->firstOrFail();
+        $this->assertSame(3, $t->offense_number);
+        $this->assertSame(1000.00, (float) $t->penalty_amount);
+    }
+
+    public function test_typing_the_name_after_picking_keeps_the_pick(): void
+    {
+        $this->as('menro');
+
+        Livewire::test(ViolationTicketForm::class)
+            ->set('offense_number', 2)
+            ->assertSet('penalty_amount', 500.00)
+            ->set('violator_name', 'Later, Lito ' . uniqid())
+            ->assertSet('offense_number', 2);
+    }
+
+    public function test_an_offense_outside_the_three_choices_is_refused(): void
+    {
+        $this->as('menro');
+
+        Livewire::test(ViolationTicketForm::class)
+            ->set('violator_name', 'Out, Oscar')->set('address', 'x')
+            ->set('violation_type', 'littering')
+            ->set('offense_number', 0)
+            ->call('save')
+            ->assertHasErrors('offense_number');
+    }
+
+    public function test_editing_a_ticket_can_change_its_offense(): void
+    {
+        $this->as('menro');
+        $name = 'Edit, Elena ' . uniqid();
+        $this->issue(['violator_name' => $name]);
+        $t = ViolationTicket::where('violator_name', $name)->firstOrFail();
+
+        Livewire::test(ViolationTicketForm::class, ['id' => $t->ticket_id])
+            ->set('offense_number', 2)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $t->refresh();
+        $this->assertSame(2, $t->offense_number);
+        $this->assertSame(500.00, (float) $t->penalty_amount);
     }
 
     // ── The table column order ──────────────────────────────────────────────

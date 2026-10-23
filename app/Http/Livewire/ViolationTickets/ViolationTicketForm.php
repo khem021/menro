@@ -25,29 +25,31 @@ class ViolationTicketForm extends Component
     public bool $auto_ticket_number = true;
 
     /**
-     * Derived, not entered. The offense count comes from the ledger of prior
-     * tickets for the same name, and the fine from the schedule, so neither is
-     * a field anyone can type into.
+     * One of the three tiers in ViolationTicket::OFFENSE_LABELS. Pre-selected
+     * from the ledger of prior tickets for the same name until the officer
+     * picks one; the fine always follows from the schedule, never typed.
      */
     public ?int   $offense_number = null;
     public ?float $penalty_amount = null;
+
+    /** Set once the officer picks an offense, so typing the name stops overriding it. */
+    public bool $offense_chosen = false;
 
     protected function rules(): array
     {
         return [
             'ticket_number' => [
                 Rule::requiredIf(fn () => !$this->auto_ticket_number),
+                // Free text: officers copy the number off a paper booklet, whatever
+                // its format. nextTicketNumber() skips anything not YYYY-digits.
                 'nullable', 'string', 'max:20',
-                // nextTicketNumber() parses the sequence with (int) substr(), so a
-                // free-text number inside a year prefix would make it reissue
-                // numbers that already exist. {4,} keeps 2026-10001 legal.
-                'regex:/^\d{4}-\d{4,}$/',
                 // Deliberately NOT ->withoutTrashed(): Rule::unique queries the
                 // table directly, so it counts archived tickets - which is what
                 // nextTicketNumber()'s withTrashed() and the UNIQUE index both do.
                 Rule::unique('violation_tickets', 'ticket_number')
                     ->ignore($this->ticketId, 'ticket_id'),
             ],
+            'offense_number'              => ['required', 'integer', Rule::in(array_keys(ViolationTicket::OFFENSE_LABELS))],
             'violator_name'               => 'required|string|max:255',
             'violation_type'              => ['required', Rule::in(array_keys(ViolationTicket::VIOLATION_TYPES))],
             'other_violation_description' => 'required_if:violation_type,other|nullable|string|max:255',
@@ -76,8 +78,10 @@ class ViolationTicketForm extends Component
             $this->remarks                     = $t->remarks ?? '';
 
             $this->ticket_number  = $t->ticket_number;
-            $this->offense_number = $t->offense_number;
+            // A legacy count past three maps onto the tier the dropdown offers.
+            $this->offense_number = ViolationTicket::offenseTier($t->offense_number);
             $this->penalty_amount = (float) $t->penalty_amount;
+            $this->offense_chosen = true;
 
             // Show the stored number rather than replacing it with a preview.
             $this->auto_ticket_number = false;
@@ -112,8 +116,15 @@ class ViolationTicketForm extends Component
         $prior = ViolationTicket::whereRaw('LOWER(violator_name) = ?',
             [mb_strtolower(trim($this->violator_name))])->count();
 
-        $this->offense_number = min($prior + 1, 255);
+        $this->offense_number = ViolationTicket::offenseTier($prior + 1);
         $this->penalty_amount = ViolationTicket::fineForOffense($this->offense_number);
+    }
+
+    public function updatedOffenseNumber(): void
+    {
+        // Not clamped here: save() validates it against the three choices.
+        $this->offense_chosen = true;
+        $this->penalty_amount = ViolationTicket::fineForOffense((int) $this->offense_number);
     }
 
     public function updatedAutoTicketNumber(): void
@@ -136,7 +147,7 @@ class ViolationTicketForm extends Component
 
     public function updatedViolatorName(): void
     {
-        if (!$this->ticketId) {
+        if (!$this->ticketId && !$this->offense_chosen) {
             $this->previewOffense();
         }
     }
@@ -157,11 +168,12 @@ class ViolationTicketForm extends Component
             'address'                     => trim($this->address),
             'issued_date'                 => $this->issued_date,
             'remarks'                     => $this->remarks !== '' ? $this->remarks : null,
+            // The officer's choice; the fine is looked up, never entered.
+            'offense_number'              => (int) $this->offense_number,
+            'penalty_amount'              => ViolationTicket::fineForOffense((int) $this->offense_number),
         ];
 
         if ($this->ticketId) {
-            // Correcting a mistyped number is the main reason to edit a ticket
-            // at all; offense and penalty stay derived and are not touched here.
             $data['ticket_number'] = trim($this->ticket_number);
 
             $old = ViolationTicket::find($this->ticketId)?->toArray();
@@ -169,15 +181,7 @@ class ViolationTicketForm extends Component
             logAudit('update', 'ViolationTicket', $this->ticketId, $old, $data);
             $message = 'Violation ticket updated.';
         } else {
-            $priorCount = ViolationTicket::whereRaw('LOWER(violator_name) = ?', [mb_strtolower(trim($this->violator_name))])->count();
-            // Store the true count so a repeat offender's ticket says so; the 255
-            // clamp is only the unsignedTinyInteger ceiling. fineForOffense()
-            // caps the amount at the third tier.
-            $offenseNumber = min($priorCount + 1, 255);
-
-            $data['offense_number'] = $offenseNumber;
-            $data['penalty_amount'] = ViolationTicket::fineForOffense($offenseNumber);
-            $data['issued_by']      = session('auth_user_id');
+            $data['issued_by'] = session('auth_user_id');
 
             if ($this->auto_ticket_number) {
                 $year = Carbon::parse($this->issued_date)->format('Y');
