@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{-- Stops phone auto-dark modes repainting the light theme; see layouts/app. --}}
+    <meta name="color-scheme" content="dark light">
     <title>Sign In — MENRO</title>
 
     <script>
@@ -50,9 +52,11 @@
             --error-icon:      #f87171;
             --error-text:      #f87171;
             --theme-icon-bg-hover: rgba(255,255,255,0.06);
+            color-scheme: dark;
         }
 
         :root[data-theme="light"] {
+            color-scheme: only light;
             --login-bg:        #eef1f7;
             --grid-line:       rgba(30,63,122,0.05);
             --orb-1:           rgba(253,184,19,0.12);

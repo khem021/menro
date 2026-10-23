@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{-- Stops phone auto-dark modes repainting the light theme; see layouts/app. --}}
+    <meta name="color-scheme" content="dark light">
     <title>@yield('code') — @yield('heading') · MENRO</title>
     <script>
         (function () {
@@ -18,8 +20,10 @@
         :root {
             --bg: #07111f; --card: #0f1d35; --border: #1c2d4a; --text: #e8edf5; --muted: #9bb0cf;
             --accent: #FDB813; --accent-text: #FDB813; --on-accent: #071020;
+            color-scheme: dark;
         }
         :root[data-theme="light"] {
+            color-scheme: only light;
             --bg: #eef1f7; --card: #ffffff; --border: #dde3ee; --text: #16233b; --muted: #55647e;
             --accent: #FDB813; --accent-text: #8a5c00; --on-accent: #071020;
         }

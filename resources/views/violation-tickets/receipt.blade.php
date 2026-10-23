@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+{{-- A paper document: keep phone auto-dark modes from inverting it. --}}
+<meta name="color-scheme" content="only light">
 <title>Ticket {{ $ticket->ticket_number }} — MENRO</title>
 <style>
     * { margin:0; padding:0; box-sizing:border-box; }

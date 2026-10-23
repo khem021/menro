@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Declares that the page themes itself. Without it, phone browsers with
+         auto dark mode (Chrome's force-dark, Samsung Internet, MIUI) repaint
+         the light theme into muddy grays. --}}
+    <meta name="color-scheme" content="dark light">
     <title>@yield('title', 'MENRO Waste Management')</title>
 
     <script>
@@ -57,9 +61,13 @@
             --orange-text:  #fb923c;
             --shadow-soft:   rgba(0,0,0,0.35);
             --shadow-strong: rgba(0,0,0,0.55);
+            color-scheme: dark;
         }
 
         :root[data-theme="light"] {
+            /* "only" forbids the browser's auto-dark repaint; plain "light" is
+               exactly what Chrome's force-dark targets. */
+            color-scheme: only light;
             --bg:           #eef1f7;
             --sidebar-bg:   #ffffff;
             --card-bg:      #ffffff;
