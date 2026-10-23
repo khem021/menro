@@ -132,6 +132,11 @@
             flex-shrink: 0;
         }
         .brand-icon svg { color: #fff; }
+        .brand-seal {
+            width: 36px; height: 36px;
+            flex-shrink: 0;
+            object-fit: contain;
+        }
         .brand-name {
             font-size: 1rem;
             font-weight: 700;
@@ -171,6 +176,7 @@
         }
         @media (min-width: 769px) and (max-height: 760px) {
             .sidebar-brand { height: 48px; }
+            .brand-seal { width: 30px; height: 30px; }
             .nav-section { padding-top: 0.2rem; padding-bottom: 0.1rem; }
             .nav-item { padding: 0.1875rem 0.75rem; }
             .nav-item svg { width: 16px; height: 16px; }
@@ -252,6 +258,10 @@
             padding: 0.5rem 0.75rem;
             border-radius: 0.5rem;
         }
+        /* Any author `display` (.avatar's flex, Tailwind's .flex) beats the
+           browser's own [hidden] rule, so the initials fallback behind a
+           loaded photo showed beside it. Make the attribute win everywhere. */
+        [hidden] { display: none !important; }
         .avatar {
             width: 2rem; height: 2rem;
             background: linear-gradient(135deg, #1e3f7a, #2952a3);
@@ -1153,6 +1163,8 @@
      ============================================================ --}}
 <aside class="sidebar" :class="{ 'sidebar-open': mobileNav }">
     <a href="{{ route('dashboard') }}" class="sidebar-brand" @click="mobileNav = false">
+        {{-- Decorative: the brand text beside it already names the office. --}}
+        <img src="{{ asset('images/madrid-seal-sm.png') }}" alt="" class="brand-seal" width="36" height="36">
         <div>
             <div class="brand-name">MENRO MADRID</div>
         </div>
