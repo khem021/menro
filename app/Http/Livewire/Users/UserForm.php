@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Users;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class UserForm extends Component
@@ -41,8 +42,13 @@ class UserForm extends Component
 
         return [
             'full_name' => 'required|string|max:255',
-            'email'     => 'nullable|email|max:255|unique:users,email' . ($this->userId ? ",{$this->userId},user_id" : ''),
-            'username'  => 'required|string|max:100|unique:users,username' . ($this->userId ? ",{$this->userId},user_id" : ''),
+            // withoutTrashed() so an archived account stops reserving its
+            // username and email - the partial unique indexes on the table say
+            // the same thing, and the validator has to agree with them.
+            'email'     => ['nullable', 'email', 'max:255',
+                            Rule::unique('users', 'email')->ignore($this->userId, 'user_id')->withoutTrashed()],
+            'username'  => ['required', 'string', 'max:100',
+                            Rule::unique('users', 'username')->ignore($this->userId, 'user_id')->withoutTrashed()],
             'password'  => $pwRule,
             'role_id'   => 'required|integer|exists:roles,role_id',
             'status'    => 'required|in:active,inactive',
@@ -51,7 +57,20 @@ class UserForm extends Component
 
     public function save()
     {
+        // mount() does not re-run on Livewire action requests, and route
+        // middleware never sees them, so the check has to live here too.
+        requireRole('System Administrator');
+
         $this->validate();
+
+        // With only two roles, /users is the only thing the administrator role
+        // still owns. Demoting or deactivating the last active administrator
+        // makes this page unreachable and there is no way back through the UI.
+        if ($this->userId && $this->wouldStrandTheLastAdmin()) {
+            $this->addError('role_id', 'This is the only active administrator. Promote someone else first.');
+
+            return;
+        }
 
         $data = [
             'full_name' => $this->full_name,
@@ -82,6 +101,28 @@ class UserForm extends Component
 
         session()->flash('success', $this->userId ? 'User updated.' : 'User created.');
         return redirect()->route('users.index');
+    }
+
+    /**
+     * True when this edit would take the last active administrator out of the
+     * role, whether by changing the role or by deactivating the account.
+     */
+    private function wouldStrandTheLastAdmin(): bool
+    {
+        $adminRoleId = (int) Role::where('role_name', 'System Administrator')->value('role_id');
+        $current     = User::findOrFail($this->userId);
+
+        $wasAdmin   = (int) $current->role_id === $adminRoleId && $current->status === 'active';
+        $staysAdmin = (int) $this->role_id === $adminRoleId && $this->status === 'active';
+
+        if (! $wasAdmin || $staysAdmin) {
+            return false;
+        }
+
+        return User::where('role_id', $adminRoleId)
+            ->where('status', 'active')
+            ->where('user_id', '!=', $this->userId)
+            ->doesntExist();
     }
 
     public function render()

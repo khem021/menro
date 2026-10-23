@@ -1,0 +1,12 @@
+/*
+ * Instrument Sans @font-face rules only — no Tailwind, no reset.
+ *
+ * The login page (resources/views/auth/login.blade.php) is standalone: it does
+ * not load app.css, and pulling that in would apply Tailwind's preflight over
+ * its hand-written styles. This entry gives it the self-hosted font and nothing
+ * else, so the page still renders correctly when a firewall blocks the CDN.
+ */
+@import '@fontsource/instrument-sans/400.css';
+@import '@fontsource/instrument-sans/500.css';
+@import '@fontsource/instrument-sans/600.css';
+@import '@fontsource/instrument-sans/700.css';

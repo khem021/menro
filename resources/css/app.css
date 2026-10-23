@@ -1,4 +1,8 @@
-@import url('https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap');
+/* Self-hosted so the font still loads behind a captive portal or content filter. */
+@import '@fontsource/instrument-sans/400.css';
+@import '@fontsource/instrument-sans/500.css';
+@import '@fontsource/instrument-sans/600.css';
+@import '@fontsource/instrument-sans/700.css';
 
 @tailwind base;
 @tailwind components;

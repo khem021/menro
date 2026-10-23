@@ -20,16 +20,18 @@ class AuthorizationTest extends TestCase
     private const ADMIN = 'System Administrator';
     private const GUARD = 'role:System Administrator';
 
-    /** Routes that expose user management, the audit trail or the archive. */
+    /** Routes that expose user management or the audit trail. */
     private const ADMIN_ROUTES = [
         'users.index', 'users.create', 'users.edit',
-        'audit.index', 'archive.index', 'archive.download',
+        'audit.index',
     ];
 
     /** Routes every signed-in role may reach. */
     private const SHARED_ROUTES = [
         'dashboard', 'analytics.index', 'reports.index',
         'reports.export', 'settings', 'entries.index', 'generators.index',
+        // The archive is a reports artefact, reachable by both roles.
+        'archive.index', 'archive.download',
     ];
 
     /* ---------- Route wiring ---------- */
@@ -93,11 +95,15 @@ class AuthorizationTest extends TestCase
     public static function nonAdminRoleProvider(): array
     {
         return [
-            'MENRO officer'   => ['MENRO Officer'],
-            'field inspector' => ['Field Inspector'],
-            'data encoder'    => ['Data Encoder'],
-            'report viewer'   => ['Report Viewer'],
-            'barangay user'   => ['Barangay User'],
+            'MENRO staff'    => ['MENRO Staff'],
+            // AuthMiddleware stores 'Unknown' when a user's role relation is
+            // missing, so that string reaches canAccess() in real requests.
+            'unknown role'   => ['Unknown'],
+            'empty role'     => [''],
+            // A session minted before the six roles were consolidated into two
+            // still carries the old name until AuthMiddleware refreshes it. It
+            // must not reach an admin route in the meantime.
+            'a retired role' => ['Report Viewer'],
         ];
     }
 
@@ -107,6 +113,19 @@ class AuthorizationTest extends TestCase
 
         $this->expectException(HttpException::class);
         $this->runGuard();
+    }
+
+    /** Every module route now sits behind the single two-role guard. */
+    public function test_the_module_routes_all_share_one_staff_guard(): void
+    {
+        $guards = collect([
+            'entries.create', 'compliance.index', 'collections.index',
+            'incidents.create', 'violation-tickets.index', 'inspections.create',
+        ])->map(fn ($name) => collect(Route::getRoutes()->getByName($name)->gatherMiddleware())
+            ->first(fn ($m) => str_starts_with($m, 'role:')))
+          ->unique()->values();
+
+        $this->assertSame(['role:System Administrator,MENRO Staff'], $guards->all());
     }
 
     /* ---------- Sign-in throttling ---------- */

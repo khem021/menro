@@ -1,0 +1,21 @@
+
+  [41;1m Psy\Exception\ParseErrorException [49;22m
+
+[39;1m  PHP Parse error: Syntax error, unexpected '-', expecting '[' or T_OBJECT_OPERATOR or T_NULLSAFE_OBJECT_OPERATOR on line 1[39;22m
+
+  at [32mC:\Users\jhonr\Herd\menro\vendor\psy\psysh\src\Exception\ParseErrorException.php[39m:[32m44[39m
+     40▕      * @param \PhpParser\Error $e
+     41▕      */
+     42▕     public static function fromParseError(\PhpParser\Error $e): self
+     43▕     {
+  ➜  44▕         return new self($e->getRawMessage(), $e->getAttributes());
+     45▕     }
+     46▕ }
+     47▕
+
+  [33m1   [39m[39;1mC:\Users\jhonr\Herd\menro\vendor\psy\psysh\src\CodeCleaner.php[39;22m:[39;1m657[39;22m
+  [90m    Psy\Exception\ParseErrorException::fromParseError(Object(PhpParser\Error))[39m
+
+  [33m2   [39m[39;1mC:\Users\jhonr\Herd\menro\vendor\psy\psysh\src\CodeCleaner.php[39;22m:[39;1m273[39;22m
+  [90m    Psy\CodeCleaner::parse("<?php $s=DB::selectOne("SELECT pg_get_serial_sequence(?,?) AS s",["clusters","id"])->s; $r=DB::selectOne("SELECT last_value,is_called FROM $s"); $m=DB::table("clusters")->max("id"); $n=$r->is_called?$r->last_value+1:$r->last_value; echo "seq=$s last={$r- called=".var_export($r->is_called,true)." max=$m next=$n\n";
+")[39m

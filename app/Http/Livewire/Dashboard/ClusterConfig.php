@@ -21,7 +21,7 @@ class ClusterConfig extends Component
 
     public function mount(): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
     }
@@ -38,12 +38,22 @@ class ClusterConfig extends Component
         }
 
         $this->chartPeriod = $period;
+        $this->refreshChart();
+    }
+
+    /**
+     * Push fresh bars to the chart. Needed after anything that changes which
+     * clusters exist or which barangays feed them — the canvas lives behind
+     * wire:ignore, so it never picks those changes up from the re-render.
+     */
+    private function refreshChart(): void
+    {
         $this->emit('cluster-chart-updated', $this->chartPayload());
     }
 
     public function addCluster(): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -53,12 +63,13 @@ class ClusterConfig extends Component
         logAudit('create', 'Cluster', $cluster->id, null, $cluster->toArray());
 
         $this->activeCluster = (string) $cluster->id;
+        $this->refreshChart();
         session()->flash('success', 'Cluster added.');
     }
 
     public function addToCluster(int $clusterId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -76,11 +87,12 @@ class ClusterConfig extends Component
         }
 
         $this->newBarangayName[$clusterId] = '';
+        $this->refreshChart();
     }
 
     public function startRename(int $clusterId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -101,7 +113,7 @@ class ClusterConfig extends Component
 
     public function saveRename(int $clusterId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -121,6 +133,7 @@ class ClusterConfig extends Component
         if ($old !== $name) {
             $cluster->update(['name' => $name]);
             logAudit('update', 'Cluster', $cluster->id, ['name' => $old], ['name' => $name]);
+            $this->refreshChart();
         }
 
         $this->cancelRename();
@@ -128,7 +141,7 @@ class ClusterConfig extends Component
 
     public function deleteCluster(int $clusterId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -137,7 +150,7 @@ class ClusterConfig extends Component
             return;
         }
 
-        Barangay::where('cluster', $clusterId)->update(['cluster' => null]);
+        Barangay::withTrashed()->where('cluster', $clusterId)->update(['cluster' => null]);
 
         $old = $cluster->toArray();
         $cluster->delete();
@@ -148,12 +161,14 @@ class ClusterConfig extends Component
             $this->activeCluster = 'all';
         }
 
+        $this->refreshChart();
+
         session()->flash('success', 'Cluster deleted.');
     }
 
     public function removeFromCluster(int $barangayId): void
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -163,6 +178,8 @@ class ClusterConfig extends Component
             $b->update(['cluster' => null]);
             logAudit('update', 'Barangay', $barangayId, ['cluster' => $old], ['cluster' => null]);
         }
+
+        $this->refreshChart();
     }
 
     public function render()
@@ -213,6 +230,9 @@ class ClusterConfig extends Component
         $totals = DB::table('waste_entries as we')
             ->join('waste_generators as wg', 'we.generator_id', '=', 'wg.generator_id')
             ->join('barangays as b', 'wg.barangay_id', '=', 'b.barangay_id')
+            ->whereNull('we.deleted_at')
+            ->whereNull('wg.deleted_at')
+            ->whereNull('b.deleted_at')
             ->whereNotNull('b.cluster')
             ->whereBetween('we.entry_date', [$start, $end])
             ->groupBy('b.cluster')

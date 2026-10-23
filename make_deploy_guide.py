@@ -619,9 +619,7 @@ add_body(doc, 'You should see the MENRO login screen. Log in using the default c
 
 creds = [
     ('admin',     'admin123',  'System Administrator'),
-    ('menro',     'admin123',  'MENRO Officer'),
-    ('encoder',   'admin123',  'Data Encoder'),
-    ('inspector', 'admin123',  'Field Inspector'),
+    ('menro',     'admin123',  'MENRO Staff'),
 ]
 tbl_cred = doc.add_table(rows=1 + len(creds), cols=3)
 tbl_cred.alignment = WD_TABLE_ALIGNMENT.LEFT

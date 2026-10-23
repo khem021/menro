@@ -15,7 +15,7 @@ class ReportController extends Controller
 
     public function printView(Request $request)
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -36,7 +36,7 @@ class ReportController extends Controller
 
     public function export(Request $request)
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
