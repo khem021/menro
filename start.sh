@@ -44,7 +44,40 @@ fi
 
 # ---------------------------------------------------------------------------
 # 2. Schema and data.
+#
+#    Wait for the database first. When Railway restarts both containers at
+#    once, postgres.railway.internal can stay unresolvable for a few seconds
+#    after Postgres is up. migrate then fails, set -e exits, and five quick
+#    failures exhaust restartPolicyMaxRetries, leaving the service Crashed
+#    until someone restarts it by hand (2026-10-22 outage). Each probe is capped
+#    by `timeout` because an unreachable host can make the connect hang. If the
+#    database never answers we carry on anyway, so migrate prints the real error.
 # ---------------------------------------------------------------------------
+#    The budget is wall-clock time, not a count of sleeps, so a hanging probe
+#    cannot stretch it past railway.json's 300s healthcheckTimeout.
+DB_WAIT_SECONDS="${DB_WAIT_SECONDS:-90}"
+db_wait_start=$(date +%s)
+until timeout 10 php -d display_errors=stderr -r '
+    try {
+        require "vendor/autoload.php";
+        $app = require "bootstrap/app.php";
+        $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+        $app["db"]->connection()->getPdo();
+    } catch (Throwable $e) {
+        fwrite(STDERR, $e->getMessage() . "\n");
+        exit(1);
+    }
+' 2>/tmp/db-wait.err; do
+    db_waited=$(( $(date +%s) - db_wait_start ))
+    if [ "$db_waited" -ge "$DB_WAIT_SECONDS" ]; then
+        echo "[start] WARNING: database still unreachable after ${db_waited}s, migrating anyway"
+        break
+    fi
+    db_wait_reason=$(head -c 160 /tmp/db-wait.err)
+    echo "[start] waiting for database (${db_waited}s): ${db_wait_reason:-no answer within 10s}"
+    sleep 3
+done
+
 echo "[start] migrating"
 php artisan migrate --force
 
