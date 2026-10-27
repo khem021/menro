@@ -13,7 +13,7 @@ class ReportIndex extends Component
 
     public function mount()
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 

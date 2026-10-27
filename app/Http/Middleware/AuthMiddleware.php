@@ -10,7 +10,7 @@ class AuthMiddleware
     public function handle(Request $request, Closure $next)
     {
         if (!session('auth_user_id')) {
-            return redirect()->route('login');
+            return $this->signedOut($request);
         }
 
         // Re-read the account on every request. Without this, a user who is
@@ -24,8 +24,7 @@ class AuthMiddleware
             session()->flush();
             session()->regenerate();
 
-            return redirect()->route('login')
-                ->withErrors(['login' => 'Your account is no longer active. Please contact an administrator.']);
+            return $this->signedOut($request, 'Your account is no longer active. Please contact an administrator.');
         }
 
         // A changed password ends every other session for that account. The
@@ -41,8 +40,7 @@ class AuthMiddleware
             session()->flush();
             session()->regenerate();
 
-            return redirect()->route('login')
-                ->withErrors(['login' => 'Your password was changed. Please sign in again.']);
+            return $this->signedOut($request, 'Your password was changed. Please sign in again.');
         }
 
         $role = $user->role->role_name ?? 'Unknown';
@@ -52,5 +50,21 @@ class AuthMiddleware
         }
 
         return $next($request);
+    }
+
+    /**
+     * A normal page goes back to the login screen. A Livewire request cannot
+     * follow a redirect, so it gets a 419, which makes Livewire reload the page
+     * (and that reload lands on the login screen).
+     */
+    private function signedOut(Request $request, ?string $message = null)
+    {
+        if ($request->headers->has('X-Livewire')) {
+            abort(419, $message ?? 'Your session has ended.');
+        }
+
+        $redirect = redirect()->route('login');
+
+        return $message ? $redirect->withErrors(['login' => $message]) : $redirect;
     }
 }

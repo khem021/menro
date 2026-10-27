@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Settings;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -42,8 +43,12 @@ class SettingsForm extends Component
 
         $this->validate([
             'full_name' => 'required|string|max:255',
-            'email'     => 'nullable|email|max:255|unique:users,email,' . $user->user_id . ',user_id',
-            'username'  => 'required|string|max:100|unique:users,username,' . $user->user_id . ',user_id',
+            // withoutTrashed() so an archived account no longer reserves its
+            // username and email, matching the partial unique indexes.
+            'email'     => ['nullable', 'email', 'max:255',
+                            Rule::unique('users', 'email')->ignore($user->user_id, 'user_id')->withoutTrashed()],
+            'username'  => ['required', 'string', 'max:100',
+                            Rule::unique('users', 'username')->ignore($user->user_id, 'user_id')->withoutTrashed()],
         ]);
 
         $old = $user->only(['full_name', 'email', 'username']);

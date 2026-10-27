@@ -13,12 +13,7 @@
 
     <div style="display:flex;flex-direction:column;gap:0.75rem;">
 
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
-            <div style="font-size:0.8125rem;color:var(--text-muted);max-width:60ch;">
-                Group barangays into collection clusters. Clusters drive the
-                <a href="{{ route('dashboard') }}" style="color:var(--accent);text-decoration:none;">dashboard</a>
-                charts and collection routing. Changes take effect immediately.
-            </div>
+        <div style="display:flex;align-items:flex-start;justify-content:flex-end;gap:1rem;">
             <button wire:click="addCluster" class="btn-primary" style="flex-shrink:0;">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                 Add Cluster
@@ -36,7 +31,8 @@
                 All Clusters
             </button>
             @foreach($clusterModels as $cl)
-            <button wire:click="setCluster('{{ $cl->id }}')"
+            <button wire:key="tab-{{ $cl->id }}"
+                    wire:click="setCluster('{{ $cl->id }}')"
                     style="padding:0.2rem 0.625rem;border-radius:999px;font-size:0.6875rem;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid;
                         {{ (string)$activeCluster === (string)$cl->id
                             ? 'background:var(--accent);color:#071020;border-color:var(--accent);'
@@ -59,7 +55,7 @@
         <div style="display:grid;gap:0.75rem;grid-template-columns:{{ count($showClusters) === 1 ? '1fr' : 'repeat(auto-fit,minmax(240px,1fr))' }};">
             @foreach($showClusters as $c)
             @php $clModel = $clusterModels->firstWhere('id', $c); @endphp
-            <div class="card" style="
+            <div class="card" wire:key="cluster-card-{{ $c }}" style="
                 border-top:2px solid {{ $topColors[$c] }};
                 padding:0.875rem;
                 display:flex;flex-direction:column;gap:0.5rem;
@@ -148,7 +144,7 @@
 
         {{-- ── Waste collection by cluster ── --}}
         @if($clusterModels->isNotEmpty())
-        <div class="card" style="padding:0.875rem 1rem;display:flex;flex-direction:column;gap:0.75rem;">
+        <div class="card" wire:key="cluster-waste-chart-card" style="padding:0.875rem 1rem;display:flex;flex-direction:column;gap:0.75rem;">
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
                 <span style="font-size:0.6875rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);">Waste Collection by Cluster</span>
                 <div style="display:flex;align-items:center;gap:0.3rem;">
@@ -163,20 +159,37 @@
                     @endforeach
                 </div>
             </div>
-            <div wire:ignore style="position:relative;height:260px;">
-                <canvas id="clusterWasteChart" style="position:absolute;inset:0;width:100%!important;height:100%!important;"></canvas>
+            <div wire:ignore wire:key="cluster-chart-box" class="cluster-chart-box">
+                <canvas id="clusterWasteChart"></canvas>
             </div>
         </div>
         @endif
 
     </div>
 
+    @push('styles')
+    <style>
+        /* Chart.js sizes the canvas itself — the box only fixes the area it may use. */
+        .cluster-chart-box {
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            height: 260px;
+            overflow: hidden;
+        }
+        .cluster-chart-box canvas { display: block; }
+    </style>
+    @endpush
+
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
     document.addEventListener('livewire:load', function () {
         const canvas = document.getElementById('clusterWasteChart');
         if (!canvas) return;
+
+        // A stale instance would fight this one over the canvas size.
+        const stale = Chart.getChart(canvas);
+        if (stale) stale.destroy();
 
         function themeColors() {
             const cs = getComputedStyle(document.documentElement);
@@ -199,6 +212,7 @@
                     backgroundColor: initial.colors.length ? initial.colors : ['#3987e5'],
                     borderRadius: 4,
                     borderSkipped: false,
+                    maxBarThickness: 96,
                 }]
             },
             options: {
@@ -210,15 +224,39 @@
                 },
                 scales: {
                     x: { grid: { display: false }, ticks: { color: labelColor, font: { size: 9 } } },
-                    y: { grid: { color: gridColor }, ticks: { color: labelColor, font: { size: 9 } } },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: {
+                            color: labelColor,
+                            font: { size: 9 },
+                            callback: v => v.toLocaleString(),
+                        },
+                    },
                 }
             }
         });
+
+        // A Livewire re-render can strip the width/height Chart.js wrote onto the
+        // canvas, leaving it at the 300x150 default inside a full-width box. Measure
+        // the box and put the canvas back whenever the two drift apart.
+        const box = canvas.parentElement;
+        function syncSize() {
+            if (!box.clientWidth || !box.clientHeight) return;
+            if (canvas.clientWidth === box.clientWidth && canvas.clientHeight === box.clientHeight) return;
+
+            canvas.removeAttribute('width');
+            canvas.removeAttribute('height');
+            canvas.style.width  = '';
+            canvas.style.height = '';
+            chart.resize(box.clientWidth, box.clientHeight);
+        }
 
         Livewire.on('cluster-chart-updated', payload => {
             chart.data.labels = payload.labels.length ? payload.labels : ['—'];
             chart.data.datasets[0].data = payload.totals.length ? payload.totals : [0];
             chart.data.datasets[0].backgroundColor = payload.colors.length ? payload.colors : ['#3987e5'];
+            syncSize();
             chart.update();
         });
 
@@ -227,7 +265,19 @@
             chart.options.scales.x.ticks.color = c.label;
             chart.options.scales.y.ticks.color = c.label;
             chart.options.scales.y.grid.color  = c.grid;
+            syncSize();
             chart.update();
+        });
+
+        if (window.ResizeObserver) {
+            new ResizeObserver(syncSize).observe(box);
+        }
+        window.addEventListener('resize', syncSize);
+
+        // The morph lands after the hook, so re-check on the next frame too.
+        Livewire.hook('message.processed', () => {
+            syncSize();
+            requestAnimationFrame(syncSize);
         });
     });
     </script>

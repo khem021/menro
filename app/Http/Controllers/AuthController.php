@@ -30,6 +30,18 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    /**
+     * There is no emailed reset link: an administrator sets a new password on
+     * the Users page. This page just tells the user who to ask.
+     */
+    public function showForgotPassword()
+    {
+        if (session('auth_user_id')) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.forgot-password');
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -64,6 +76,9 @@ class AuthController extends Controller
             // simply mistyping is not locked out without notice.
             if ($remaining > 0 && $remaining <= 2) {
                 $message .= " {$remaining} attempt(s) remaining before this account is temporarily locked.";
+            } elseif ($remaining === 0) {
+                $seconds = RateLimiter::availableIn($key);
+                $message .= " Sign-in is now temporarily locked. Try again in {$seconds} seconds.";
             }
 
             return back()->withErrors(['login' => $message])->withInput(['username' => $request->username]);

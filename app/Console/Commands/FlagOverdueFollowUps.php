@@ -19,27 +19,48 @@ class FlagOverdueFollowUps extends Command
     {
         $today = Carbon::today()->toDateString();
 
-        $overdue = Inspection::with('wasteGenerator:generator_id,generator_name')
-            ->where('compliance_status', 'for_follow_up')
+        // Only a generator's latest inspection counts, in the order InspectionForm
+        // uses to decide which inspection sets the generator's status. A newer
+        // inspection means the follow-up took place, so an older one's date
+        // passing is not overdue.
+        $generatorIds = Inspection::where('compliance_status', 'for_follow_up')
             ->whereNotNull('next_follow_up')
             ->where('next_follow_up', '<', $today)
-            ->get(['inspection_id', 'generator_id', 'next_follow_up']);
+            ->whereNotExists(function ($q) {
+                $q->from('inspections as newer')
+                    ->whereColumn('newer.generator_id', 'inspections.generator_id')
+                    ->whereNull('newer.deleted_at')
+                    ->where(function ($q) {
+                        $q->whereColumn('newer.inspection_date', '>', 'inspections.inspection_date')
+                            ->orWhere(function ($q) {
+                                $q->whereColumn('newer.inspection_date', 'inspections.inspection_date')
+                                    ->whereColumn('newer.inspection_id', '>', 'inspections.inspection_id');
+                            });
+                    });
+            })
+            ->distinct()
+            ->pluck('generator_id');
 
-        if ($overdue->isEmpty()) {
+        // "For follow-up" on an inspection puts its generator at for_inspection
+        // (InspectionForm), so that is the status an overdue follow-up moves on to
+        // non_compliant. This used to match 'for_follow_up' instead, which is an
+        // inspection result and never a generator status, so nothing changed.
+        // A status set by hand since then is left alone.
+        $flagged = WasteGenerator::whereIn('generator_id', $generatorIds)
+            ->where('status', 'active')
+            ->where('compliance_status', 'for_inspection')
+            ->pluck('generator_id');
+
+        if ($flagged->isEmpty()) {
             $this->info('No overdue follow-ups found.');
             return 0;
         }
 
-        $count        = $overdue->count();
-        $generatorIds = $overdue->pluck('generator_id')->unique()->values()->all();
-
-        // Revert generator compliance to non_compliant
-        WasteGenerator::whereIn('generator_id', $generatorIds)
-            ->where('compliance_status', 'for_follow_up')
-            ->update(['compliance_status' => 'non_compliant']);
+        $count = $flagged->count();
+        WasteGenerator::whereIn('generator_id', $flagged)->update(['compliance_status' => 'non_compliant']);
 
         $recipientIds = User::whereHas('role', fn($q) =>
-            $q->whereIn('role_name', ['System Administrator', 'MENRO Officer'])
+            $q->whereIn('role_name', ROLES_STAFF())
         )->where('status', 'active')->pluck('user_id');
 
         if ($recipientIds->isNotEmpty()) {
@@ -76,7 +97,7 @@ class FlagOverdueFollowUps extends Command
         Cache::forget('stats:compliance_pipeline');
         Cache::forget('dashboard:kpis');
 
-        $this->info("Flagged {$count} overdue follow-up(s) as non-compliant.");
+        $this->info("Marked {$count} generator(s) with overdue follow-ups as non-compliant.");
         return 0;
     }
 }

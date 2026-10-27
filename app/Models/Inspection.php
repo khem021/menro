@@ -2,16 +2,27 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\CascadesSoftDeletes;
 use App\Models\Concerns\InvalidatesDataCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inspection extends Model
 {
     use SoftDeletes;
+    use CascadesSoftDeletes;
     use InvalidatesDataCache;
+
+    /** @return list<string> */
+    protected static function cascadeSoftDeletes(): array
+    {
+        // A violation only means anything as a finding of its inspection, so
+        // it follows the inspection into and out of the archive.
+        return ['violations'];
+    }
 
     protected static function dataCacheGroups(): array
     {
@@ -46,7 +57,12 @@ class Inspection extends Model
 
     public function inspector(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'inspector_id', 'user_id');
+        // Who did this is history. Archiving someone's account must not blank
+        // their name out of the records they touched, so this relation ignores
+        // the soft-delete scope. (BelongsTo::withTrashed() does not exist in
+        // Laravel 9; withoutGlobalScope is the supported equivalent.)
+        return $this->belongsTo(User::class, 'inspector_id', 'user_id')
+                    ->withoutGlobalScope(SoftDeletingScope::class);
     }
 
     public function violations(): HasMany

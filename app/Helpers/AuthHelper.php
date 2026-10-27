@@ -34,6 +34,38 @@ if (!function_exists('canAccess')) {
     function canAccess(string ...$roles): bool { return in_array(authRole(), $roles); }
 }
 
+if (!function_exists('requireRole')) {
+    /**
+     * Stops the request unless the current role is one of $roles.
+     *
+     * Livewire actions need this in the method itself: a component's mount()
+     * runs only on the first render, so a guard there does not cover the
+     * action requests that follow, and route middleware never sees them at all.
+     */
+    function requireRole(string ...$roles): void
+    {
+        if (!canAccess(...$roles)) {
+            abort(403, 'Access denied.');
+        }
+    }
+}
+
+if (!function_exists('ROLES_STAFF')) {
+    /**
+     * Every role that may change data: both of them.
+     *
+     * This used to be four sets (ROLES_MANAGE / ENCODE / FIELD / CONTRIBUTE)
+     * carving up six roles. The 2026-10 consolidation left two, which made all
+     * four the same list, so they were collapsed into this one rather than kept
+     * as aliases that would drift apart the first time someone "fixed" one.
+     *
+     * Deliberately not "anyone signed in": AuthMiddleware stores 'Unknown' when a
+     * user's role relation is missing, so naming the two real roles keeps that
+     * case failing closed.
+     */
+    function ROLES_STAFF(): array { return ['System Administrator', 'MENRO Staff']; }
+}
+
 if (!function_exists('logAudit')) {
     function logAudit(string $action, string $module, $recordId = null, $old = null, $new = null): void
     {

@@ -18,15 +18,24 @@ class BarangaySeeder extends Seeder
             'San Roque', 'San Vicente', 'Songkit', 'Union',
         ];
 
+        // insertOrIgnore only ignores a UNIQUE violation, and barangay_name has
+        // no unique index — so this used to insert a fresh copy of all 14 on
+        // every boot. start.sh runs this seeder on every deploy, which is how
+        // the deployed database reached 98 barangays. Check by name instead, so
+        // the seeder is idempotent whether or not the index exists.
         foreach ($barangays as $name) {
-            DB::table('barangays')->insertOrIgnore([
-                'barangay_name' => $name,
-                'municipality'  => 'Madrid',
-                'province'      => 'Surigao del Sur',
-                'cluster'       => null,
-                'created_at'    => now(),
-                'updated_at'    => now(),
-            ]);
+            $exists = DB::table('barangays')->where('barangay_name', $name)->exists();
+
+            if (! $exists) {
+                DB::table('barangays')->insert([
+                    'barangay_name' => $name,
+                    'municipality'  => 'Madrid',
+                    'province'      => 'Surigao del Sur',
+                    'cluster'       => null,
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ]);
+            }
         }
 
         // Create 6 sectors per barangay
