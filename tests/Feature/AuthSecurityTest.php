@@ -185,6 +185,36 @@ class AuthSecurityTest extends TestCase
         $this->get('/dashboard')->assertOk();
     }
 
+    /* ---------- Forgot password ---------- */
+
+    public function test_the_sign_in_page_links_to_forgot_password(): void
+    {
+        $this->flushSession();
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertSee('href="' . route('password.request') . '"', false)
+            ->assertSee('Forgot password?');
+    }
+
+    public function test_forgot_password_explains_who_resets_it(): void
+    {
+        $this->flushSession();
+
+        $this->get('/forgot-password')
+            ->assertOk()
+            ->assertSee('does not email reset links')
+            ->assertSee('System Administrator')
+            ->assertSee('href="' . route('login') . '"', false);
+    }
+
+    public function test_forgot_password_sends_a_signed_in_user_to_the_dashboard(): void
+    {
+        $this->signInAs('admin');
+
+        $this->get('/forgot-password')->assertRedirect(route('dashboard'));
+    }
+
     /* ---------- Helpers ---------- */
 
     private function signInAs(string $username): User

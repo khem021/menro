@@ -20,6 +20,7 @@ Route::get('/', [AuthController::class, 'redirectRoot']);
 // Guest routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Both roles may work with every module below. The components re-check this in

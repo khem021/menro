@@ -30,6 +30,18 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    /**
+     * There is no emailed reset link: an administrator sets a new password on
+     * the Users page. This page just tells the user who to ask.
+     */
+    public function showForgotPassword()
+    {
+        if (session('auth_user_id')) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.forgot-password');
+    }
+
     public function login(Request $request)
     {
         $request->validate([
