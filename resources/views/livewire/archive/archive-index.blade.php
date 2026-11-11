@@ -4,6 +4,19 @@
 
     <div class="mob-page" style="height:calc(100vh - 72px - 3.5rem);display:flex;flex-direction:column;overflow:hidden;">
 
+        {{-- Two things live here: the report files generated on a schedule, and
+             every record someone has deleted from the system. --}}
+        <div class="flex-shrink-0" style="display:flex;gap:0.25rem;margin-bottom:0.75rem;border-bottom:1px solid var(--card-border);">
+            @foreach(['reports' => 'Report Files', 'deleted' => 'Deleted Records'] as $key => $label)
+                <button type="button" wire:click="setTab('{{ $key }}')"
+                        style="padding:0.5rem 0.9rem;font-size:0.8125rem;font-weight:600;border:none;background:none;cursor:pointer;color:{{ $tab === $key ? 'var(--accent-text)' : 'var(--text-muted)' }};border-bottom:2px solid {{ $tab === $key ? 'var(--accent-text)' : 'transparent' }};margin-bottom:-1px;">
+                    {{ $label }}
+                </button>
+            @endforeach
+        </div>
+
+        @if($tab === 'reports')
+
         {{-- Filter bar --}}
         <div class="filter-bar flex-shrink-0">
             <div class="filter-row">
@@ -88,6 +101,89 @@
             </div>
             @endif
         </div>
+
+        @else
+
+        {{-- Deleted records: one type at a time, so the table can stay a plain
+             paginated Eloquent query rather than a union across eleven tables. --}}
+        <div class="filter-bar flex-shrink-0">
+            <div class="filter-row">
+                <div class="filter-group mob-fgroup"><span class="filter-label">Record Type</span>
+                    <select wire:model="record_type" class="form-select w-56">
+                        @foreach($types as $key => $label)
+                            <option value="{{ $key }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @if($config && $config['search'])
+                <div class="filter-group mob-fgroup"><span class="filter-label">Search</span>
+                    <input type="text" wire:model.debounce.300ms="search" class="form-input w-56" placeholder="Search archived records…" />
+                </div>
+                @endif
+                <div class="filter-group mob-fgroup"><span class="filter-label">Deleted From</span><input type="date" wire:model="deleted_from" class="form-input w-36" /></div>
+                <div class="filter-group mob-fgroup"><span class="filter-label">Deleted To</span><input type="date" wire:model="deleted_to" class="form-input w-36" /></div>
+                <a href="{{ route('archive.print', ['type' => $record_type, 'search' => $search, 'from' => $deleted_from, 'to' => $deleted_to]) }}" target="_blank" class="btn-secondary" style="margin-left:auto;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print List
+                </a>
+            </div>
+        </div>
+
+        <div class="page-card tbl-card flex-1 min-h-0 flex flex-col overflow-hidden">
+            <div class="flex-1 min-h-0 overflow-y-auto mob-tbl-inner" style="scrollbar-width:none;-ms-overflow-style:none;">
+                <table class="w-full">
+                    <thead class="sticky top-0 z-10" style="background:var(--card-bg)"><tr>
+                        <th class="table-header">Record</th>
+                        @foreach($config['columns'] ?? [] as $heading)
+                            <th class="table-header">{{ $heading }}</th>
+                        @endforeach
+                        <th class="table-header">Deleted</th>
+                        <th class="table-header">Deleted By</th>
+                        <th class="table-header" style="text-align:right;">Actions</th>
+                    </tr></thead>
+                    <tbody>
+                        @forelse($records ?? [] as $r)
+                            @php $log = $deletions[$r->{$config['key']}] ?? null; @endphp
+                            <tr class="table-row">
+                                <td class="table-cell" style="font-weight:600;color:var(--text);font-size:0.8125rem;">{{ $r->{$config['title']} }}</td>
+                                @foreach(array_keys($config['columns']) as $col)
+                                    <td class="table-cell" style="color:var(--text-muted);font-size:0.8125rem;">{{ $r->{$col} ?? '—' }}</td>
+                                @endforeach
+                                <td class="table-cell" style="font-size:0.8125rem;white-space:nowrap;">{{ $r->deleted_at?->format('M d, Y') ?? '—' }}</td>
+                                {{-- Joined from the audit trail. logAudit() swallows its own
+                                     failures, so this can legitimately be missing. --}}
+                                <td class="table-cell" style="color:var(--text-muted);font-size:0.8125rem;">{{ $log?->user?->full_name ?? '—' }}</td>
+                                <td class="table-cell" style="text-align:right;white-space:nowrap;">
+                                    @if($config['print'])
+                                        <a href="{{ route($config['print'], $r->{$config['key']}) }}" target="_blank" class="btn-icon" title="Print" aria-label="Print"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg></a>
+                                    @endif
+                                    @if($canRestore)
+                                        <button wire:click="restore({{ $r->{$config['key']} }})" data-confirm="Restore this record? It will reappear in its own list." data-confirm-label="Restore" data-confirm-tone="neutral" class="btn-icon" title="Restore" aria-label="Restore"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a5 5 0 015 5v2M3 10l4-4M3 10l4 4"/></svg></button>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="{{ count($config['columns'] ?? []) + 4 }}" class="px-4 py-16 text-center">
+                                <div class="flex flex-col items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background:var(--card-border)">
+                                        <svg class="w-6 h-6" style="color:var(--text-dim)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/></svg>
+                                    </div>
+                                    <p class="text-sm font-semibold" style="color:var(--text)">Nothing archived here</p>
+                                    <p class="text-xs" style="color:var(--text-dim)">Records deleted from {{ strtolower($config['label'] ?? 'this module') }} are kept here so they can still be read, printed and put back.</p>
+                                </div>
+                            </td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if($records && $records->hasPages())
+            <div class="px-5 py-3 flex-shrink-0 flex items-center justify-between" style="border-top:1px solid var(--card-border)">
+                <p class="text-xs" style="color:var(--text-dim)">{{ $records->firstItem() }}–{{ $records->lastItem() }} of {{ $records->total() }} records</p>
+                {{ $records->links() }}
+            </div>
+            @endif
+        </div>
+
+        @endif
 
     </div>
 </div>

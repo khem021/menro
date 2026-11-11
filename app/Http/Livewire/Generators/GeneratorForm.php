@@ -6,6 +6,7 @@ use App\Models\Barangay;
 use App\Models\GeneratorType;
 use App\Models\WasteGenerator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class GeneratorForm extends Component
@@ -23,22 +24,31 @@ class GeneratorForm extends Component
     public string $compliance_status       = 'for_inspection';
     public string $status                  = 'active';
 
-    protected $rules = [
-        'generator_name'           => 'required|string|max:255',
-        'generator_type_id'        => 'required|integer|exists:generator_types,generator_type_id',
-        'barangay_id'              => 'required|integer|exists:barangays,barangay_id',
-        'address'                  => 'nullable|string|max:500',
-        'contact_person'           => 'nullable|string|max:255',
-        'contact_number'           => 'nullable|string|max:50',
-        'email'                    => 'nullable|email|max:255',
-        'estimated_daily_waste_kg' => 'nullable|numeric|min:0',
-        'compliance_status'        => 'required|in:compliant,for_inspection,non_compliant',
-        'status'                   => 'required|in:active,inactive',
-    ];
+    // exists: and unique: go through Laravel's presence verifier, which
+    // queries the table directly and so ignores the soft-delete scope. Without
+    // withoutTrashed() a crafted request could attach a record to an archived
+    // parent.
+    /** A method, not a property: Rule::exists() cannot appear in a
+     *  constant expression. */
+    protected function rules(): array
+    {
+        return [
+            'generator_name'           => 'required|string|max:255',
+            'generator_type_id'        => 'required|integer|exists:generator_types,generator_type_id',
+            'barangay_id'              => ['required', 'integer', Rule::exists('barangays', 'barangay_id')->withoutTrashed()],
+            'address'                  => 'nullable|string|max:500',
+            'contact_person'           => 'nullable|string|max:255',
+            'contact_number'           => 'nullable|string|max:50',
+            'email'                    => 'nullable|email|max:255',
+            'estimated_daily_waste_kg' => 'nullable|numeric|min:0',
+            'compliance_status'        => 'required|in:compliant,for_inspection,non_compliant',
+            'status'                   => 'required|in:active,inactive',
+            ];
+    }
 
     public function mount($id = null)
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -60,6 +70,10 @@ class GeneratorForm extends Component
 
     public function save()
     {
+        // mount() does not re-run on Livewire action requests, and route
+        // middleware never sees them, so the check has to live here too.
+        requireRole(...ROLES_STAFF());
+
         $this->validate();
 
         $data = [

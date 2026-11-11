@@ -56,11 +56,12 @@ class ReportBuilder
                     SELECT we.entry_date, wg.generator_name, b.barangay_name,
                            wc.category_name, we.quantity, we.unit, u.full_name AS encoded_by
                     FROM waste_entries we
-                    LEFT JOIN waste_generators wg ON we.generator_id = wg.generator_id
-                    LEFT JOIN barangays b ON wg.barangay_id = b.barangay_id
+                    LEFT JOIN waste_generators wg ON we.generator_id = wg.generator_id AND wg.deleted_at IS NULL
+                    LEFT JOIN barangays b ON wg.barangay_id = b.barangay_id AND b.deleted_at IS NULL
                     LEFT JOIN waste_categories wc ON we.category_id = wc.category_id
                     LEFT JOIN users u ON we.encoded_by = u.user_id
-                    WHERE we.entry_date BETWEEN ? AND ?
+                    WHERE we.deleted_at IS NULL
+                      AND we.entry_date BETWEEN ? AND ?
                     ORDER BY we.entry_date DESC
                 ", [$from, $to]);
                 foreach ($data as $row) {
@@ -81,7 +82,8 @@ class ReportBuilder
                            wg.compliance_status, wg.status, wg.estimated_daily_waste_kg
                     FROM waste_generators wg
                     LEFT JOIN generator_types gt ON wg.generator_type_id = gt.generator_type_id
-                    LEFT JOIN barangays b ON wg.barangay_id = b.barangay_id
+                    LEFT JOIN barangays b ON wg.barangay_id = b.barangay_id AND b.deleted_at IS NULL
+                    WHERE wg.deleted_at IS NULL
                     ORDER BY wg.compliance_status, wg.generator_name
                 ");
                 foreach ($data as $row) {
@@ -101,7 +103,7 @@ class ReportBuilder
                     SELECT i.date_reported, b.barangay_name, i.incident_type,
                            i.status, u.full_name AS assigned_to, i.description
                     FROM incidents i
-                    LEFT JOIN barangays b ON i.barangay_id = b.barangay_id
+                    LEFT JOIN barangays b ON i.barangay_id = b.barangay_id AND b.deleted_at IS NULL
                     LEFT JOIN users u ON i.assigned_to = u.user_id
                     WHERE i.deleted_at IS NULL
                       AND i.date_reported BETWEEN ? AND ?
@@ -124,8 +126,9 @@ class ReportBuilder
                     SELECT cs.collection_date, b.barangay_name, cs.waste_type,
                            cs.assigned_team, cs.assigned_vehicle, cs.status
                     FROM collection_schedules cs
-                    LEFT JOIN barangays b ON cs.barangay_id = b.barangay_id
-                    WHERE cs.collection_date BETWEEN ? AND ?
+                    LEFT JOIN barangays b ON cs.barangay_id = b.barangay_id AND b.deleted_at IS NULL
+                    WHERE cs.deleted_at IS NULL
+                      AND cs.collection_date BETWEEN ? AND ?
                     ORDER BY cs.collection_date DESC
                 ", [$from, $to]);
                 foreach ($data as $row) {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class Report extends Model
 {
@@ -30,6 +31,11 @@ class Report extends Model
 
     public function generatedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'generated_by', 'user_id');
+        // Who did this is history. Archiving someone's account must not blank
+        // their name out of the records they touched, so this relation ignores
+        // the soft-delete scope. (BelongsTo::withTrashed() does not exist in
+        // Laravel 9; withoutGlobalScope is the supported equivalent.)
+        return $this->belongsTo(User::class, 'generated_by', 'user_id')
+                    ->withoutGlobalScope(SoftDeletingScope::class);
     }
 }

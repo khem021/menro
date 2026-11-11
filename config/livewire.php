@@ -12,7 +12,7 @@ return [
 
     'inject_morph_markers' => true,
 
-    'middleware_group' => 'web',
+    'middleware_group' => 'livewire',
 
     'temporary_file_upload' => [
         'disk'        => null,       // uses default (local)

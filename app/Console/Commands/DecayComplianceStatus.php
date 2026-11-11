@@ -25,6 +25,7 @@ class DecayComplianceStatus extends Command
             ->whereRaw('NOT EXISTS (
                 SELECT 1 FROM inspections
                 WHERE inspections.generator_id = waste_generators.generator_id
+                AND inspections.deleted_at IS NULL
                 AND inspection_date >= ?
             )', [$threshold])
             ->get(['generator_id', 'generator_name']);
@@ -40,7 +41,7 @@ class DecayComplianceStatus extends Command
             ->update(['compliance_status' => 'for_inspection']);
 
         $recipientIds = User::whereHas('role', fn($q) =>
-            $q->whereIn('role_name', ['System Administrator', 'MENRO Officer'])
+            $q->whereIn('role_name', ROLES_STAFF())
         )->where('status', 'active')->pluck('user_id');
 
         if ($recipientIds->isNotEmpty()) {

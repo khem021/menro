@@ -25,7 +25,7 @@ class CollectionIndex extends Component
 
     public function delete($id)
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -37,7 +37,7 @@ class CollectionIndex extends Component
 
     public function markCompleted($id)
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 

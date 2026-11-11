@@ -30,14 +30,26 @@ class FreshDemoSeeder extends Seeder
         $this->command->info('Seeding fresh demo data…');
 
         // ── 1. Users ─────────────────────────────────────────────────────────
-        $roles = DB::table('roles')->pluck('role_id', 'role_name');
+        // Resolved once, up front: users.role_id is NOT NULL, so looking the role
+        // up per user would turn a missing row into an opaque constraint violation
+        // halfway through the insert loop.
+        $staffRoleId = DB::table('roles')->where('role_name', 'MENRO Staff')->value('role_id');
 
+        if (! $staffRoleId) {
+            $this->command->error('MENRO Staff role is missing - run RoleSeeder first.');
+
+            return;
+        }
+
+        // All five are MENRO Staff. They stay distinct accounts because the rules
+        // that survived the role consolidation are per-user, not per-role: a staff
+        // member may only edit the waste entries they encoded themselves.
         $newUsers = [
-            ['username' => 'menro',     'full_name' => 'Ma. Lourdes Dela Cruz',   'email' => 'menro@madrid.gov.ph',      'role' => 'MENRO Officer'],
-            ['username' => 'encoder',   'full_name' => 'Roberto Santillan Jr.',   'email' => 'encoder@madrid.gov.ph',    'role' => 'Data Encoder'],
-            ['username' => 'inspector', 'full_name' => 'Felix T. Navarro',         'email' => 'inspector@madrid.gov.ph',  'role' => 'Field Inspector'],
-            ['username' => 'brgy_user', 'full_name' => 'Natividad Reyes',          'email' => 'barangay@madrid.gov.ph',   'role' => 'Barangay User'],
-            ['username' => 'viewer',    'full_name' => 'Cristina M. Aquino',       'email' => 'viewer@madrid.gov.ph',     'role' => 'Report Viewer'],
+            ['username' => 'menro',     'full_name' => 'Ma. Lourdes Dela Cruz',   'email' => 'menro@madrid.gov.ph'],
+            ['username' => 'encoder',   'full_name' => 'Roberto Santillan Jr.',   'email' => 'encoder@madrid.gov.ph'],
+            ['username' => 'inspector', 'full_name' => 'Felix T. Navarro',         'email' => 'inspector@madrid.gov.ph'],
+            ['username' => 'brgy_user', 'full_name' => 'Natividad Reyes',          'email' => 'barangay@madrid.gov.ph'],
+            ['username' => 'viewer',    'full_name' => 'Cristina M. Aquino',       'email' => 'viewer@madrid.gov.ph'],
         ];
 
         foreach ($newUsers as $u) {
@@ -47,7 +59,7 @@ class FreshDemoSeeder extends Seeder
                     'full_name'     => $u['full_name'],
                     'email'         => $u['email'],
                     'password_hash' => bcrypt('admin123'),
-                    'role_id'       => $roles[$u['role']],
+                    'role_id'       => $staffRoleId,
                     'status'        => 'active',
                     'created_at'    => now()->subDays(rand(90, 180)),
                     'updated_at'    => now(),
@@ -79,6 +91,19 @@ class FreshDemoSeeder extends Seeder
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+            }
+
+            // Writing explicit ids leaves Postgres's identity sequence untouched,
+            // so without this the next Cluster::create() reuses id 1 and dies on a
+            // duplicate key. Keep in step with the resync migration.
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement(<<<'SQL'
+                    SELECT setval(
+                        pg_get_serial_sequence('clusters', 'id'),
+                        GREATEST(COALESCE((SELECT MAX(id) FROM clusters), 0), 1),
+                        (SELECT COUNT(*) FROM clusters) > 0
+                    )
+                SQL);
             }
         }
 
@@ -191,23 +216,42 @@ class FreshDemoSeeder extends Seeder
         // Rice mill → category 6 (construction debris / processing residue) extra entries
         $riceMillId = DB::table('waste_generators')->where('generator_name', 'Magsaysay Rice Mill')->value('generator_id');
 
+        // Runs to the END of the current month, not the end of the previous one:
+        // stopping a month short left the dashboard's "Waste This Month" and the
+        // cluster chart's Daily/Weekly/Monthly views empty on a fresh install.
+        // DemoRecentActivitySeeder then fills the current month up to today.
+        $today = Carbon::now();
+
+        /** A day inside $month, never later than today. */
+        $dayIn = function (Carbon $month) use ($today) {
+            $last = min(26, $month->copy()->endOfMonth()->day - 1);
+            if ($month->isSameMonth($today)) {
+                $last = min($last, $today->day - 1);
+            }
+            return $month->copy()->addDays($last > 0 ? rand(0, $last) : 0);
+        };
+
         foreach ($genIds as $gid) {
             $perMonth = rand(3, 6);
-            for ($m = 0; $m < 12; $m++) {
+            for ($m = 0; $m <= 12; $m++) {
                 $md = $startDate->copy()->addMonths($m);
+                if ($md->greaterThan($today)) {
+                    break;
+                }
                 for ($e = 0; $e < $perMonth; $e++) {
                     $catId = rand(1, 3); // mostly biodegradable/recyclable/residual
                     if ($gid == $hospitalId) $catId = 4;
+                    $day = $dayIn($md);
                     $entries[] = [
                         'generator_id' => $gid,
                         'category_id'  => $catId,
                         'quantity'     => round(rand(40, 480) + (rand(0, 99) / 100), 2),
                         'unit'         => 'kg',
-                        'entry_date'   => $md->copy()->addDays(rand(0, 26))->toDateString(),
+                        'entry_date'   => $day->toDateString(),
                         'remarks'      => null,
                         'encoded_by'   => $encoderId,
-                        'created_at'   => $md->copy()->addDays(rand(0, 26))->setHour(rand(8, 17)),
-                        'updated_at'   => $md->copy()->addDays(rand(0, 26))->setHour(rand(8, 17)),
+                        'created_at'   => $day->copy()->setHour(rand(8, 17)),
+                        'updated_at'   => $day->copy()->setHour(rand(8, 17)),
                     ];
                 }
             }
@@ -215,18 +259,22 @@ class FreshDemoSeeder extends Seeder
 
         // Special processing waste for rice mill (category 6)
         if ($riceMillId) {
-            for ($m = 0; $m < 12; $m++) {
+            for ($m = 0; $m <= 12; $m++) {
                 $md = $startDate->copy()->addMonths($m);
+                if ($md->greaterThan($today)) {
+                    break;
+                }
+                $day = $dayIn($md);
                 $entries[] = [
                     'generator_id' => $riceMillId,
                     'category_id'  => 6,
                     'quantity'     => round(rand(250, 650) + (rand(0, 99) / 100), 2),
                     'unit'         => 'kg',
-                    'entry_date'   => $md->copy()->addDays(rand(1, 26))->toDateString(),
+                    'entry_date'   => $day->toDateString(),
                     'remarks'      => 'Rice hull and processing residue — monthly collection',
                     'encoded_by'   => $encoderId,
-                    'created_at'   => $md->copy()->addDays(rand(1, 26))->setHour(9),
-                    'updated_at'   => $md->copy()->addDays(rand(1, 26))->setHour(9),
+                    'created_at'   => $day->copy()->setHour(9),
+                    'updated_at'   => $day->copy()->setHour(9),
                 ];
             }
         }
@@ -523,7 +571,7 @@ class FreshDemoSeeder extends Seeder
             ['title' => 'Collection Completed — Cluster 1','msg' => 'All Cluster 1 collection routes were completed successfully this week.',                                          'type' => 'success', 'days' => 3],
             ['title' => 'Incident Reported — Linibonan',   'msg' => 'An illegal dumping incident has been reported along the Linibonan creek road. Investigation underway.',           'type' => 'warning', 'days' => 3],
             ['title' => 'Compliance Rate Update',          'msg' => 'Monthly compliance rate is at 71% — 10 generators still flagged for inspection.',                                 'type' => 'info',    'days' => 2],
-            ['title' => 'New User Account Created',        'msg' => 'A new Data Encoder account has been activated.',                                                                  'type' => 'info',    'days' => 14],
+            ['title' => 'New User Account Created',        'msg' => 'A new MENRO Staff account has been activated.',                                                                  'type' => 'info',    'days' => 14],
             ['title' => 'Violation Resolved',              'msg' => 'The drainage clogging violation has been marked as resolved after a satisfactory site visit.',                    'type' => 'success', 'days' => 18],
             ['title' => 'Monthly Waste Volume Report',     'msg' => 'Total waste volume recorded this month: approx 12,450 kg. See Reports for the full breakdown.',                  'type' => 'info',    'days' => 1],
             ['title' => 'Open Burning Incident — Panayogon','msg' => 'Open burning reported near the sitio boundary. Field inspector dispatched.',                                    'type' => 'danger',  'days' => 1],

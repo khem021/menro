@@ -126,8 +126,7 @@ rows = [
     ('Name (optional):', ''),
     ('Office / Barangay:', ''),
     ('Role in the system:',
-     '☐ System Administrator   ☐ MENRO Officer   ☐ Data Encoder\n'
-     '☐ Field Inspector   ☐ Barangay User   ☐ Report Viewer   ☐ IT Expert'),
+     '☐ System Administrator   ☐ MENRO Staff   ☐ IT Expert'),
     ('Date of evaluation:', ''),
 ]
 for i, (k, v) in enumerate(rows):

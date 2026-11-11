@@ -73,7 +73,7 @@ class NotificationIndex extends Component
 
     public function sendNotification()
     {
-        if (!canAccess('System Administrator', 'MENRO Officer')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 

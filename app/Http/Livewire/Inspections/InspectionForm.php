@@ -6,6 +6,7 @@ use App\Models\Inspection;
 use App\Models\User;
 use App\Models\WasteGenerator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class InspectionForm extends Component
@@ -21,20 +22,29 @@ class InspectionForm extends Component
     public string $recommendation    = '';
     public string $next_follow_up    = '';
 
-    protected $rules = [
-        'generator_id'      => 'required|integer|exists:waste_generators,generator_id',
-        'inspection_date'   => 'required|date',
-        'inspector_id'      => 'required|integer|exists:users,user_id',
-        'compliance_status' => 'required|in:compliant,warning,for_follow_up,violation',
-        'segregation_score' => 'nullable|integer|min:0|max:100',
-        'remarks'           => 'nullable|string|max:2000',
-        'recommendation'    => 'nullable|string|max:2000',
-        'next_follow_up'    => 'nullable|date',
-    ];
+    // exists: and unique: go through Laravel's presence verifier, which
+    // queries the table directly and so ignores the soft-delete scope. Without
+    // withoutTrashed() a crafted request could attach a record to an archived
+    // parent.
+    /** A method, not a property: Rule::exists() cannot appear in a
+     *  constant expression. */
+    protected function rules(): array
+    {
+        return [
+            'generator_id'      => ['required', 'integer', Rule::exists('waste_generators', 'generator_id')->withoutTrashed()],
+            'inspection_date'   => 'required|date|after_or_equal:2000-01-01|before_or_equal:tomorrow',
+            'inspector_id'      => ['required', 'integer', Rule::exists('users', 'user_id')->withoutTrashed()],
+            'compliance_status' => 'required|in:compliant,warning,for_follow_up,violation',
+            'segregation_score' => 'nullable|integer|min:0|max:100',
+            'remarks'           => 'nullable|string|max:2000',
+            'recommendation'    => 'nullable|string|max:2000',
+            'next_follow_up'    => 'nullable|date|after_or_equal:inspection_date',
+            ];
+    }
 
     public function mount($id = null)
     {
-        if (!canAccess('System Administrator', 'MENRO Officer', 'Field Inspector')) {
+        if (!canAccess(...ROLES_STAFF())) {
             abort(403, 'Access denied.');
         }
 
@@ -57,6 +67,10 @@ class InspectionForm extends Component
 
     public function save()
     {
+        // mount() does not re-run on Livewire action requests, and route
+        // middleware never sees them, so the check has to live here too.
+        requireRole(...ROLES_STAFF());
+
         $this->validate();
 
         $data = [
@@ -64,7 +78,7 @@ class InspectionForm extends Component
             'inspection_date'   => $this->inspection_date,
             'inspector_id'      => $this->inspector_id,
             'compliance_status' => $this->compliance_status,
-            'segregation_score' => $this->segregation_score === '' ? 0 : (int) $this->segregation_score,
+            'segregation_score' => $this->segregation_score === '' ? null : (int) $this->segregation_score,
             'remarks'           => $this->remarks ?: null,
             'recommendation'    => $this->recommendation ?: null,
             'next_follow_up'    => $this->next_follow_up ?: null,
@@ -80,18 +94,26 @@ class InspectionForm extends Component
             logAudit('create', 'Inspection', $new->inspection_id, null, $data);
         }
 
-        // Update generator compliance status
-        $generatorCompliance = match($this->compliance_status) {
-            'compliant'    => 'compliant',
-            'warning',
-            'for_follow_up'=> 'for_inspection',
-            'violation'    => 'non_compliant',
-            default        => 'for_inspection',
-        };
-        WasteGenerator::where('generator_id', $this->generator_id)
-            ->update(['compliance_status' => $generatorCompliance]);
-
         $savedId = $this->inspectionId ?? ($new->inspection_id ?? null);
+
+        // The generator's status follows its most recent inspection only, so
+        // correcting an old record does not overwrite where it stands today.
+        $latestId = Inspection::where('generator_id', $this->generator_id)
+            ->orderByDesc('inspection_date')
+            ->orderByDesc('inspection_id')
+            ->value('inspection_id');
+
+        if ($latestId === $savedId) {
+            $generatorCompliance = match($this->compliance_status) {
+                'compliant'    => 'compliant',
+                'warning',
+                'for_follow_up'=> 'for_inspection',
+                'violation'    => 'non_compliant',
+                default        => 'for_inspection',
+            };
+            WasteGenerator::where('generator_id', $this->generator_id)
+                ->update(['compliance_status' => $generatorCompliance]);
+        }
 
         if ($this->compliance_status === 'violation' && $savedId) {
             session()->flash('success', $this->inspectionId ? 'Inspection updated with violation status.' : 'Inspection recorded with violation status.');
@@ -112,7 +134,7 @@ class InspectionForm extends Component
             WasteGenerator::where('status', 'active')->orderBy('generator_name')->get(['generator_id', 'generator_name'])
         );
         $inspectors = Cache::remember('lookup:inspectors', 600, fn() =>
-            User::whereHas('role', fn($q) => $q->whereIn('role_name', ['Field Inspector', 'MENRO Officer', 'System Administrator']))
+            User::whereHas('role', fn($q) => $q->whereIn('role_name', ROLES_STAFF()))
                 ->where('status', 'active')
                 ->orderBy('full_name')
                 ->get(['user_id', 'full_name'])

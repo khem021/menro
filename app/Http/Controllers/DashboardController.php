@@ -100,7 +100,8 @@ class DashboardController extends Controller
                     EXTRACT(MONTH FROM entry_date) AS mo,
                     SUM(quantity) AS total
                 FROM waste_entries
-                WHERE entry_date >= ?
+                WHERE deleted_at IS NULL
+                  AND entry_date >= ?
                 GROUP BY EXTRACT(YEAR FROM entry_date), EXTRACT(MONTH FROM entry_date)
                 ORDER BY yr ASC, mo ASC
             ", [$since]);
@@ -108,9 +109,10 @@ class DashboardController extends Controller
             $cluster = DB::select("
                 SELECT b.cluster, SUM(we.quantity) AS total
                 FROM waste_entries we
-                JOIN waste_generators wg ON we.generator_id = wg.generator_id
-                JOIN barangays b ON wg.barangay_id = b.barangay_id
-                WHERE we.entry_date >= ?
+                JOIN waste_generators wg ON we.generator_id = wg.generator_id AND wg.deleted_at IS NULL
+                JOIN barangays b ON wg.barangay_id = b.barangay_id AND b.deleted_at IS NULL
+                WHERE we.deleted_at IS NULL
+                  AND we.entry_date >= ?
                   AND b.cluster IS NOT NULL
                 GROUP BY b.cluster
                 ORDER BY b.cluster ASC
@@ -120,7 +122,8 @@ class DashboardController extends Controller
                 SELECT wc.category_name, SUM(we.quantity) AS total
                 FROM waste_entries we
                 JOIN waste_categories wc ON we.category_id = wc.category_id
-                WHERE we.entry_date >= ?
+                WHERE we.deleted_at IS NULL
+                  AND we.entry_date >= ?
                 GROUP BY wc.category_id, wc.category_name
                 ORDER BY total DESC
             ", [$since]);
@@ -143,14 +146,16 @@ class DashboardController extends Controller
                 cs.assigned_vehicle,
                 cs.status
             FROM collection_schedules cs
-            JOIN barangays b ON cs.barangay_id = b.barangay_id
+            JOIN barangays b ON cs.barangay_id = b.barangay_id AND b.deleted_at IS NULL
             INNER JOIN (
                 SELECT barangay_id, MIN(collection_date) AS next_date
                 FROM collection_schedules
-                WHERE collection_date >= ?
+                WHERE deleted_at IS NULL
+                  AND collection_date >= ?
                   AND status IN ('pending', 'confirmed')
                 GROUP BY barangay_id
             ) nxt ON cs.barangay_id = nxt.barangay_id AND cs.collection_date = nxt.next_date
+            WHERE cs.deleted_at IS NULL
             ORDER BY b.cluster ASC, cs.collection_date ASC, b.barangay_name ASC
         ", [$today]));
 

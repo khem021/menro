@@ -444,11 +444,11 @@ add_body(doc, 'Default accounts that must be updated:', bold=True)
 
 accounts = [
     ('admin',     'admin123', 'System Administrator', 'Full system access — highest priority to change',   'B71C1C'),
-    ('menro',     'admin123', 'MENRO Officer',         'Full operational access',                           'B71C1C'),
-    ('encoder',   'admin123', 'Data Encoder',          'Can create waste entries and generator records',    'E65100'),
-    ('inspector', 'admin123', 'Field Inspector',       'Can create inspections and violations',             'E65100'),
-    ('barangay',  'admin123', 'Barangay User',         'Can view barangay data',                            '1B5E20'),
-    ('viewer',    'admin123', 'Report Viewer',         'Read-only access to reports',                       '1B5E20'),
+    ('menro',     'admin123', 'MENRO Staff',           'Full operational access',                           'B71C1C'),
+    ('encoder',   'admin123', 'MENRO Staff',           'Full operational access',                           'B71C1C'),
+    ('inspector', 'admin123', 'MENRO Staff',           'Full operational access',                           'B71C1C'),
+    ('barangay',  'admin123', 'MENRO Staff',           'Full operational access',                           'B71C1C'),
+    ('viewer',    'admin123', 'MENRO Staff',           'Full operational access',                           'B71C1C'),
 ]
 
 tbl_acc = doc.add_table(rows=1 + len(accounts), cols=5)

@@ -55,7 +55,7 @@
                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>Clear
             </button>
             @endif
-            <a href="{{ route('entries.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add Entry</a>
+            @if(canAccess(...ROLES_STAFF()))<a href="{{ route('entries.create') }}" class="btn-primary" style="margin-left:auto;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add Entry</a>@endif
         </div>
     </div>
 
@@ -96,13 +96,17 @@
                         <td class="table-cell" style="color:var(--text-muted);font-size:0.8125rem;">{{ $entry->encodedBy->full_name ?? '—' }}</td>
                         <td class="table-cell" style="text-align:right;">
                             <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.25rem;">
-                                <a href="{{ route('entries.edit', $entry->entry_id) }}" class="btn-icon btn-icon-edit" title="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
-                                <button wire:click="delete({{ $entry->entry_id }})" wire:confirm="Delete this entry?" class="btn-icon btn-icon-del" title="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @if(isAdmin() || $entry->encoded_by === session('auth_user_id'))
+                                <a href="{{ route('entries.edit', $entry->entry_id) }}" class="btn-icon btn-icon-edit" title="Edit" aria-label="Edit"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
+                                @endif
+                                @if(isAdmin() || $entry->encoded_by === session('auth_user_id'))
+                                <button wire:click="delete({{ $entry->entry_id }})" data-confirm="Delete the {{ number_format($entry->quantity, 2) }} {{ $entry->unit }} entry for {{ $entry->wasteGenerator->generator_name ?? 'this generator' }} on {{ \Carbon\Carbon::parse($entry->entry_date)->format('M d, Y') }}?" class="btn-icon btn-icon-del" title="Delete" aria-label="Delete"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                @endif
                             </div>
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="padding:3rem 1rem;text-align:center;"><div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;"><div style="width:2.5rem;height:2.5rem;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg></div><div style="font-size:0.875rem;font-weight:600;color:var(--text);">No entries found</div><div style="font-size:0.75rem;color:var(--text-muted);">Adjust filters or record a new waste entry.</div><a href="{{ route('entries.create') }}" class="btn-primary" style="font-size:0.75rem;margin-top:0.25rem;">Add Entry</a></div></td></tr>
+                    <tr><td colspan="6" style="padding:3rem 1rem;text-align:center;"><div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;"><div style="width:2.5rem;height:2.5rem;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg></div><div style="font-size:0.875rem;font-weight:600;color:var(--text);">No entries found</div><div style="font-size:0.75rem;color:var(--text-muted);">Adjust filters or record a new waste entry.</div>@if(canAccess(...ROLES_STAFF()))<a href="{{ route('entries.create') }}" class="btn-primary" style="font-size:0.75rem;margin-top:0.25rem;">Add Entry</a>@endif</div></td></tr>
                     @endforelse
                 </tbody>
             </table>
