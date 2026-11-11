@@ -1,6 +1,6 @@
 <div>
-    @section('title', ($ticketId ? 'Edit' : 'Issue') . ' Violation Ticket — MENRO')
-    @section('page-title', $ticketId ? 'Edit Violation Ticket' : 'Issue Violation Ticket')
+    @section('title', $ticketId ? 'Edit Violation Ticket — MENRO' : 'Issue Citation Ticket — MENRO')
+    @section('page-title', $ticketId ? 'Edit Violation Ticket' : 'Issue Citation Ticket')
     @section('page-subtitle')
         <a href="{{ route('violation-tickets.index') }}">Violation</a>
         <span class="sep">›</span>
